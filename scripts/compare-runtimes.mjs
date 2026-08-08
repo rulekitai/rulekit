@@ -114,12 +114,16 @@ if (!eve) {
 const problems = []
 const a = shape(aiSdk)
 const b = shape(eve)
-if (a.join(",") !== b.join(",")) problems.push(`event sequence differs:\n    ai-sdk: ${a.join(" → ")}\n    eve:    ${b.join(" → ")}`)
+if (a.join(",") !== b.join(","))
+  problems.push(`event sequence differs:\n    ai-sdk: ${a.join(" → ")}\n    eve:    ${b.join(" → ")}`)
 
 const aKeys = doneShape(aiSdk)
 const bKeys = doneShape(eve)
 if (!aKeys || !bKeys) problems.push("a runtime produced no terminal event")
-else if (aKeys.join(",") !== bKeys.join(",")) problems.push(`done event carries different fields:\n    ai-sdk: ${aKeys.join(", ")}\n    eve:    ${bKeys.join(", ")}`)
+else if (aKeys.join(",") !== bKeys.join(","))
+  problems.push(
+    `done event carries different fields:\n    ai-sdk: ${aKeys.join(", ")}\n    eve:    ${bKeys.join(", ")}`,
+  )
 
 for (const events of [aiSdk, eve]) {
   const unknown = [...new Set(events.map((e) => e.type))].filter(
