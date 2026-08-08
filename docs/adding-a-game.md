@@ -193,3 +193,22 @@ createAskHandler({ pipeline, agent, gate, identify: (req) => ({ id: readUserId(r
 `allow` runs before any stage, so a refusal costs nothing at all. `record` runs
 after, with the full answer including what it cost. The browser never receives
 that figure.
+
+### What an answer costs
+
+`answer.usage` carries the token counts and, when a provider reports one, the
+price:
+
+```ts
+{ prompt_tokens: 39663, completion_tokens: 930, cost_usd: 0.0886,
+  cache_read_input_tokens: 0, cache_creation_input_tokens: null, agent_steps: 5 }
+```
+
+**`cost_usd` comes from the provider, never from a price table here.** A gateway
+that already priced the call reports it and this reads that figure. A provider
+that reports nothing leaves it null, and null is not zero: a zero reads as a
+genuinely free answer and would drag any average you compute downwards.
+
+If your provider reports no price, price the tokens yourself in `record`. This
+project ships no table, because a table of per-model prices goes stale silently
+and is the fork's to keep, not this project's.

@@ -205,7 +205,9 @@ export function createRulesAgent(options: RulesAgentOptions) {
         }
 
         if (type === "finish-step") {
-          usage = addStepUsage(usage, part.usage as never)
+          // The WHOLE step, not just its usage: the price arrives on the
+          // provider metadata, beside the token counts and not among them.
+          usage = addStepUsage(usage, part.usage as never, part.providerMetadata as never)
           // The model may still be mid-answer. Stopping here keeps whatever it
           // wrote and marks the answer incomplete, so nothing caches a
           // half-sentence.

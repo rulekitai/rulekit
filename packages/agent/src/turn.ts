@@ -77,15 +77,52 @@ export const EMPTY_USAGE: UsageTotals = Object.freeze({
   agent_steps: null,
 })
 
-/** Read a number off an untyped payload, or null. */
+/**
+ * Read a number off an untyped payload, or null.
+ *
+ * A numeric STRING counts. A gateway reports a price as `"0.00093"`, and
+ * refusing it because it is not a number reported every priced call as unpriced.
+ */
 function numberOrNull(value: unknown): number | null {
-  return typeof value === "number" && Number.isFinite(value) ? value : null
+  if (typeof value === "number") return Number.isFinite(value) ? value : null
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
+}
+
+/** The price a provider put on one call, or null when none did. */
+function providerCost(metadata: StepProviderMetadata | null | undefined): number | null {
+  if (!metadata) return null
+  return (
+    numberOrNull(metadata.gateway?.cost) ??
+    numberOrNull(metadata.gateway?.totalCost) ??
+    numberOrNull(metadata.openrouter?.usage?.cost)
+  )
 }
 
 /** Add two totals where null means "unreported" rather than zero. */
 function addField(current: number | null, next: number | null): number | null {
   if (next === null) return current
   return (current ?? 0) + next
+}
+
+/**
+ * What a provider says one model call cost, when it says anything.
+ *
+ * No price table ships with this project, and none should: a table of per-model
+ * prices is an opinion that goes stale silently and belongs to the fork. But a
+ * gateway that already priced the call will tell you, and reading that costs
+ * nothing and cannot go stale.
+ *
+ * The figure arrives as a STRING, and under a key that differs by provider, so
+ * every shape below is tried and a value nobody sent contributes nothing.
+ */
+export type StepProviderMetadata = {
+  gateway?: { cost?: unknown; totalCost?: unknown }
+  openrouter?: { usage?: { cost?: unknown } }
+  [provider: string]: unknown
 }
 
 /** One model call's reported usage, in whatever shape the runtime shows it. */
@@ -113,12 +150,16 @@ export type StepUsage = {
  * no usage must still count: otherwise a run of unpriced calls loops past the
  * cap without ever reaching it.
  */
-export function addStepUsage(totals: UsageTotals, usage: StepUsage | null | undefined): UsageTotals {
+export function addStepUsage(
+  totals: UsageTotals,
+  usage: StepUsage | null | undefined,
+  providerMetadata?: StepProviderMetadata | null,
+): UsageTotals {
   const u = usage ?? {}
   return {
     prompt_tokens: addField(totals.prompt_tokens, numberOrNull(u.inputTokens ?? u.promptTokens)),
     completion_tokens: addField(totals.completion_tokens, numberOrNull(u.outputTokens ?? u.completionTokens)),
-    cost_usd: addField(totals.cost_usd, numberOrNull(u.costUsd ?? u.cost)),
+    cost_usd: addField(totals.cost_usd, numberOrNull(u.costUsd ?? u.cost) ?? providerCost(providerMetadata)),
     cache_read_input_tokens: addField(
       totals.cache_read_input_tokens,
       numberOrNull(u.cachedInputTokens ?? u.cacheReadInputTokens),

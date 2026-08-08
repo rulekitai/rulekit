@@ -75,6 +75,30 @@ describe("turn accounting", () => {
     assert.equal(b.completion_tokens, 7)
   })
 
+  test("reads a price a gateway reported, as the string it sends", () => {
+    // No price table ships here, and none should. But a gateway that already
+    // priced the call says so, and it says so as a string beside the tokens.
+    const totals = addStepUsage(EMPTY_USAGE, { inputTokens: 10 }, { gateway: { cost: "0.00093" } })
+    assert.equal(totals.cost_usd, 0.00093)
+  })
+
+  test("sums a price across steps", () => {
+    let totals = addStepUsage(EMPTY_USAGE, null, { gateway: { cost: "0.001" } })
+    totals = addStepUsage(totals, null, { gateway: { cost: "0.002" } })
+    assert.ok(Math.abs((totals.cost_usd ?? 0) - 0.003) < 1e-9)
+  })
+
+  test("leaves the price null when no provider reported one", () => {
+    // Null is not zero. A zero reads as a genuinely free answer and drags a
+    // measured average down; a null is simply omitted.
+    assert.equal(addStepUsage(EMPTY_USAGE, { inputTokens: 10 }).cost_usd, null)
+    assert.equal(addStepUsage(EMPTY_USAGE, null, { anthropic: {} }).cost_usd, null)
+  })
+
+  test("ignores a price that is not a number", () => {
+    assert.equal(addStepUsage(EMPTY_USAGE, null, { gateway: { cost: "unknown" } }).cost_usd, null)
+  })
+
   test("sums across steps", () => {
     const totals = addStepUsage(addStepUsage(EMPTY_USAGE, { inputTokens: 10 }), { inputTokens: 4 })
     assert.equal(totals.prompt_tokens, 14)
