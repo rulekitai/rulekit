@@ -96,7 +96,10 @@ function tokensSection(profile: Profile): string | null {
   return block(
     "# Symbols",
     `Write each cost, symbol, and keyword as a bracket token, as plain inline text: ${tokens.syntax}. ` +
-      "Do not put a token in backticks or a code block. A token in backticks renders as text, not as a symbol.",
+      "Do not put a token in backticks or a code block. A token in backticks renders as text, not as a symbol.\n\n" +
+      "This applies to YOUR OWN sentences only. Inside a quotation, reproduce what the tool returned " +
+      "exactly, symbols and abbreviations included. Expanding an abbreviation inside quotation marks " +
+      "makes the quotation false.",
     groups.length ? `Use these exact spellings:\n\n${groups.join("\n")}` : null,
   )
 }

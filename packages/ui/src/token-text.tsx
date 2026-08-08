@@ -14,6 +14,11 @@ import { useRuleKit } from "./provider.tsx"
  * A game with no symbols passes no renderer, and every bracket in its answers
  * stays exactly as written. That matters: a rulebook uses square brackets in
  * ordinary prose too.
+ *
+ * GIVE THIS PARSED TEXT, NOT RAW MARKDOWN. A link's label looks exactly like a
+ * token, so `[Card Name](card:...)` would render the label as a symbol. In the
+ * answer renderer that never happens, because react-markdown turns a link into
+ * an element first and only its bare label reaches here.
  */
 
 /** `[Fury]`, `[2]`, `[Shield 2]`. Bounded so a long bracketed aside is left alone. */

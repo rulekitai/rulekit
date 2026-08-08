@@ -105,12 +105,41 @@ it calls things, how its symbols are written. You write a profile, not a prompt.
 3. `pnpm rulekit build my-game`
 4. Write `my-game/profile.json`. See `docs/adding-a-game.md`.
 
+## Check that it does not lie
+
+The design rests on one claim: every answer comes from the corpus. `rulekit eval`
+is what checks it, and it applies two gates that no model judges.
+
+```bash
+pnpm rulekit eval data/riftbound
+```
+
+- **Fabricated citation.** Every rule number in an answer must exist in the
+  corpus. A confidently cited wrong rule reads exactly like a correct one.
+- **Fabricated quotation.** Every quoted passage must be corpus text. A real
+  rule number wrapped around invented words is the same lie wearing a citation.
+
+Either failure exits non-zero. Citation recall is reported and is never a gate:
+an answer can cite four of seven expected rules and be completely right.
+
+It needs a model credential and takes about ten minutes, so it is a command you
+run before adopting a model or changing the instructions, not one for every push.
+Add `--regrade <file>` to grade a previous run's saved answers again, with no
+model calls at all.
+
+**Measured, 18 questions, `anthropic/claude-sonnet-5`, the shipped Riftbound
+corpus:** 17 of 18 clean. One fabricated citation — rule `315.1.b.1`, which does
+not exist, where `315.1.b` does. Zero fabricated quotations. Citation recall 38%.
+
+That one fabrication is why the gate exists, and why it exits non-zero.
+
 ## Verify it
 
 ```bash
-pnpm check-types
-pnpm test
+pnpm check-types      # every package
+pnpm test             # 255 tests, no model and no network
 pnpm rulekit validate data/demo
+pnpm test:e2e         # the interface, in a browser
 ```
 
 ## Licence

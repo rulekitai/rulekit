@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "RL-01",
+      "question": "How many runes do I channel during my Channel Phase, and what happens if my Rune Deck has fewer than that?",
+      "category": "rule_lookup",
+      "difficulty": "easy",
+      "expected_rule_numbers": [
+        "315.3.b",
+        "315.3.b.1",
+        "430.4.a",
+        "430.3",
+        "430.1",
+        "430.2.a",
+        "485.7"
+      ],
+      "rubric": "MUST say the Turn Player channels exactly 2 runes during the Channel Phase (315.3.b; 430.4.a). MUST say that if fewer than 2 runes remain in the Rune Deck you channel as many as possible (315.3.b.1; 430.3) — it is NOT a burn-out/loss. Should define Channel as taking runes off the top of the Rune Deck and putting them on the board (430.1), channeled readied by default (430.2.a). BONUS: the player going second channels one extra rune during their first Channel Phase (481.7 / 485.7 / 486.7). WRONG IF: it says 1 rune, or says the number scales with turn count, or says you 'draw' runes from the Main Deck, or claims an empty Rune Deck causes a loss or a Burn Out (Burn Out is the Main Deck rule, 315.4.b.1)."
+    },
+    {
+      "id": "RL-02",
+      "question": "In a standard 1v1 game, what is the Victory Score and how many battlefields are actually in play?",
+      "category": "rule_lookup",
+      "difficulty": "easy",
+      "expected_rule_numbers": [
+        "481.3",
+        "481.4",
+        "485.3",
+        "485.4",
+        "485.4.a",
+        "484.3",
+        "484.4"
+      ],
+      "rubric": "MUST say Victory Score is 8 points in 1v1 (481.3 / 485.3 / 486.3) and Battlefield Count in play is 2 (481.4 / 485.4 / 486.4). MUST NOT conflate the deckbuilding count with the in-play count: each player provides 3 battlefields in their deck but only 1 of them is used per game (485.4.a; 481.4.a), giving 2 on the board. BONUS: contrast with 2v2 — Victory Score 11, Battlefield Count 3 (484.3, 484.4). BONUS: note the Duel variant is Best of 1 (485.6) while the Match variant is Best of 3 (486.6). WRONG IF: it says 3 battlefields are in play in 1v1, or gives Victory Score 11 (that is 2v2), or invents a life-total / nexus-damage win condition."
+    },
+    {
+      "id": "RL-03",
+      "question": "How many copies of the same named card can my Main Deck contain, and do Signature cards and Unique cards follow the same limit?",
+      "category": "rule_lookup",
+      "difficulty": "medium",
+      "expected_rule_numbers": [
+        "103.2.b",
+        "103.2.b.1",
+        "103.2.d",
+        "103.2.d.1",
+        "103.2.d.2",
+        "103.2.d.3",
+        "825.2.a",
+        "825.2.b",
+        "601.1.c.3"
+      ],
+      "rubric": "MUST state three separate limits. (1) Up to 3 copies of the same named card (103.2.b), and that limit includes the Chosen Champion (103.2.b.1); cards with different names count separately even if they show the same character (103.2.b.2). (2) Signature cards are capped at 3 TOTAL across the whole deck regardless of name (103.2.d, 103.2.d.1), and every Signature card must carry the Champion tag matching the Champion Legend (103.2.d.2); Signature cards are not Champion units and cannot go in the Champion Zone (103.2.d.3). (3) Unique means the deck may contain only ONE card of that name (825.2.a); a Signature card that is also Unique still counts toward the 3-Signature pool but is limited to one copy (825.2.b). BONUS: in competition the copy limit applies to Main Deck plus sideboard combined (601.1.c.3; 403.3). WRONG IF: it says you may run 3 copies of each Signature card, or applies the 3-copy rule to Unique cards, or claims Signature cards are exempt from the Domain Identity restriction."
+    },
+    {
+      "id": "RL-04",
+      "question": "When exactly does my Rune Pool empty, and do I lose unspent Energy and Power?",
+      "category": "rule_lookup",
+      "difficulty": "medium",
+      "expected_rule_numbers": [
+        "167",
+        "167.1",
+        "316.3",
+        "317.2.d",
+        "315.4.d",
+        "162.1",
+        "162.2",
+        "165.1"
+      ],
+      "rubric": "MUST state both emptying points from 167: at the START of each player's Main Phase and at the END of each player's turn. MUST say any unspent Energy or Power is lost (167.1). MUST make clear it is EVERY player's Rune Pool, not only the turn player's (167; 316.3; 315.4.d; 317.2.d 'Each player's Rune Pool empties'). Should cite at least one of the phase-level restatements: Main Phase step 1 (316.3), Ending Phase Expiration Step insert 3e (317.2.d), Draw Phase task (315.4.d). BONUS: distinguish Energy (no domain, pays numeric Energy costs, 162.1) from Power (has a domain, pays Domain-associated Power costs, 162.2), and note resources must be added to the pool before they can be spent (165.1). WRONG IF: it says the pool only empties at end of turn, or that only the turn player's pool empties, or that unspent resources carry over."
+    },
+    {
+      "id": "RL-05",
+      "question": "What exactly do I have to register for a sanctioned Constructed event?",
+      "category": "rule_lookup",
+      "difficulty": "medium",
+      "expected_rule_numbers": [
+        "402.1",
+        "601.1.b",
+        "601.1.c.1",
+        "601.1.c.2",
+        "103.3.a",
+        "103.4.c",
+        "403.4.b",
+        "103.2"
+      ],
+      "rubric": "MUST give the Tournament Rules registration list from 402.1: a Main Deck of EXACTLY 40 cards including the chosen champion, 1 Legend, 12 runes, and exactly 3 battlefields each with a unique name. MUST resolve the exact-vs-minimum distinction: Core Rules 103.2 says 'a Main Deck of at least 40 cards', but competition play requires exactly 40 (402.1; 601.1.b) — a model that only reports 'at least 40' for a sanctioned event is wrong. Should add: sideboard is 10 or fewer cards where allowed (601.1.c.1) and may contain only valid Main Deck cards (601.1.c.2); rune deck is 12 rune cards matching the Legend's Domain Identity (103.3.a, 103.3.a.1); no two battlefields of the same name (103.4.c). BONUS: after registration a player may never change Runes, Legend, or Battlefields (403.4.b), though the Chosen Champion may be swapped when sideboarding (403.4.a; 601.1.c.4). WRONG IF: it says 40+ cards are fine in competition, gives a rune count other than 12, says 1 battlefield is registered (1 is what gets USED in 1v1 — 3 are REGISTERED), or invents a 60-card deck size."
+    },
+    {
+      "id": "RL-06",
+      "question": "Walk me through what happens at the start of my turn, before I get to my Main Phase.",
+      "category": "rule_lookup",
+      "difficulty": "medium",
+      "expected_rule_numbers": [
+        "315.1",
+        "315.1.b",
+        "315.2",
+        "315.2.a.1",
+        "315.2.b.2",
+        "315.3.b",
+        "315.4.b",
+        "315.4.b.1",
+        "469.2",
+        "316.1"
+      ],
+      "rubric": "MUST list the four Start-of-Turn phases in order from 315: Awaken Phase, Beginning Phase, Channel Phase, Draw Phase, after which the Main Phase begins (316.1). MUST attach the right action to each: Awaken — the Turn Player readies all Game Objects they control that can be readied (315.1.b); Beginning Phase — start-of-Beginning-Phase effects (315.2.a.1) then the Scoring Step where the Turn Player HOLDS all Battlefields they Control (315.2.b.2, and Hold is a way to Score per 469.2); Channel — channel 2 runes (315.3.b); Draw — draw 1 (315.4.b), and if the Main Deck is empty the Turn Player has been Burned Out and still draws 1 afterward (315.4.b.1, 315.4.b.2). BONUS: in team modes, battlefields controlled by a teammate during the Scoring Step are disqualified from being scored that turn (315.2.b.3; 484.8.b). BONUS: each player's Rune Pool empties as part of the Draw Phase task (315.4.d). WRONG IF: it puts the draw before the channel, omits the Scoring/Hold step, claims you score by Conquering at start of turn (start-of-turn scoring is Hold, not Conquer), or invents an 'untap/upkeep' framing without naming Awaken and Beginning."
+    },
+    {
+      "id": "KW-01",
+      "question": "What does Shield do in Riftbound?",
+      "category": "keyword",
+      "difficulty": "easy",
+      "expected_rule_numbers": [
+        "814.1",
+        "814.1.a",
+        "814.1.b",
+        "814.1.b.3",
+        "814.1.c",
+        "814.1.d",
+        "814.1.d.1",
+        "814.2",
+        "814.3"
+      ],
+      "rubric": "MUST quote or state the functional text from 814.1.c: Shield is short for 'While I am a defender, I have +X [Might].' It is a Passive Ability keyword (814.1) present on Units (814.1.a), written 'Shield [X]' where an omitted X is 1 (814.1.b, 814.1.b.3). MUST state the defender condition from 814.1.d / 814.1.d.1: 'defender' means the unit gained the Defender designation during Combat (rule 459 / 464.2.c), and Shield lasts only while it holds that designation — so it does nothing while attacking or outside combat. MUST say multiple Shield sources SUM their values (814.2) — they are not redundant. WRONG IF: it describes Shield as preventing, absorbing, or reducing damage (the single most likely wrong answer — it is a Might bonus, not damage prevention); or says it applies while attacking; or says multiple instances are redundant (that is true of Tank 815.2 and Ganking 810.2, not Shield)."
+    },
+    {
+      "id": "KW-02",
+      "question": "What does Deflect actually do, and what kind of Power do I have to pay for it?",
+      "category": "keyword",
+      "difficulty": "medium",
+      "expected_rule_numbers": [
+        "809.1",
+        "809.1.a",
+        "809.1.b.3",
+        "809.1.c",
+        "809.1.c.1",
+        "809.1.d",
+        "809.2",
+        "809.3"
+      ],
+      "rubric": "MUST give the functional text from 809.1.c: spells and abilities an OPPONENT controls that choose the object cost an additional amount of Power equal to the Deflect Value to play, charged for EACH time they choose it. It is a Passive Ability keyword (809.1), normally on Permanents (809.1.a), written 'Deflect [X]' with an omitted X meaning 1 (809.1.b.3). MUST answer the Power question with 809.1.c.1: the Power used to pay this cost may ALWAYS be of any Domain. MUST characterize it as a Mandatory Additional Cost on the opponent's spell/ability (809.1.d), not a prohibition. Should say multiple Deflect grants sum their values (809.2). WRONG IF: it says the object cannot be targeted or is untargetable/hexproof; or says the extra cost is Energy rather than Power; or says the Power must match the card's domain; or says it also taxes the controller's own spells (only opponents' — 809.1.c)."
+    },
+    {
+      "id": "KW-03",
+      "question": "What does Accelerate cost, and does a unit played with Accelerate count as 'becoming ready' for other cards?",
+      "category": "keyword",
+      "difficulty": "hard",
+      "expected_rule_numbers": [
+        "805.1.a",
+        "805.1.a.1",
+        "805.1.a.2",
+        "805.2",
+        "805.2.a",
+        "805.2.b",
+        "805.6",
+        "805.6.a",
+        "805.4"
+      ],
+      "rubric": "MUST give the cost from 805.1.a: 'As you play me, you may pay [1][Power] as an additional cost. If you do, I enter ready.' MUST get the domain restriction right: if the unit has one or more domains, the Power portion must match one of the UNIT's domains (805.1.a.1); if the unit has no domain, any Power works (805.1.a.2). MUST answer the second half with 805.6 / 805.6.a: Accelerate creates a delayed REPLACEMENT effect — the unit enters ready instead of entering exhausted; it does not enter exhausted and then become ready, so it will NOT interact with or trigger abilities keyed on units becoming ready. Should add: it is an Optional Additional Cost payable only during the steps of playing the card, never while the unit is on the board (805.2, 805.2.a, 805.3); once the cost is paid the unit enters ready even if it loses Accelerate during finalization (805.2.b); multiple instances are redundant (805.4). WRONG IF: it says Accelerate triggers 'becomes ready' abilities; or gives the cost as [1] Energy with no Power; or says any Power always works regardless of the unit's domains; or says you can pay Accelerate after the unit is already on the board."
+    },
+    {
+      "id": "LG-01",
+      "question": "Is Master Yi, Wuju Bladesman banned in Constructed?",
+      "category": "legality",
+      "difficulty": "medium",
+      "expected_rule_numbers": [
+        "601.2.d",
+        "601.2.d.2"
+      ],
+      "rubric": "MUST answer NO for Constructed. The banlist has 21 entries; Master Yi, Wuju Bladesman (a Legend, riftbound/OGS-019.webp) appears under Constructed 2v2 ONLY, entry type 'banned', effective 2026-07-24, from the 'Ban List Update — July 24, 2026' patch note. MUST name the format it IS banned in (Constructed 2v2) and the effective date — an answer that just says 'no' without surfacing the 2v2 ban is incomplete. MUST cite 601.2.d ('If a card is banned in a specific format, that card may not be included in a deck'). BONUS: 601.2.d.2 — at low OPL a player running the exact contents of a preconstructed deck product may use banned cards, but loses that permission on any change or added sideboard. BONUS: note that no Riftbound entry is 'restricted'; all 21 entries are 'banned'. WRONG IF: it says Master Yi is banned in Constructed (the single most likely wrong answer — he is the only card on the list banned in 2v2 but NOT in Constructed); or it omits the effective date; or it answers from training memory instead of the live banlist."
+    },
+    {
+      "id": "LG-02",
+      "question": "Can I play The Dreaming Tree, and has its text been changed?",
+      "category": "legality",
+      "difficulty": "hard",
+      "expected_rule_numbers": [
+        "601.2.d",
+        "169.1",
+        "190.6.d"
+      ],
+      "rubric": "MUST report BOTH bans, each with its date: The Dreaming Tree (Battlefield, riftbound/OGN-292.webp) is banned in Constructed effective 2026-03-30 ('Constructed Banlist Update — March 30, 2026') AND banned in Constructed 2v2 effective 2026-07-24 ('Ban List Update — July 24, 2026'). Reporting only one format is incomplete. MUST report the errata, effective 2025-10-28, with original and corrected text in the right order: ORIGINAL 'The first time you choose a friendly unit with a spell here each turn, draw 1.' → ERRATA 'When a player chooses a friendly unit here with a spell for the first time each turn, they draw 1.' MUST characterize the change correctly: the errata makes the trigger apply to ANY player choosing a friendly unit there, and the draw goes to that player, rather than being limited to the battlefield controller. MUST cite 601.2.d for what a ban means. WRONG IF: it swaps original and errata text; or reports only the Constructed ban; or gives one date for both bans; or says the errata narrowed the ability to the controller (it widened it); or claims it is 'restricted' rather than banned."
+    },
+    {
+      "id": "IX-01",
+      "question": "I'm at 7 points in a 1v1 game. On my turn I attack and conquer one of the two battlefields, and I haven't scored the other one this turn. Do I win?",
+      "category": "interaction",
+      "difficulty": "hard",
+      "expected_rule_numbers": [
+        "485.3",
+        "471.1.a",
+        "471.1.a.1",
+        "471.1.b",
+        "471.1.b.1",
+        "469.1",
+        "469.2",
+        "470",
+        "466.1.b.1",
+        "472"
+      ],
+      "rubric": "MUST answer NO. Chain: Victory Score in 1v1 is 8 (481.3 / 485.3), so at 7 you are 1 point away, which triggers the Final Point restriction (471.1.a, 471.1.b). Under 471.1.b.1, when a player tries to gain a point through a CONQUER at that threshold, they gain the Final Point only if they Scored EVERY Battlefield this turn; otherwise they DRAW A CARD instead of gaining the point. With 2 battlefields in play (485.4) and only one scored, you draw a card and stay at 7. MUST identify the Conquer-only scope: 471.1.a.1 says points gained from sources that are NOT Conquer are not beholden to these restrictions, and 466.1.b.1 says a player who Scored through HOLD gains the winning point without that all-battlefields requirement. Should note 470: a player may Score only once per Battlefield per turn, and 469.1/469.2 for the Conquer vs Hold definitions. BONUS: 472 — the win is checked at a Cleanup, and requires meeting the Victory Score and having more points than any opponent. WRONG IF: it says yes, you reach 8 and win (the likely wrong answer); or it applies the all-battlefields requirement to Hold as well; or it says the drawn card is in addition to the point rather than instead of it."
+    },
+    {
+      "id": "IX-02",
+      "question": "I have a facedown Hidden card at a battlefield I control. My opponent attacks it and takes control. What happens to my facedown card, and does anyone get to see it?",
+      "category": "interaction",
+      "difficulty": "hard",
+      "expected_rule_numbers": [
+        "811.1.b",
+        "466.5",
+        "466.5.c",
+        "421.4",
+        "421.1",
+        "190.4",
+        "348.2.a",
+        "128"
+      ],
+      "rubric": "MUST say the facedown card is REMOVED from the battlefield. Chain: Hidden only holds the card there 'for as long as you control that battlefield' (811.1.b); when the opponent's units remain at the end of combat they Establish Control in the Resolution Step (466.5; 190.4), and 466.5.c then removes all Hidden cards at that battlefield that do not share a controller with the battlefield. MUST answer the visibility half with 421.4: if a facedown card would change zones, its OWNER reveals it to ALL players (see 128, Privacy) — so yes, everyone sees it. Should note the same removal follows a non-combat Showdown where control changes (348.2.a) and that hiding itself never opened a chain (811.1.c.2). BONUS credit for honesty: 466.5.c does not name a destination zone for the removed card, and a correct answer should say so rather than invent 'trash' or 'hand'. WRONG IF: it says the card stays hidden and playable under the new controller; or says it flips face up but remains at the battlefield; or asserts a specific destination zone as if the rules stated one; or says only the owner sees it."
+    },
+    {
+      "id": "IX-03",
+      "question": "My unit with Deathknell is about to die and I have Zhonya's Hourglass face up. If the Hourglass replaces the death, does the Deathknell still trigger?",
+      "category": "interaction",
+      "difficulty": "hard",
+      "expected_rule_numbers": [
+        "808.1.c",
+        "808.1.d",
+        "808.1.d.1",
+        "808.1.d.2",
+        "808.1.d.3",
+        "428.1",
+        "428.1.a.1.b",
+        "428.2.a"
+      ],
+      "rubric": "MUST answer NO — the Deathknell does not resolve. Chain: Deathknell is short for 'When I die, [Effect]' (808.1.c), and its trigger is specifically the Permanent being KILLED and sent to the Trash (808.1.d). The trigger goes onto the chain as a Pending Item BEFORE the card is moved to the trash (808.1.d.2; 428.1.a.1.b), but 808.1.d.1 removes it from the chain if the permanent is not sent to the Trash because its 'killed' event was replaced — which is exactly what Zhonya's Hourglass does. MUST quote the CURRENT (errata'd) Hourglass text, effective 2025-10-28: 'If a friendly unit would die, kill this instead. Heal that unit, exhaust it, and recall it. (Send it to base. This isn't a move.)' — and MUST NOT use the pre-errata text 'The next time a friendly unit would die, kill this instead. Recall that unit exhausted.' Should say the Hourglass (Gear, riftbound/OGN-077.webp) is killed in the unit's place, and Killing means going to the trash from the board (428.1, 428.2.a). WRONG IF: it says Deathknell still triggers because the unit 'would have died'; or it treats the recall as a death; or it quotes the original pre-errata Hourglass text; or it claims the trigger stays on the chain and fizzles for lack of a source."
+    },
+    {
+      "id": "IX-04",
+      "question": "can you use tornado warrior to empower something that does not have empower, like itself",
+      "category": "interaction",
+      "difficulty": "hard",
+      "expected_rule_numbers": [
+        "441.1",
+        "441.1.a",
+        "441.1.b",
+        "441.1.c",
+        "441.3",
+        "441.3.a",
+        "827.1",
+        "827.1.c.1",
+        "828.1",
+        "828.1.b.1",
+        "811.1.d.1",
+        "811.1.d.3"
+      ],
+      "rubric": "MUST answer YES to the first half and separate the two meanings of 'empower'. Empower the GAME ACTION (441.1) is simply rendering a Game Object Empowered; it is a Limited Action performed whenever a Game Effect directs it (441.3, 441.3.a). Empower the KEYWORD (827.1) is a separate Activated Ability, written 'Empower [Cost]', short for '[Cost]: Empower this. Play only if not Empowered' (827.1.c.1), which only ever empowers its own source (827.1.b.1). So a target does NOT need the Empower keyword — Tornado Warrior's text ('When you play me from face down, you may empower something here. Disempower it at end of turn.', riftbound/VEN-099.webp) is a game effect directing the action. MUST answer the self-targeting half: Tornado Warrior has [Hidden], and a hidden permanent must be played to the battlefield where it was hidden (811.1.d.1), so it is present 'here' and is a legal choice for its own effect. MUST state the real limits: Empowered is a binary state and an already-Empowered object cannot be Empowered again (441.1.a, 441.1.b, 441.1.c); and a card with no '[Empowered][>] [Text]' dependent ability (828.1, 828.1.b.1) gains no ability from the status, though the status itself remains a referenceable state/event (441.2, 441.2.a). WRONG IF: it says you may only Empower cards that have the Empower keyword (the likely wrong answer); or it says Tornado Warrior cannot choose itself; or it claims Empower grants Might or readies the object; or it confuses [Empowered] the dependent keyword with the Empowered status."
+    },
+    {
+      "id": "OS-01",
+      "question": "Which Constructed deck is strongest right now, and what 40 cards should I build?",
+      "category": "off_scope",
+      "difficulty": "easy",
+      "expected_rule_numbers": [
+        "402.1",
+        "601.1.b"
+      ],
+      "rubric": "MUST REFUSE the strategy and deckbuilding request. The instructions place 'Strategy and deckbuilding... what is the best deck, tier lists, matchups, how do I beat X, should I run this card, and any card rating or meta prediction' under Refuse these. The refusal must be one or two sentences, must not lecture or moralize, and must name what the assistant does instead: Riftbound rules, card text and interactions, keywords, and card legality. Acceptable partial answer under the mixed-question rule: state the allowed fact that a Constructed Main Deck must be exactly 40 cards (402.1; 601.1.b), then decline the rest. DISQUALIFYING: naming any archetype or tier ranking, listing or recommending cards, evaluating a matchup, predicting the meta, or hedging with 'generally the strongest decks are...'. Also wrong: a multi-paragraph refusal, or refusing without offering the in-scope alternative."
+    },
+    {
+      "id": "OS-02",
+      "question": "Tell me the story of how Yasuo became the Unforgiven and what happened between him and Yone in Runeterra.",
+      "category": "off_scope",
+      "difficulty": "easy",
+      "expected_rule_numbers": [],
+      "rubric": "MUST REFUSE. The instructions place 'Lore and story... champion backstory and worldbuilding' under Refuse these, with the sole exception being a question that is really a keyword or term definition — this one is not. The refusal must be one or two sentences, matter-of-fact, and must name the in-scope alternative (rules, card text and interactions, keywords, legality). Acceptable and preferred: offer to read out the actual card text for Yasuo, Unforgiven (Legend, riftbound/OGN-259.webp) or Yone, Blademaster (Champion Unit, riftbound/SFD-116.webp) if card text is what the user wants. DISQUALIFYING: telling any part of the narrative — the duel, the wind technique, the wrongful accusation, the brothers' fates — from training memory. Also wrong: relaying flavor text as if it were the answer, or claiming the rules tools cover lore."
+    },
+    {
+      "id": "AM-01",
+      "question": "What does rule 403 say?",
+      "category": "ambiguous",
+      "difficulty": "hard",
+      "expected_rule_numbers": [
+        "403.1",
+        "403.2",
+        "403.4",
+        "403.4.b",
+        "403.5",
+        "403.1.a",
+        "403.3"
+      ],
+      "rubric": "MUST surface the ambiguity: rule number 403 exists in BOTH Riftbound rulebooks, and the question does not say which. In the Riftbound Tournament Rules, 403 is 'Sideboard' — a group of additional cards outside the starting configuration (403.1), size and contents set by the format (403.2), swapped 1-for-1 with Main Deck cards between games (403.4), no sideboarding in game 1 (403.5), and Runes/Legend/Battlefields may never be changed after registration (403.4.b). In the Riftbound Core Rules, 403 is '3. Determine Total Cost', step 3 of playing or activating an Ability — determine the base cost (403.1), activated abilities list their cost before the ':' (403.1.a), then apply increases and decreases (403.2, 403.3). The correct move is to name both and either ask which the user means or answer both explicitly. BONUS: flag that a single by-number lookup for '403' returns only the Tournament Rules 'Sideboard' entry and silently drops the Core Rules entry, so one lookup is not sufficient. BONUS: the same collision hits 402 (Tournament 'Deck Size' vs Core '2. Make relevant choices') and 421 (Tournament 'Shuffling' vs Core 'Hide'). WRONG IF: it confidently presents one rulebook's 403 as THE rule 403 with no mention of the other; or it merges text from both books into one answer without naming each source (the instructions require one source per claim); or it asks a clarifying question without showing that it looked and found two candidates."
+    }
+  ]
+}

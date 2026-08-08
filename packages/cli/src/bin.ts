@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { cp, mkdir, readFile, stat, writeFile } from "node:fs/promises"
+import { cp, mkdir, readFile, stat } from "node:fs/promises"
 import { dirname, join, resolve } from "node:path"
 import { argv, exit, stderr, stdout } from "node:process"
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, pathToFileURL } from "node:url"
 import { buildDatabase } from "@rulekit/corpus/build"
 import { type CorpusProblem, checkIntegrity, loadCorpus } from "@rulekit/corpus/load"
 import { SqliteStore } from "@rulekit/corpus/sqlite-store"
@@ -29,6 +29,16 @@ Usage:
   rulekit init <dir>              Copy the example corpus as a starting point
   rulekit ask <dir> "<question>"  Ask a question with no model, using only the
                                   free stages. Useful for checking a corpus.
+  rulekit eval <dir> [options]    Run the corpus's eval.json through the agent
+                                  and check nothing was invented. Needs a model
+                                  credential. Exits non-zero on any fabrication.
+
+eval options:
+  --model <id>     Model to grade. Default anthropic/claude-sonnet-5.
+  --out <file>     Write full results as JSON.
+  --only <text>    Run only questions whose id or category contains this.
+  --step-cap <n>   Cap model calls per question. Default none, as in production.
+  --regrade <file> Grade a previous run's answers again, with no model calls.
 
 Every corpus is a directory of JSON files. See docs/corpus-format.md.
 `
@@ -190,7 +200,13 @@ function flag(name: string): string | null {
 
 async function main(): Promise<number> {
   const [command, ...rest] = argv.slice(2)
-  const positional = rest.filter((arg) => !arg.startsWith("--") && rest[rest.indexOf(arg) - 1] !== "--out")
+  // A flag's VALUE is not a positional argument. Listing the value-taking flags
+  // is what stops `--model anthropic/x` leaving "anthropic/x" to be read as the
+  // corpus directory.
+  const VALUE_FLAGS = new Set(["--out", "--model", "--only", "--step-cap", "--regrade"])
+  const positional = rest.filter(
+    (arg, index) => !arg.startsWith("--") && !VALUE_FLAGS.has(rest[index - 1] ?? ""),
+  )
 
   switch (command) {
     case "validate": {
@@ -222,6 +238,22 @@ async function main(): Promise<number> {
       }
       return commandAsk(resolve(positional[0]), positional.slice(1).join(" "))
     }
+    case "eval": {
+      if (!positional[0]) {
+        err("Usage: rulekit eval <dir> [--model id] [--out file] [--only text] [--step-cap n]")
+        return 2
+      }
+      const { commandEval } = await import("./eval.ts")
+      const cap = flag("step-cap")
+      return commandEval({
+        corpusDir: resolve(positional[0]),
+        model: flag("model") ?? "anthropic/claude-sonnet-5",
+        outFile: flag("out") ? resolve(flag("out") as string) : null,
+        filter: flag("only"),
+        stepCap: cap ? Number(cap) : null,
+        regradeFile: flag("regrade") ? resolve(flag("regrade") as string) : null,
+      })
+    }
     case "--help":
     case "-h":
     case "help":
@@ -235,11 +267,21 @@ async function main(): Promise<number> {
   }
 }
 
-main()
-  .then((code) => exit(code))
-  .catch((error) => {
-    err(`\nrulekit failed: ${error?.message ?? String(error)}`)
-    exit(1)
-  })
+/**
+ * Run only when this file IS the command, never when it is imported.
+ *
+ * Without the guard, importing a command to test it runs the whole program and
+ * calls `exit`, which kills the test runner before a single assertion.
+ */
+const isDirectRun = process.argv[1] ? import.meta.url === pathToFileURL(process.argv[1]).href : false
 
-export { commandAsk, commandBuild, commandValidate, reportProblems, writeFile }
+if (isDirectRun) {
+  main()
+    .then((code) => exit(code))
+    .catch((error) => {
+      err(`\nrulekit failed: ${error?.message ?? String(error)}`)
+      exit(1)
+    })
+}
+
+export { commandAsk, commandBuild, commandInit, commandValidate, main, reportProblems }

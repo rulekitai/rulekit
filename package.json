@@ -17,7 +17,8 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "test": "node --conditions=development --no-warnings --test \"packages/*/src/**/*.test.ts\"",
-    "rulekit": "node --conditions=development --no-warnings packages/cli/src/bin.ts"
+    "rulekit": "node --conditions=development --no-warnings packages/cli/src/bin.ts",
+    "test:e2e": "pnpm --filter rulekit-example test:e2e"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
