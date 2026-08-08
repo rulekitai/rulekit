@@ -17,3 +17,7 @@ out/
 
 # Local probing scripts, not part of the project.
 .scratch/
+
+# Eve build output.
+.eve/
+.output/

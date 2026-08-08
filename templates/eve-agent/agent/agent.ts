@@ -1,19 +1,12 @@
-import { readFileSync } from "node:fs"
-import { resolve } from "node:path"
-import { buildInstructions } from "@rulekit/agent/instructions"
-import { parseProfile } from "@rulekit/agent/profile"
-import { builtinSkills } from "@rulekit/agent/skills"
 import { defineAgent } from "eve"
-import { CORPUS_DIR } from "./corpus.ts"
 
 /**
  * The agent, on Eve.
  *
- * The instructions are built from the same profile the AI SDK runtime reads, so
- * a change to a game's profile reaches both runtimes and neither can drift.
+ * The instructions are NOT here. Eve discovers them from `agent/instructions.ts`
+ * beside this file, which builds them from the same profile the AI SDK runtime
+ * reads. Passing them to `defineAgent` fails the build with "Unknown key".
  */
-
-const profile = parseProfile(JSON.parse(readFileSync(resolve(CORPUS_DIR, "profile.json"), "utf8")))
 
 /**
  * The model.
@@ -32,8 +25,6 @@ export default defineAgent({
    * Raise it if answers about interactions between several cards get weaker.
    */
   reasoning: "low",
-
-  instructions: buildInstructions(profile, { skills: builtinSkills() }),
 
   /**
    * The outer bound on one session, not on one question.
