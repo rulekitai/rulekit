@@ -1,6 +1,5 @@
 import { type AgentEvent, deriveLabel, encodeEvent, type TraceStep } from "@rulekit/agent/events"
 import {
-  AGENT_STEP_CAP,
   addStepUsage,
   buildMessage,
   EMPTY_USAGE,
@@ -97,6 +96,10 @@ export default defineChannel({
             // step's cost, every time.
             let answered = false
             let capped: { text: string; complete: boolean } | null = null
+            // No ceiling unless this deployment sets one. A turn ends when the
+            // model stops calling tools. See NO_STEP_CAP in @rulekit/agent/turn
+            // for why this project ships no cap of its own.
+            const cap = process.env.RULEKIT_STEP_CAP ? Number(process.env.RULEKIT_STEP_CAP) : null
 
             while (true) {
               const { done, value } = await reader.read()
@@ -109,8 +112,8 @@ export default defineChannel({
                 // `answered` guards the cap: once the answer has arrived the
                 // loop is only collecting cost, and cutting that short throws
                 // away the price of a finished answer.
-                if (!answered && stepCapReached(usage)) {
-                  capped = stopAtStepCap(finalText, running, usage.agent_steps ?? 0, AGENT_STEP_CAP)
+                if (!answered && cap !== null && stepCapReached(usage, cap)) {
+                  capped = stopAtStepCap(finalText, running, usage.agent_steps ?? 0, cap)
                   await reader.cancel().catch(() => {})
                   break
                 }

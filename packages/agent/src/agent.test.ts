@@ -13,10 +13,10 @@ import * as proseModule from "./prose.ts"
 import { builtinSkills, findSkill } from "./skills.ts"
 import { defineRulesTools, findTool, type RuleTool } from "./tools.ts"
 import {
-  AGENT_STEP_CAP,
   addStepUsage,
   buildMessage,
   EMPTY_USAGE,
+  SUGGESTED_STEP_CAP,
   salvageAnswer,
   stepCapReached,
   usageOrNull,
@@ -49,13 +49,21 @@ describe("turn accounting", () => {
   })
 
   test("counts a step the runtime priced at nothing", () => {
-    // A run of unpriced calls must still reach the cap. Counting only priced
-    // calls is how a loop runs past its ceiling without ever tripping it.
+    // A run of unpriced calls must still reach a cap that was set. Counting
+    // only priced calls is how a loop runs past its ceiling without tripping it.
     let totals = EMPTY_USAGE
-    for (let i = 0; i < AGENT_STEP_CAP; i++) totals = addStepUsage(totals, null)
-    assert.equal(totals.agent_steps, AGENT_STEP_CAP)
+    for (let i = 0; i < SUGGESTED_STEP_CAP; i++) totals = addStepUsage(totals, null)
+    assert.equal(totals.agent_steps, SUGGESTED_STEP_CAP)
     assert.equal(totals.cost_usd, null)
-    assert.equal(stepCapReached(totals), true)
+    assert.equal(stepCapReached(totals, SUGGESTED_STEP_CAP), true)
+  })
+
+  test("never caps when no cap was set, which is the default", () => {
+    // A cap is a cost control, and this project ships none. A turn ends when
+    // the model stops calling tools.
+    let totals = EMPTY_USAGE
+    for (let i = 0; i < 500; i++) totals = addStepUsage(totals, null)
+    assert.equal(stepCapReached(totals, null), false)
   })
 
   test("reads several spellings of the same field", () => {
@@ -78,10 +86,10 @@ describe("turn accounting", () => {
     assert.ok(usageOrNull(addStepUsage(EMPTY_USAGE, null)))
   })
 
-  test("does not trip the cap early", () => {
+  test("does not trip a set cap early", () => {
     let totals = EMPTY_USAGE
-    for (let i = 0; i < AGENT_STEP_CAP - 1; i++) totals = addStepUsage(totals, null)
-    assert.equal(stepCapReached(totals), false)
+    for (let i = 0; i < SUGGESTED_STEP_CAP - 1; i++) totals = addStepUsage(totals, null)
+    assert.equal(stepCapReached(totals, SUGGESTED_STEP_CAP), false)
   })
 
   test("keeps text a stream produced without a terminal event", () => {

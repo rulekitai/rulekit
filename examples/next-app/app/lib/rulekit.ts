@@ -59,7 +59,7 @@ export function rulekit(): Wiring {
     stages: [exactCacheStage(), staticAnswersStage(store), glossaryStage(store)],
   })
 
-  const agent = createRulesAgent({ store, profile, model: MODEL, reasoning: "low" })
+  const agent = createRulesAgent({ store, profile, model: MODEL })
 
   cached.__rulekit = { store, profile, pipeline, agent }
   return cached.__rulekit

@@ -67,8 +67,11 @@ function cardsSection(profile: Profile): string | null {
         `The first time you name a card you looked up, write it as a Markdown link:\n\n` +
         `    [Card Name](${cards.linkScheme}:<image path>)\n\n` +
         `Use the exact image path the tool returned for that card. The link shows the card when a ` +
-        `reader hovers or taps the name. Link every card you name. If a card has no image path, ` +
-        `write its name as plain text.`,
+        `reader hovers or taps the name.\n\n` +
+        `Link a card ONLY when you have its image path from a tool. Two things are never links: ` +
+        `a card with no image path, and anything that is not a card. A rule, a keyword, an ability ` +
+        `and a defined term are all written as plain text. A link with an empty path renders as ` +
+        `nothing and tells the reader you looked something up that you did not.`,
     )
     if (cards.maxInlineImages > 0) {
       parts.push(

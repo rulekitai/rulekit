@@ -15,21 +15,32 @@ export type RetrievedRule = { id?: string; rule_number?: string; title?: string 
 /**
  * The most model calls one turn may make.
  *
- * WHY A CAP EXISTS. A tool-calling loop has no natural end. The model decides
- * whether to call another tool, so a turn that keeps almost-finding the answer
- * keeps paying for another lookup. Without a ceiling the cost of a single
- * question is unbounded, and no budget built on an average survives that.
+ * **THERE IS NO CAP BY DEFAULT, AND THAT IS DELIBERATE.** A step cap is a cost
+ * control, and a cost control is an opinion about what an answer is worth. This
+ * project has no pricing model and takes no such position, for the same reason
+ * its gate allows everything: the fork decides, and never has to undo a decision
+ * made here.
  *
- * WHY SIX. It is enough for the shape of answer this exists to give: find a
- * card, read its text, check the rule it turns on, check whether that rule was
- * changed. Four truncates exactly the multi-lookup questions worth asking. More
- * than six has never, in measurement, turned a wrong answer into a right one.
+ * A turn ends on its own when the model stops calling tools and writes an
+ * answer. A cap ends it EARLY, mid-thought, which is why it costs something
+ * real: measured on a rules corpus of about 3,300 rules, a hard interaction
+ * question spent six model calls and had not finished writing. Capping there
+ * hands the reader a sentence that stops in the middle.
  *
- * Raise it if your corpus needs deeper chains, and measure what share of turns
- * reach it. A cap nothing reaches costs nothing; a cap most turns reach is
- * truncating answers rather than bounding them.
+ * Set `stepCap` when you are paying per token and want a ceiling. Then measure
+ * what share of turns reach it. A cap nothing reaches costs nothing; a cap most
+ * turns reach is truncating answers rather than bounding them.
  */
-export const AGENT_STEP_CAP = 6
+export const NO_STEP_CAP = null
+
+/**
+ * A cap that suits a paid deployment, if you want one to start from.
+ *
+ * Nothing uses this by itself. It is a number to pass to `stepCap`, offered so
+ * that "pick a cap" is not a blank page. Measure before you trust it: a corpus
+ * that needs deeper lookups will truncate here.
+ */
+export const SUGGESTED_STEP_CAP = 12
 
 /** How many prior messages travel with a question. */
 export const MAX_HISTORY_MESSAGES = 6
@@ -120,9 +131,14 @@ export function addStepUsage(totals: UsageTotals, usage: StepUsage | null | unde
   }
 }
 
-/** Whether this turn has spent its whole step budget and must stop. */
-export function stepCapReached(totals: UsageTotals, cap: number = AGENT_STEP_CAP): boolean {
-  return (totals.agent_steps ?? 0) >= cap
+/**
+ * Whether this turn has spent a step budget it was given.
+ *
+ * Always false when `cap` is null, which is the default: with no cap, a turn
+ * ends when the model stops calling tools.
+ */
+export function stepCapReached(totals: UsageTotals, cap: number | null): boolean {
+  return cap !== null && (totals.agent_steps ?? 0) >= cap
 }
 
 /** Totals worth recording, or null when the turn measured nothing at all. */
@@ -158,7 +174,7 @@ export function stopAtStepCap(
   finalText: string,
   running: string,
   steps: number,
-  cap: number = AGENT_STEP_CAP,
+  cap: number,
 ): { text: string; complete: boolean } {
   const salvaged = salvageAnswer(finalText, running)
   console.warn(

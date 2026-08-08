@@ -5,7 +5,6 @@ import type { Profile } from "./profile.ts"
 import { builtinSkills, type Skill } from "./skills.ts"
 import { defineRulesTools, type RuleTool } from "./tools.ts"
 import {
-  AGENT_STEP_CAP,
   addStepUsage,
   buildMessage,
   EMPTY_USAGE,
@@ -47,10 +46,35 @@ export type RulesAgentOptions = {
    * project requires a particular provider.
    */
   model: string | LanguageModelLike
-  /** Reasoning effort, where a provider supports it. */
-  reasoning?: "low" | "medium" | "high"
-  /** Model calls one turn may make. Defaults to AGENT_STEP_CAP. */
-  stepCap?: number
+  /**
+   * Provider-specific settings, passed to the AI SDK untouched.
+   *
+   * There is no portable way to ask for a reasoning effort, a thinking budget,
+   * or a safety setting: every provider spells them differently and respells
+   * them between model versions. So this project does not invent a name for
+   * them and translate. It hands yours through and takes no position.
+   *
+   * An earlier version did try, mapping a `reasoning: "low"` option onto one
+   * provider's thinking field. It was wrong within a model generation, and
+   * every request failed with a message about a field this project chose.
+   *
+   *     providerOptions: { anthropic: { thinking: { type: "adaptive" } } }
+   *
+   * Read your provider's AI SDK page for the shape it wants.
+   */
+  providerOptions?: Record<string, Record<string, unknown>>
+  /**
+   * A ceiling on the model calls one turn may make.
+   *
+   * **Unset by default, which means no ceiling.** A turn ends when the model
+   * stops calling tools and writes its answer. See `NO_STEP_CAP` in
+   * `@rulekit/agent/turn` for why this project sets none: a cap is a cost
+   * control, and cost is the fork's decision, not this project's.
+   *
+   * Set it when you pay per token. A capped turn hands the reader whatever was
+   * written when the ceiling hit, which can be half a sentence.
+   */
+  stepCap?: number | null
   /** Instructions override. Defaults to buildInstructions(profile) plus the skills. */
   instructions?: string
   /** Extra tools, merged with the corpus tools. */
@@ -115,7 +139,7 @@ export function createRulesAgent(options: RulesAgentOptions) {
     options.skills ??
     builtinSkills().filter((skill) => skill.name !== "card_lookup" || options.profile.cards.enabled)
   const instructions = options.instructions ?? buildInstructions(options.profile, { skills })
-  const cap = options.stepCap ?? AGENT_STEP_CAP
+  const cap = options.stepCap ?? null
 
   async function* stream(input: AskInput): AsyncGenerator<AgentEvent> {
     const startedAt = Date.now()
@@ -140,13 +164,15 @@ export function createRulesAgent(options: RulesAgentOptions) {
         system: instructions,
         prompt: buildMessage(input.question, input.history ?? [], input.rules ?? []),
         tools: toolMap,
-        // The cap is enforced here AND checked in the loop below. The AI SDK
-        // ends the loop; the check below is what makes the truncation visible
-        // to the reader and countable by an operator.
-        stopWhen: ({ steps: taken }: { steps: unknown[] }) => taken.length >= cap,
-        ...(options.reasoning
-          ? { providerOptions: { anthropic: { thinking: { type: "enabled" } } }, temperature: undefined }
-          : {}),
+        // The AI SDK stops after ONE step unless told otherwise, so a tool
+        // loop needs this even when nothing is being capped. Returning false
+        // never stops the loop early; the turn still ends by itself the moment
+        // the model answers without calling a tool.
+        stopWhen:
+          cap === null ? () => false : ({ steps: taken }: { steps: unknown[] }) => taken.length >= cap,
+        // Passed through exactly as given. Nothing here inspects or translates
+        // it, so this project cannot be wrong about a provider's spelling.
+        ...(options.providerOptions ? { providerOptions: options.providerOptions } : {}),
       })
 
       for await (const part of result.fullStream) {
@@ -183,7 +209,7 @@ export function createRulesAgent(options: RulesAgentOptions) {
           // The model may still be mid-answer. Stopping here keeps whatever it
           // wrote and marks the answer incomplete, so nothing caches a
           // half-sentence.
-          if (stepCapReached(usage, cap)) {
+          if (cap !== null && stepCapReached(usage, cap)) {
             capped = stopAtStepCap(finalText, running, usage.agent_steps ?? 0, cap)
             break
           }
