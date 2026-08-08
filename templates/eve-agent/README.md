@@ -7,8 +7,19 @@ sandbox, or its deployment path. If neither of those means anything to you, use
 `@rulekit/agent/runtime` instead: it needs one model key and no separate process.
 
 **Both emit the same events**, so the same interface drives either. That is what
-the shared wire contract in `@rulekit/agent/events` is for, and the test in
-`packages/agent` is what keeps it true.
+the shared wire contract in `@rulekit/agent/events` is for.
+
+It is checked rather than asserted:
+
+```bash
+cd templates/eve-agent && pnpm dev     # needs Node 24
+pnpm compare-runtimes "what is the Shield keyword"
+```
+
+Measured, both against the shipped corpus: the same event sequence
+(`step → text → done`) and the same fields on the terminal event. The answers
+differ in length and wording, which is two runs of a model and not a broken
+contract, so the comparison reads types and keys and never text.
 
 ## Before you start
 

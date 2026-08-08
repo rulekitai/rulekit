@@ -11,6 +11,21 @@ importers:
       '@biomejs/biome':
         specifier: ^2.0.0
         version: 2.5.7
+      '@rulekit/agent':
+        specifier: workspace:*
+        version: link:packages/agent
+      '@rulekit/cli':
+        specifier: workspace:*
+        version: link:packages/cli
+      '@rulekit/corpus':
+        specifier: workspace:*
+        version: link:packages/corpus
+      '@rulekit/pipeline':
+        specifier: workspace:*
+        version: link:packages/pipeline
+      '@rulekit/server':
+        specifier: workspace:*
+        version: link:packages/server
       '@types/node':
         specifier: ^22.10.0
         version: 22.20.1
