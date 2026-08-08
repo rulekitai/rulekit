@@ -1,0 +1,207 @@
+# The corpus format
+
+A corpus is a directory of JSON files. It is the only input this project takes,
+and how you produce it is entirely yours.
+
+Start by copying the worked example:
+
+```bash
+pnpm rulekit init my-game
+pnpm rulekit validate my-game
+```
+
+`data/demo/` is that example. Every field below appears in it.
+
+## The files
+
+| File | Holds | Required |
+|---|---|---|
+| `game.json` | The game's name and slug | Yes |
+| `rules.json` | Every rule | Yes |
+| `rulebooks.json` | The books the rules belong to | Yes |
+| `sections.json` | The chapters inside a book | Yes |
+| `terms.json` | Defined terms and keywords | Yes, may be empty |
+| `errata.json` | Published changes to card text | Yes, may be empty |
+| `banlist.json` | Banned and restricted cards | Yes, may be empty |
+| `patch-notes.json` | Update notes | Yes, may be empty |
+| `cards.json` | Cards | Yes, may be empty |
+| `profile.json` | How the assistant talks about this game | No, but write one |
+
+A file that must exist may hold an empty list. A missing file fails the load,
+because "empty" and "I forgot to write this" must not look the same.
+
+## The shape of every file
+
+Each file is an object, not a bare list:
+
+```json
+{ "schemaVersion": 1, "items": [] }
+```
+
+`game.json` is the exception: `{ "schemaVersion": 1, "game": { ... } }`.
+
+**`schemaVersion` is checked before anything is read.** A version the reader does
+not know is refused outright rather than read anyway, because a field that moved
+between versions would otherwise arrive empty and an assistant that quietly lost
+`content` answers every question from nothing.
+
+## game.json
+
+```json
+{ "schemaVersion": 1, "game": { "slug": "paper-kingdoms", "name": "Paper Kingdoms" } }
+```
+
+The corpus names itself and nothing else. How the assistant *talks* about the
+game belongs in `profile.json`.
+
+## rulebooks.json
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string | Unique. Anything stable. |
+| `name` | string | |
+| `slug` | string | |
+| `version` | string or null | |
+| `effective_date` | string or null | `YYYY-MM-DD` |
+| `is_active` | boolean | Defaults to true |
+
+The order matters. When a rule number appears in more than one book, the first
+active book in this list wins.
+
+## sections.json
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string | Unique |
+| `rule_book_id` | string | Must name a rulebook |
+| `section_number` | string | |
+| `title` | string | |
+| `slug` | string or null | |
+| `description` | string or null | |
+| `display_order` | number | |
+
+## rules.json
+
+The important file.
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string | Unique |
+| `rule_book_id` | string | Must name a rulebook |
+| `section_id` | string or null | Must name a section |
+| `parent_id` | string or null | Must name another rule |
+| `rule_number` | string | As printed, e.g. `300.2.a` |
+| `slug` | string or null | |
+| `title` | string or null | |
+| `content` | string | The rule text. May be empty for a heading |
+| `example` | string or null | |
+| `depth` | number | 0 for a top-level rule |
+| `display_order` | number | Order among its siblings |
+| `rule_type` | string | `rule`, `sub_rule`, `section_header` |
+| `keywords` | string[] | |
+| `cross_references` | string[] | Rule NUMBERS this rule points at |
+| `is_deprecated` | boolean | |
+| `deprecation_note` | string or null | |
+
+Three fields decide whether the assistant works well:
+
+**`parent_id` is data, not something to infer.** Rule numbers repeat across
+books, so the same number can name two rules with two different parents. Write
+the link; do not expect it to be derived.
+
+**`rule_type` separates a heading from a rule.** A heading with empty `content`
+is kept out of search results, because a search that returns blank rows puts
+nothing at the top of the answer.
+
+**`is_deprecated` keeps superseded text out of search.** A deprecated rule stays
+reachable by number, so somebody can still look it up, but it never answers a
+current question. Quoting superseded text as current is a wrong answer, not an
+incomplete one.
+
+`cross_references` holds rule NUMBERS, not ids, because that is what a printed
+rule cites. They are resolved inside the same book.
+
+## terms.json
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string | Unique |
+| `term` | string | As printed |
+| `slug` | string | |
+| `definition` | string | The full definition |
+| `short_definition` | string or null | |
+| `category` | string or null | e.g. `keyword_ability` |
+| `aliases` | string[] | Other spellings readers use |
+| `defining_rule_id` | string or null | Must name a rule |
+| `defining_rule_number` | string or null | |
+
+Terms are what make "what is X?" free and exact. `aliases` matter more than they
+look: a reader who types a synonym reaches the definition or reaches nothing.
+
+## cards.json
+
+| Field | Type |
+|---|---|
+| `id`, `name` | string, required |
+| `type_line`, `super_type`, `rarity`, `set_name` | string or null |
+| `png_uri` | string or null |
+| `card_text`, `effect_text`, `attach_text`, `flavor_text` | string or null |
+| `colors`, `color_identity`, `might`, `might_bonus`, `energy`, `power`, `tags` | anything |
+| `mana_cost` | string or null |
+
+**Three text fields, not one.** A card can print text in more than one box, and
+an equipment card commonly holds almost nothing in the first. List each one your
+game uses in `profile.json` so the assistant reads all of them before it says a
+card does not do something.
+
+The loose fields hold whatever your game uses: a number, a string, or a list. The
+type survives the round trip through the database unchanged.
+
+`png_uri` is a relative path. Nothing renders it until a host app says where
+images live, via `cardImageUrl` on the provider.
+
+## errata.json and banlist.json
+
+Both name a card inline, so a legality answer needs no card lookup:
+
+```json
+{ "id": "ban-001",
+  "card": { "id": "pk-005", "name": "Borrowed Hour", "png_uri": "…/PK-005.webp" },
+  "format": { "id": "fmt-standard", "name": "Standard", "slug": "standard" },
+  "entry_type": "banned",
+  "effective_date": "2026-03-01",
+  "reason": "…" }
+```
+
+Errata carries `original_text`, `errata_text`, and `explanation` instead of a
+format and a type.
+
+**`effective_date` is not optional in practice.** The assistant will not state
+that a card is *not* banned unless the list carries a date, because a verdict
+with no date cannot be audited against the list it was read from.
+
+## patch-notes.json
+
+`id`, `slug`, `title`, `version`, `effective_date`, `category`, `summary`,
+`body`, plus `affected_rule_ids` and `affected_card_ids`.
+
+## What validation checks
+
+`rulekit validate` checks more than shapes:
+
+- Every `rule_book_id`, `section_id`, `parent_id`, and `defining_rule_id` names
+  something that exists.
+- No rule is its own parent, and no parent chain forms a cycle. A cycle hangs
+  every tool that walks upward, and finding it here costs a second.
+- The corpus holds at least one rule.
+
+A row that fails validation is dropped and reported; the rest still load. One
+malformed card must not cost a reader the whole rulebook.
+
+## Producing a corpus
+
+However you like. Write the JSON by hand, export it from a database you already
+have, or write a scraper in any language. This project ships no importer on
+purpose: data collection is where every source-specific detail lives, and a
+project carrying none of it stays neutral and does not go stale when somebody
+else changes their page.

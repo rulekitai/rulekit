@@ -1,0 +1,761 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "5d134f56-42e7-4880-b00c-4c90e5880dc2",
+      "card": {
+        "id": "9e812171-db5a-4631-933a-71e6efdb9565",
+        "name": "Bone Skewer",
+        "png_uri": "riftbound/UNL-139.webp"
+      },
+      "effective_date": "2026-04-03",
+      "original_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nChoose a battlefield. An opponent reveals their hand. You may choose a unit from it. They play that unit to that battlefield, ignoring any and all costs. When they do, [Stun] it. (It doesn't deal combat damage this turn.)",
+      "errata_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nChoose a battlefield. An opponent reveals their hand. You may choose a unit from it. They play that unit to that battlefield, ignoring any and all costs. If they do, then do this: [Stun] it. (It doesn't deal combat damage this turn.)",
+      "explanation": null,
+      "patch_note_slug": "2026-04-03-unleashed-errata-updates",
+      "patch_note_title": "Unleashed Errata Updates"
+    },
+    {
+      "id": "6533988c-be45-436f-b564-ee4c27247681",
+      "card": {
+        "id": "808557f8-3a76-4cba-a376-93f5a4548a62",
+        "name": "Death from Below",
+        "png_uri": "riftbound/UNL-186.webp"
+      },
+      "effective_date": "2026-04-03",
+      "original_text": "Kill a unit at a battlefield. Then, if it had 3 [M] or less, you may play this from your trash for [A].",
+      "errata_text": "Kill a unit at a battlefield. Then, if it had 3 [M] or less, do this: You may play this from your trash for [A].",
+      "explanation": null,
+      "patch_note_slug": "2026-04-03-unleashed-errata-updates",
+      "patch_note_title": "Unleashed Errata Updates"
+    },
+    {
+      "id": "754cc7f5-6e63-4c9b-85c1-cefae518ebf4",
+      "card": {
+        "id": "24f00640-3997-478b-a9ba-c33a0d2d0dbc",
+        "name": "Guards!",
+        "png_uri": "riftbound/SFD-154.webp"
+      },
+      "effective_date": "2026-04-03",
+      "original_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nPlay a 2 [M] Sand Soldier unit token. You may pay [C] to ready it.",
+      "errata_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nPlay a 2 [M] Sand Soldier unit token. Then do this: You may pay [C] to ready it.",
+      "explanation": null,
+      "patch_note_slug": "2026-04-03-unleashed-errata-updates",
+      "patch_note_title": "Unleashed Errata Updates"
+    },
+    {
+      "id": "4bcd49c7-1153-42fc-b034-64e387e84701",
+      "card": {
+        "id": "3dec6d0c-242e-44d8-af3f-c2f051a6b61a",
+        "name": "Keeper of Masks",
+        "png_uri": "riftbound/UNL-081.webp"
+      },
+      "effective_date": "2026-04-03",
+      "original_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\n[Temporary] (Kill me at the start of my controller's Beginning Phase, before scoring.)\n\nWhen you play me, play two Reflection unit tokens here. They become copies of me.",
+      "errata_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\n[Temporary] (Kill me at the start of my controller's Beginning Phase, before scoring.)\n\nWhen you play me, play two Reflection unit tokens here. Then do this: They become copies of me.",
+      "explanation": null,
+      "patch_note_slug": "2026-04-03-unleashed-errata-updates",
+      "patch_note_title": "Unleashed Errata Updates"
+    },
+    {
+      "id": "2810a2a2-f1b3-4983-8b5e-fec783a0f972",
+      "card": {
+        "id": "6c27142d-b677-41ac-bd44-fcbd1d2727d2",
+        "name": "LeBlanc, Deceiver",
+        "png_uri": "riftbound/UNL-199.webp"
+      },
+      "effective_date": "2026-04-03",
+      "original_text": "When you conquer or hold, you may discard 1 and exhaust me to play a ready Reflection unit token there. It becomes a copy of another unit there. Give it [Temporary].",
+      "errata_text": "When you conquer or hold, you may discard 1 and exhaust me to play a ready Reflection unit token there. Then do this: It becomes a copy of another unit there. Give it [Temporary].",
+      "explanation": null,
+      "patch_note_slug": "2026-04-03-unleashed-errata-updates",
+      "patch_note_title": "Unleashed Errata Updates"
+    },
+    {
+      "id": "74d98e9c-baf4-45db-9ef7-09980488c8a4",
+      "card": {
+        "id": "ef6b92ad-fe17-4ea1-b24d-24868f710fee",
+        "name": "Mirror Image",
+        "png_uri": "riftbound/UNL-200.webp"
+      },
+      "effective_date": "2026-04-03",
+      "original_text": "Choose a unit. Play a ready Reflection unit token to your base. It becomes a copy of that unit. Give it [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+      "errata_text": "Choose a unit. Play a ready Reflection unit token to your base. Then do this: It becomes a copy of that unit. Give it [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+      "explanation": null,
+      "patch_note_slug": "2026-04-03-unleashed-errata-updates",
+      "patch_note_title": "Unleashed Errata Updates"
+    },
+    {
+      "id": "100c8521-355f-45bd-8acd-bd41a575b2a2",
+      "card": {
+        "id": "6d95fbee-b4a8-4386-82e6-5927d1e77a0e",
+        "name": "Relentless Pursuit",
+        "png_uri": "riftbound/SFD-184.webp"
+      },
+      "effective_date": "2026-04-03",
+      "original_text": "[Action] (Play on your turn or in showdowns.)\n\nMove a friendly unit. You may attach an Equipment with the same controller to it. This turn, that unit has \"When I conquer, you may move me to my base.\"",
+      "errata_text": "[Action] (Play on your turn or in showdowns.)\n\nMove a friendly unit. You may attach up to one Equipment with the same controller to it. This turn, that unit has \"When I conquer, you may move me to my base.\"",
+      "explanation": null,
+      "patch_note_slug": "2026-04-03-unleashed-errata-updates",
+      "patch_note_title": "Unleashed Errata Updates"
+    },
+    {
+      "id": "5e7b315a-ae52-4e58-8f16-3d6334d6b468",
+      "card": {
+        "id": "669db661-afbb-4f50-9a6f-13ddd13b01f1",
+        "name": "Rengar, Trophy Hunter",
+        "png_uri": "riftbound/UNL-120.webp"
+      },
+      "effective_date": "2026-04-03",
+      "original_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\n\nI can be played to a battlefield where there are enemy units (even if you don't have units there).",
+      "errata_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\n\nI can [Ambush] to a battlefield where there are enemy units, even if you don't have units there.",
+      "explanation": null,
+      "patch_note_slug": "2026-04-03-unleashed-errata-updates",
+      "patch_note_title": "Unleashed Errata Updates"
+    },
+    {
+      "id": "40957282-3b42-4acf-8bb8-3eebab3e7564",
+      "card": {
+        "id": "4c131cd8-fe27-48e6-87ab-8db68660bb96",
+        "name": "Arise!",
+        "png_uri": "riftbound/SFD-198.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "Play a 2 [M] Sand Soldier unit token for each Equipment you control. Then ready two of them.",
+      "errata_text": "Play a 2 [M] Sand Soldier unit token for each Equipment you control. Then do this: Ready up to two of them.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "3cce009c-0131-4543-b1e9-8649fd229a1f",
+      "card": {
+        "id": "8557cc40-b2a5-4cae-acb5-019acba564ef",
+        "name": "Blood Rush",
+        "png_uri": "riftbound/SFD-003.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Action] (Play on your turn or in showdowns.)\n\n[Repeat] [1] (You may pay the additional cost to repeat this spell's effect.)\n\nGive a unit [Assault 2]. (+2 [M] while it's an attacker.)",
+      "errata_text": "[Action] (Play on your turn or in showdowns.)\n\n[Repeat] [1] (You may pay the additional cost to repeat this spell's effect.)\n\nGive a unit [Assault 2] this turn. (+2 [M] while it's an attacker.)",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "73c5b8f7-1e0e-4e7e-b2fe-dbf75f7b3814",
+      "card": {
+        "id": "79980086-4de3-4498-9686-041605a08655",
+        "name": "Deathgrip",
+        "png_uri": "riftbound/SFD-163.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n\nKill a friendly unit to give +[M] equal to its Might to another friendly unit this turn. Draw 1.",
+      "errata_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n\nKill a friendly unit. If you do, give +[M] equal to its Might to another friendly unit this turn.\n\nDraw 1.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "858fe048-c2c2-471e-8cbb-1e83c3c30853",
+      "card": {
+        "id": "8a243397-5526-47c9-9a93-bf337de1991f",
+        "name": "Edge of Night",
+        "png_uri": "riftbound/SFD-139.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nWhen you play this from face down, attach it to a unit you control here.\n\n[Equip] [C] ([C]: Attach this to a unit you control.)",
+      "errata_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nWhen you play this from face down, attach it to a unit you control (here) .\n\n[Equip] [C] ([C]: Attach this to a unit you control.)",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "714b4859-ca7e-4746-80f8-8cb1ed68512c",
+      "card": {
+        "id": "a53ba89f-abba-4beb-a147-743b7d9c80db",
+        "name": "Falling Star",
+        "png_uri": "riftbound/OGN-029.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "Do this twice:\n\nDeal 3 to a unit. (You can choose different units.)",
+      "errata_text": "Deal 3 to a unit.\n\nDeal 3 to a unit.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "c995d8c3-db1a-4732-9194-501697523259",
+      "card": {
+        "id": "51daf171-df28-415a-8756-dcf091d19038",
+        "name": "Icathian Rain",
+        "png_uri": "riftbound/OGN-248.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "Do this 6 times:\n\nDeal 2 to a unit. (You can choose different units.)",
+      "errata_text": "Deal 2 to a unit.\n\nDeal 2 to a unit.\n\nDeal 2 to a unit.\n\nDeal 2 to a unit.\n\nDeal 2 to a unit.\n\nDeal 2 to a unit.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "9e841426-5dd3-4dc6-9d63-54f2cc07f9bf",
+      "card": {
+        "id": "ae23dd47-0a0a-4d27-912c-cbe8d4cd7803",
+        "name": "Janna, Savior",
+        "png_uri": "riftbound/SFD-053.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)\n\nWhen you play me, heal your units here, then move an enemy unit from here to its base.",
+      "errata_text": "[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)\n\nWhen you play me, heal your units here, then move up to one enemy unit from here to its base.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "6867865b-d446-4ffb-9a62-e17a79ac65e1",
+      "card": {
+        "id": "ac4de203-9692-4fbf-8ac1-f3ef1ebbc88e",
+        "name": "Jax, Unmatched",
+        "png_uri": "riftbound/SFD-054.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Deflect] (Opponents must pay [A] to choose me with a spell or ability.)\n\nEach Equipment in your hand has [Quick-Draw]. (It gains [Reaction]. When you play it, attach it to a unit you control.)",
+      "errata_text": "[Deflect] (Opponents must pay [A] to choose me with a spell or ability.)\n\nYour Equipment everywhere have [Quick-Draw]. (Each gains [Reaction]. When you play it, attach it to a unit you control.)",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "ab7c3c67-1067-4ade-819c-2d7d7557c55e",
+      "card": {
+        "id": "58324e23-bee6-4d68-b707-262b2517c8b7",
+        "name": "Kato the Arm",
+        "png_uri": "riftbound/SFD-112.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Deflect] (Opponents must pay [A] to choose me with a spell or ability.)\n\nWhen I move to a battlefield, give a friendly unit my keywords and +[M] equal to my Might this turn.",
+      "errata_text": "[Deflect] (Opponents must pay [A] to choose me with a spell or ability.)\n\nWhen I move to a battlefield, give another friendly unit my keywords and +[M] equal to my Might this turn.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "1110cfef-68d4-4811-babf-e439a8800da2",
+      "card": {
+        "id": "d36d5f87-ba0b-4fe8-b1fc-eb13831469a0",
+        "name": "Reinforce",
+        "png_uri": "riftbound/OGN-062.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "Look at the top 5 cards of your Main Deck. You may play a unit from among them. Its Energy cost is reduced by [5]. Then recycle the remaining cards.",
+      "errata_text": "Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by [5]. Recycle the remaining cards.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "cf3aa380-f1a1-49fe-8b6b-271513bacfa0",
+      "card": {
+        "id": "cb3fd286-55b4-4f39-ad55-8b421b36f1c2",
+        "name": "Rek'Sai, Swarm Queen",
+        "png_uri": "riftbound/SFD-170.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "When I attack, you may reveal the top 2 cards of your Main Deck. You may play one. Then recycle the rest. If the played card is a unit, you may play it here.",
+      "errata_text": "When I attack, you may reveal the top 2 cards of your Main Deck. You may banish one, then play it. If it is a unit, you may play it here. Recycle the rest.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "530725b4-9974-43fa-8a13-3038bc9a2fc9",
+      "card": {
+        "id": "adced6a6-009b-4e20-9422-02b44c4e4fe6",
+        "name": "Rek'Sai, Void Burrower",
+        "png_uri": "riftbound/SFD-187.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "When you conquer, you may exhaust me to reveal the top 2 cards of your Main Deck. You may play one. Then recycle the rest.",
+      "errata_text": "When you conquer, you may exhaust me to reveal the top 2 cards of your Main Deck. You may banish one, then play it. Recycle the rest.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "e61d1db4-adbc-4981-b6c2-8c93e161d997",
+      "card": {
+        "id": "42810dd0-1783-4897-84ba-f8051eed65c7",
+        "name": "Rell, Magnetic",
+        "png_uri": "riftbound/SFD-024.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Tank] (I must be assigned combat damage first.)\n\nWhen I attack, you may play an Equipment with Energy cost no more than [2], ignoring its cost, and attach it to me.",
+      "errata_text": "[Tank] (I must be assigned combat damage first.)\n\nWhen I attack, you may play an Equipment with Energy cost no more than [2], ignoring its cost. If you do, then do this: Attach it to me.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "c4b971bd-4160-4a02-b385-6449f4be12bc",
+      "card": {
+        "id": "61072217-3a68-49f9-9b10-a23d616c8983",
+        "name": "Tianna Crownguard",
+        "png_uri": "riftbound/SFD-060.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Deflect] (Opponents must pay [A] to choose me with a spell or ability.)\n\nWhile I'm at a battlefield, opponents can't score points.",
+      "errata_text": "[Deflect] (Opponents must pay [A] to choose me with a spell or ability.)\n\nWhile I'm at a battlefield, opponents can't gain points.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "9b194658-be36-4a10-aed8-4d1217fdd92c",
+      "card": {
+        "id": "adce480b-ee6f-436e-b468-e5b800c2bb8c",
+        "name": "Void Rush",
+        "png_uri": "riftbound/SFD-188.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "Reveal the top 2 cards of your Main Deck. You may play one of them, reducing its cost by [2]. Draw any you did not play this way.",
+      "errata_text": "Reveal the top 2 cards of your Main Deck. You may banish one, then play it, reducing its cost by [2]. Draw any you didn't banish.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "e48f4376-adb6-4eb7-aa34-3dcba946e08a",
+      "card": {
+        "id": "b8ce82b2-a9ac-451b-8efb-662a6e1b2b81",
+        "name": "Yone, Blademaster",
+        "png_uri": "riftbound/SFD-116.webp"
+      },
+      "effective_date": "2026-01-14",
+      "original_text": "[Weaponmaster] (When you play me, you may [Equip] one of your Equipment to me for [A] less, even if it's already attached.)\n\nWhen I conquer an open battlefield, deal damage equal to my Might to an enemy unit in a base.",
+      "errata_text": "[Weaponmaster] (When you play me, you may [Equip] one of your Equipment to me for [A] less, even if it's already attached.)\n\nWhen I conquer a battlefield that was uncontrolled, deal damage equal to my Might to an enemy unit in a base.",
+      "explanation": null,
+      "patch_note_slug": "2026-01-14-riftbound-spiritforged-errata",
+      "patch_note_title": "Riftbound Spiritforged Errata"
+    },
+    {
+      "id": "a71b9cd2-1dde-42ce-8c33-f2f2e0b4e6a3",
+      "card": {
+        "id": "3ab64c2d-a286-45a1-86d1-8c9e788d47e5",
+        "name": "Ava Achiever",
+        "png_uri": "riftbound/OGN-107.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "When I attack, you may pay [C] to play a card with [Hidden] from your hand here, ignoring its cost.",
+      "errata_text": "When I attack, you may pay [C] to play a card with [Hidden] from your hand, ignoring its cost. If it’s a unit, play it here.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "a56d6e48-9036-469a-b267-c993ee5c0b49",
+      "card": {
+        "id": "e38b5fa3-df49-4b2f-8b34-048d929a0dec",
+        "name": "Baited Hook",
+        "png_uri": "riftbound/OGN-242.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[1][C], [E]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may play a unit from among them that has Might up to 1 more than the killed unit, ignoring its cost. Then recycle the rest.",
+      "errata_text": "[1][C], [E]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "504d76d1-e09c-438b-bdc9-09879746dbc4",
+      "card": {
+        "id": "e4edf79f-3788-45aa-bfe7-59e89a404210",
+        "name": "Blind Fury",
+        "png_uri": "riftbound/OGN-025.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Action] (Play on your turn or in showdowns.)\n\nEach opponent reveals the top card of their Main Deck. Choose one and play it, ignoring its cost. Then recycle the rest.",
+      "errata_text": "[Action] (Play on your turn or in showdowns.)\n\nEach opponent reveals the top card of their Main Deck. Choose one and banish it, then play it, ignoring its cost. Then recycle the rest.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "d6b3f4e5-a1e8-4f87-8dcc-fc9d7da499f0",
+      "card": {
+        "id": "8bf025dc-faa4-4879-95c7-9a1bcd30381e",
+        "name": "Clockwork Keeper",
+        "png_uri": "riftbound/OGN-044.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "As you play me, you may pay [C] as an additional cost. If you do, draw 1.",
+      "errata_text": "You may pay [C] as an additional cost to play me.\n\nWhen you play me, if you paid the additional cost, draw 1.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "c9582b42-6d1f-4287-84f7-ac2a04092793",
+      "card": {
+        "id": "d82dd367-a93f-49b0-8b39-fdb2d91db32f",
+        "name": "Convergent Mutation",
+        "png_uri": "riftbound/OGN-108.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n\nChoose a friendly unit. Increase its Might until it equals the Might of another friendly unit.",
+      "errata_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n\nChoose a friendly unit. This turn, increase its Might to the Might of another friendly unit.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "3ec00ea3-d13f-4054-98e3-f6292137bfb2",
+      "card": {
+        "id": "6f315681-0fb6-4520-833f-0ba0d4c5554d",
+        "name": "Dazzling Aurora",
+        "png_uri": "riftbound/OGN-160.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit. Play it, ignoring its cost, and recycle the rest.",
+      "errata_text": "At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit and banish it. Play it, ignoring its cost, and recycle the rest.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "9b2de84a-429c-4c0a-8d50-0e05c388920c",
+      "card": {
+        "id": "919e9b25-da37-4ffa-bc9b-542ac20114d8",
+        "name": "Disintegrate",
+        "png_uri": "riftbound/OGN-005.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Action] (Play on your turn or in showdowns.)\n\nDeal 3 to a unit at a battlefield. If this kills it, draw 1.",
+      "errata_text": "Action (Play on your turn or in showdowns.)\n\nDeal 3 to a unit at a battlefield. If this kills it, do this: draw 1.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "c9af7eca-fa3a-47c3-b8ac-456ebe667b13",
+      "card": {
+        "id": "24da5811-33f2-4d7d-82c9-6721aef2abe9",
+        "name": "Dragon's Rage",
+        "png_uri": "riftbound/OGN-258.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "Move an enemy unit. Then choose another enemy unit at its destination. They deal damage equal to their Mights to each other.",
+      "errata_text": "Move an enemy unit. Then do this: Choose another enemy unit at its destination. They deal damage equal to their Mights to each other.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "dcd1fc0b-db2a-4e64-9ee2-a97e4363d67a",
+      "card": {
+        "id": "474c97fe-afd7-4588-b3a6-8b85e880e5c0",
+        "name": "Dune Drake",
+        "png_uri": "riftbound/OGN-131.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "When I attack, give me +2 [M] if there is a ready enemy unit here.",
+      "errata_text": "When I attack, give me +2 [M] this turn if there is a ready enemy unit here.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "231b227b-b732-48ea-9c98-2ceeb98ead78",
+      "card": {
+        "id": "b2d9cb0a-9ee7-4f4e-8877-fb92c20df344",
+        "name": "Highlander",
+        "png_uri": "riftbound/OGS-020.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n\nChoose a friendly unit. The next time it dies this turn, recall it exhausted instead. (Send it to base. This isn't a move.)",
+      "errata_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n\nChoose a friendly unit. The next time it would die this turn, heal it, exhaust it, and recall it instead. (Send it to base. This isn't a move.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "f1bc0f83-a2f0-4177-9785-a7c399df9445",
+      "card": {
+        "id": "5a35a706-9d46-47e3-9ebb-2acf8ee3b027",
+        "name": "Karma, Channeler",
+        "png_uri": "riftbound/OGN-235.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n\nWhen you recycle one or more cards, buff a friendly unit. (If it doesn't have a buff, it gets a +1 [M] buff. Runes aren't cards.)",
+      "errata_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n\nWhen you recycle one or more cards to your Main Deck, buff a friendly unit. (If it doesn't have a buff, it gets a +1 [M] buff. Runes aren't cards.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "af56504e-3ffa-461e-b34c-acdf6532fdd2",
+      "card": {
+        "id": "02adbcfb-73f2-43df-9a7f-b19a5cefb7d2",
+        "name": "Kinkou Monk",
+        "png_uri": "riftbound/OGN-141.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "When you play me, buff two other friendly units. (Each one that doesn't have a buff gets a +1 [M] buff.)",
+      "errata_text": "When you play me, buff up to two other friendly units. (Each one that doesn't have a buff gets a +1 [M] buff.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "7454ab38-e15f-4a44-ad35-1dfd0d29d759",
+      "card": {
+        "id": "c686800a-6f79-4a3f-8364-a562523c7796",
+        "name": "Nocturne, Horrifying",
+        "png_uri": "riftbound/OGN-194.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Ganking] (I can move from battlefield to battlefield.)\n\nWhen you look at cards from the top of your deck (and don't draw them) and see me, you may play me for [A].",
+      "errata_text": "[Ganking] (I can move from battlefield to battlefield.)\n\nAs you look at or reveal me from the top of your deck, you may banish me. If you do, you may play me for [A].",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "622699ba-e79f-4753-b1df-8eaba4c1e006",
+      "card": {
+        "id": "519407b7-b7b1-4e8a-8ad1-c1fc0976ec9a",
+        "name": "Pack of Wonders",
+        "png_uri": "riftbound/OGN-181.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[E]: Return another friendly gear, unit, or [Hidden] card to its owner's hand.",
+      "errata_text": "[E]: Return another friendly gear, unit, or facedown card to its owner's hand.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "5a33be5f-c5e5-4248-b156-36fd2657bc51",
+      "card": {
+        "id": "24e65fc4-ebc6-4a8a-96eb-656366b6f6f6",
+        "name": "Portal Rescue",
+        "png_uri": "riftbound/OGN-102.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Action] (Play on your turn or in showdowns.)\n\nBanish a friendly unit, then play it to base, ignoring its cost.\n\nNote: Text only differs for English version of the card",
+      "errata_text": "[Action] (Play on your turn or in showdowns.)\n\nBanish a friendly unit, then its owner plays it to their base, ignoring its cost.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "86e9a748-5d13-4707-8e20-727289b02b48",
+      "card": {
+        "id": "353d9241-ea52-4f70-9bbb-e069e06eac90",
+        "name": "Promising Future",
+        "png_uri": "riftbound/OGN-115.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "Each player looks at the top 5 cards of their Main Deck, chooses one, then recycles the rest. Starting with the next player, each player plays those cards, ignoring Energy costs. (They must still pay Power costs.)",
+      "errata_text": "Each player looks at the top 5 cards of their Main Deck, banishes one of them, then recycles the rest. Starting with the next player, each player plays those cards, ignoring Energy costs. (They must still pay Power costs.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "78526a38-45a4-40cf-8f1e-3225fce1d99e",
+      "card": {
+        "id": "40209742-d8d5-4282-8c73-0fb176d793e4",
+        "name": "Ravenborn Tome",
+        "png_uri": "riftbound/OGN-032.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[E]: The next spell you play deals 1 Bonus Damage. (Each instance of damage the spell deals is increased by 1.)",
+      "errata_text": "[E]: The next spell you play this turn deals 1 Bonus Damage. (Each instance of damage the spell deals is increased by 1.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "d6d3ebf2-bdbd-43a9-b78c-05257b100691",
+      "card": {
+        "id": "0125dbd1-dca8-4a42-8677-5cc5aaf2ff5d",
+        "name": "Salvage",
+        "png_uri": "riftbound/OGN-224.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Action] (Play on your turn or in showdowns.)\n\nYou may kill a gear. Draw 1.",
+      "errata_text": "[Action] (Play on your turn or in showdowns.)\n\nYou may kill up to one gear. Draw 1.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "e148aade-7f86-4778-b4e5-e958b679a9db",
+      "card": {
+        "id": "e9114da6-cd16-4cf1-b260-ef026ed03487",
+        "name": "Sett, The Boss",
+        "png_uri": "riftbound/OGN-269.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "When a buffed unit you control would die, you may pay [C] and exhaust me to spend its buff and recall it exhausted instead. (Send it to base. This isn't a move.)\n\nWhen you conquer, ready me.",
+      "errata_text": "If a buffed unit you control would die, you may pay [C], exhaust me, and spend its buff to heal it, exhaust it, and recall it instead. (Send it to base. This isn't a move.)\n\nWhen you conquer, ready me.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "759d14f1-6cc1-4d41-86af-f367f482df83",
+      "card": {
+        "id": "6b66f73a-89a6-47bb-a93d-7d012743d2ed",
+        "name": "Sigil of the Storm",
+        "png_uri": "riftbound/OGN-287.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "When you conquer here, recycle one of your runes.",
+      "errata_text": "When you conquer here, you must recycle one of your runes. (This doesn’t choose anything.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "8470816f-292a-4f6f-9ef1-ea29389017cc",
+      "card": {
+        "id": "8091b317-5524-4d9d-aea5-f39f0610441c",
+        "name": "Sona, Harmonious",
+        "png_uri": "riftbound/OGN-073.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "While I'm at a battlefield, ready 4 friendly runes at the end of your turn.",
+      "errata_text": "At the end of your turn, if I'm at a battlefield, ready up to 4 friendly runes.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "b68dbc42-a318-4c93-956e-4d1699299ac5",
+      "card": {
+        "id": "3aadac39-deb6-45b4-823a-e0b349ef185d",
+        "name": "Targon's Peak",
+        "png_uri": "riftbound/OGN-289.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "When you conquer here, ready 2 runes at the end of this turn.",
+      "errata_text": "When you conquer here, ready up to 2 runes at the end of this turn.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "98b024bd-55db-413c-bc45-7df76a9b8075",
+      "card": {
+        "id": "ee13a7b4-7263-49d7-aaa7-6277ada4b2dc",
+        "name": "Teemo, Strategist",
+        "png_uri": "riftbound/OGN-121.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nWhen I defend or I'm played from [Hidden], reveal the top 5 cards of your Main Deck. Deal 1 to an enemy unit here for each card with [Hidden], then recycle them.",
+      "errata_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nWhen I defend, choose an enemy unit here and reveal the top 5 cards of your Main Deck. Deal 1 to that unit for each card with [Hidden] revealed this way, then recycle the revealed cards.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "2213dbea-7a31-40cd-ae63-685ef6673376",
+      "card": {
+        "id": "6658e37b-ac88-4f54-a460-0b8f4a74fa08",
+        "name": "The Dreaming Tree",
+        "png_uri": "riftbound/OGN-292.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "The first time you choose a friendly unit with a spell here each turn, draw 1.",
+      "errata_text": "When a player chooses a friendly unit here with a spell for the first time each turn, they draw 1.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "e49a3e35-2271-410c-9284-aeebcf5bfa00",
+      "card": {
+        "id": "0968dfdf-920a-4174-ae2b-d8ba2a878d3a",
+        "name": "The Syren",
+        "png_uri": "riftbound/OGN-184.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[1], [E]: Move a friendly unit at a battlefield to your base.\n\nNote: Text only differs for English version of the card",
+      "errata_text": "[1], [E]: Move a friendly unit at a battlefield to its base.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "ab139f97-123b-485d-b7da-84b29c456752",
+      "card": {
+        "id": "eca277e4-c3a6-473e-821c-22ed4a3d3651",
+        "name": "Tideturner",
+        "png_uri": "riftbound/OGN-199.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nWhen you play me, you may choose a friendly unit. Move me to its location and it to my original location.",
+      "errata_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nWhen you play me, you may choose a unit you control at another location. Move me to its location and it to my original location.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "9c5938b9-d76f-4689-a117-bb6ecb911cfe",
+      "card": {
+        "id": "a9b3cb30-439a-40f8-828d-b52fadacf2d1",
+        "name": "Unlicensed Armory",
+        "png_uri": "riftbound/OGN-023.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "Discard 1, [E]: Choose a friendly unit. The next time it dies this turn, you may pay [C] to recall it exhausted instead. (Send it to base. This isn't a move.)",
+      "errata_text": "Discard 1, [E]: Choose a friendly unit. The next time it would die this turn, you may pay [C] to heal it, exhaust it, and recall it instead. (Send it to base. This isn't a move.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "22a852d9-47a6-4389-834c-80088b85ee68",
+      "card": {
+        "id": "f40b0e74-e322-4648-933f-5769df32c90c",
+        "name": "Void Gate",
+        "png_uri": "riftbound/OGN-296.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "Spells and abilities affecting units here each deal 1 Bonus Damage. (Each instance of damage the spell deals is increased by 1.)",
+      "errata_text": "Spells and abilities deal 1 Bonus Damage to units here. (Each instance of damage the spell deals to a unit here is increased by 1.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "ed5ba197-dee9-45bc-be33-2299173bb3d2",
+      "card": {
+        "id": "8ccfc926-c01f-4219-9033-ffc9811e8d07",
+        "name": "Yasuo, Unforgiven",
+        "png_uri": "riftbound/OGN-259.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[2], [E]: Move a friendly unit to or from your base.\n\nNote: Text only differs for English version of the card",
+      "errata_text": "[2], [E]: Move a friendly unit to or from its base.",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    },
+    {
+      "id": "87122371-2e17-4783-980f-2c5c711cfdeb",
+      "card": {
+        "id": "c2abadd9-8087-41cc-83e7-c591cdbe34a5",
+        "name": "Zhonya's Hourglass",
+        "png_uri": "riftbound/OGN-077.webp"
+      },
+      "effective_date": "2025-10-28",
+      "original_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nThe next time a friendly unit would die, kill this instead. Recall that unit exhausted. (Send it to base. This isn't a move.)",
+      "errata_text": "[Hidden] (Hide now for [A] to react with later for [0].)\n\nIf a friendly unit would die, kill this instead. Heal that unit, exhaust it, and recall it. (Send it to base. This isn't a move.)",
+      "explanation": null,
+      "patch_note_slug": "2025-10-28-riftbound-origins-card-errata",
+      "patch_note_title": "Riftbound: Origins Card Errata"
+    }
+  ]
+}

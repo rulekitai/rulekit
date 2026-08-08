@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "book-core",
+      "name": "Paper Kingdoms Core Rules",
+      "slug": "core-rules",
+      "version": "1.2",
+      "effective_date": "2026-03-01",
+      "is_active": true
+    },
+    {
+      "id": "book-tournament",
+      "name": "Paper Kingdoms Tournament Rules",
+      "slug": "tournament-rules",
+      "version": "1.0",
+      "effective_date": "2026-01-15",
+      "is_active": true
+    }
+  ]
+}

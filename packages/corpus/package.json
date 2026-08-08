@@ -1,0 +1,63 @@
+{
+  "name": "@rulekit/corpus",
+  "version": "0.1.0",
+  "description": "The rules corpus: a JSON schema, a SQLite builder, and one read interface.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "development": "./src/schema.ts",
+      "default": "./dist/schema.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "development": "./src/types.ts",
+      "default": "./dist/types.js"
+    },
+    "./load": {
+      "types": "./dist/load.d.ts",
+      "development": "./src/load.ts",
+      "default": "./dist/load.js"
+    },
+    "./build": {
+      "types": "./dist/build.d.ts",
+      "development": "./src/build.ts",
+      "default": "./dist/build.js"
+    },
+    "./store": {
+      "types": "./dist/store.d.ts",
+      "development": "./src/store.ts",
+      "default": "./dist/store.js"
+    },
+    "./sqlite-store": {
+      "types": "./dist/sqlite-store.d.ts",
+      "development": "./src/sqlite-store.ts",
+      "default": "./dist/sqlite-store.js"
+    },
+    "./json-store": {
+      "types": "./dist/json-store.d.ts",
+      "development": "./src/json-store.ts",
+      "default": "./dist/json-store.js"
+    },
+    "./text": {
+      "types": "./dist/text.d.ts",
+      "development": "./src/text.ts",
+      "default": "./dist/text.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "test": "node --test src/**/*.test.ts"
+  },
+  "dependencies": {
+    "zod": "^3.25.0"
+  }
+}

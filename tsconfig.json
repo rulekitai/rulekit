@@ -1,0 +1,12 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/corpus" },
+    { "path": "packages/agent" },
+    { "path": "packages/pipeline" },
+    { "path": "packages/server" },
+    { "path": "packages/react" },
+    { "path": "packages/ui" },
+    { "path": "packages/cli" }
+  ]
+}

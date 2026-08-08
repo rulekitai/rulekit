@@ -1,0 +1,117 @@
+import { z } from "zod"
+
+/**
+ * A profile is everything about one game that the instructions cannot know.
+ *
+ * The base instructions hold what is true of every rulebook: cite what a tool
+ * returned, quote rather than restate, never invent, stay in role. This holds
+ * the rest. Adding a game means writing one of these, not editing a prompt.
+ *
+ * Every field is optional except the game's name. A profile of one line produces
+ * a working assistant; the rest sharpens it.
+ */
+
+const nonEmpty = z.string().trim().min(1)
+
+export const vocabularyRuleSchema = z.object({
+  /** The word to use. */
+  use: nonEmpty,
+  /** Words to avoid, and what they wrongly suggest. */
+  insteadOf: z.array(nonEmpty).default([]),
+  /** What the preferred word names. */
+  means: z.string().trim().default(""),
+})
+
+export const cardTextFieldSchema = z.object({
+  /** The field name a card tool returns. */
+  field: nonEmpty,
+  /** What that field holds, in one sentence. */
+  describes: nonEmpty,
+})
+
+export const tokenGroupSchema = z.object({
+  label: nonEmpty,
+  examples: z.array(nonEmpty).min(1),
+})
+
+export const profileSchema = z.object({
+  game: z.object({
+    name: nonEmpty,
+    slug: z.string().trim().default(""),
+    /** One sentence a reader needs to know what this game is. */
+    description: z.string().trim().default(""),
+  }),
+
+  /**
+   * Overrides the generated identity sentence.
+   *
+   * Leave it unset unless the generated one reads wrong. A generated identity
+   * stays correct when the game is renamed; a written one does not.
+   */
+  identity: z.string().trim().optional(),
+
+  /** Words this game uses, and words it does not. */
+  vocabulary: z.array(vocabularyRuleSchema).default([]),
+
+  cards: z
+    .object({
+      /** Off when the corpus has no cards. The card tools are not registered. */
+      enabled: z.boolean().default(true),
+      /**
+       * The URL scheme a card link uses, without the colon.
+       *
+       * The interface turns `[Name](card:path)` into a hover preview. Set it to
+       * an empty string to have the model write plain names instead.
+       */
+      linkScheme: z.string().trim().default("card"),
+      /** How many card images one answer may show inline. */
+      maxInlineImages: z.number().int().min(0).default(3),
+      /** Every text field a card can print, so no answer reads only the first. */
+      textFields: z.array(cardTextFieldSchema).default([]),
+    })
+    .default({}),
+
+  /**
+   * Bracket tokens the interface renders as symbols or badges.
+   *
+   * Unset means the model writes plain words, which is right for a game with no
+   * symbols on its cards.
+   */
+  tokens: z
+    .object({
+      /** How to write one, for example "[Fury]" or "[Shield 2]". */
+      syntax: nonEmpty,
+      groups: z.array(tokenGroupSchema).default([]),
+    })
+    .optional(),
+
+  scope: z
+    .object({
+      /** Topics to answer. Defaults cover any rulebook. */
+      answer: z.array(nonEmpty).default([]),
+      /** Topics to decline, beyond the universal ones in the base instructions. */
+      refuse: z.array(nonEmpty).default([]),
+    })
+    .default({}),
+
+  /** Anything else, one paragraph per entry. Appended last. */
+  extraGuidance: z.array(nonEmpty).default([]),
+})
+
+export type Profile = z.output<typeof profileSchema>
+export type ProfileInput = z.input<typeof profileSchema>
+
+/**
+ * Read a profile, filling every default.
+ *
+ * Throws on a profile that names no game, because an assistant that cannot say
+ * what it is an assistant for cannot decline anything either.
+ */
+export function parseProfile(input: unknown): Profile {
+  return profileSchema.parse(input)
+}
+
+/** A minimal profile, for a corpus with no card data and no symbols. */
+export function minimalProfile(name: string, slug = ""): Profile {
+  return profileSchema.parse({ game: { name, slug }, cards: { enabled: false } })
+}

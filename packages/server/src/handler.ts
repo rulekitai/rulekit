@@ -1,0 +1,248 @@
+import { encodeEvent } from "@rulekit/agent/events"
+import type { Turn } from "@rulekit/agent/turn"
+import { openGate } from "@rulekit/pipeline/gate"
+import type { Pipeline } from "@rulekit/pipeline/pipeline"
+import { type AgentLike, streamAgent } from "@rulekit/pipeline/stages/agent"
+import { writeBack } from "@rulekit/pipeline/stages/cache"
+import type { Answer, AskContext, CallerIdentity, Gate } from "@rulekit/pipeline/types"
+
+/**
+ * One HTTP handler for the whole thing.
+ *
+ * It takes a web-standard Request and returns a web-standard Response, which is
+ * what lets the same function mount unchanged in a Next.js route, Hono, Express
+ * with an adapter, Bun, Deno, and a Cloudflare Worker. Nothing here imports a
+ * web framework.
+ */
+
+/**
+ * Caps on what one request may carry.
+ *
+ * Every one of these is paid for on every step of a tool-calling turn, so an
+ * unbounded request is an unbounded bill. They are generous for a real question
+ * and small enough that nothing pathological gets through.
+ */
+export const MAX_QUESTION_CHARS = 2000
+export const MAX_HISTORY_TURNS = 20
+export const MAX_TURN_CHARS = 4000
+
+export type AskHandlerOptions = {
+  pipeline: Pipeline
+  /** The agent, for the streaming path once the earlier stages have missed. */
+  agent?: AgentLike
+  /** Quotas and billing. Defaults to a gate that allows everything. */
+  gate?: Gate
+  /** Who is asking. Return undefined for an anonymous caller. */
+  identify?: (request: Request) => Promise<CallerIdentity | undefined> | CallerIdentity | undefined
+  /** Stream the agent's answer as it is written. On by default. */
+  stream?: boolean
+}
+
+const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json", ...headers },
+  })
+
+/** What the browser is allowed to see. */
+function clientAnswer(answer: Answer) {
+  // `usage` is stripped. A reader has no use for it, and a dollar figure beside
+  // an answer is a commercial detail that belongs to the operator, not to the
+  // page. The gate has already recorded the full answer, so nothing is lost.
+  const { usage: _usage, ...rest } = answer
+  return rest
+}
+
+type AskBody = { question?: unknown; history?: unknown }
+
+/** Read and check the request body, or say exactly what is wrong with it. */
+export function parseAskBody(
+  body: AskBody,
+): { ok: true; question: string; history: Turn[] } | { ok: false; error: string } {
+  const question = typeof body?.question === "string" ? body.question.trim() : ""
+  if (!question) return { ok: false, error: "A question is required." }
+  if (question.length > MAX_QUESTION_CHARS)
+    return { ok: false, error: `A question may be at most ${MAX_QUESTION_CHARS} characters.` }
+
+  const raw = Array.isArray(body?.history) ? body.history : []
+  if (raw.length > MAX_HISTORY_TURNS)
+    return { ok: false, error: `A conversation may carry at most ${MAX_HISTORY_TURNS} earlier messages.` }
+
+  const history: Turn[] = []
+  for (const item of raw) {
+    const turn = item as { role?: unknown; text?: unknown }
+    const text = typeof turn?.text === "string" ? turn.text : ""
+    if (!text.trim()) continue
+    if (text.length > MAX_TURN_CHARS)
+      return { ok: false, error: `An earlier message may be at most ${MAX_TURN_CHARS} characters.` }
+    history.push({ role: turn.role === "assistant" ? "assistant" : "user", text })
+  }
+  return { ok: true, question, history }
+}
+
+export function createAskHandler(options: AskHandlerOptions) {
+  const gate = options.gate ?? openGate
+  const shouldStream = options.stream !== false
+
+  return async function handle(request: Request): Promise<Response> {
+    if (request.method !== "POST") return json({ error: "Use POST." }, 405, { allow: "POST" })
+
+    let body: AskBody
+    try {
+      body = (await request.json()) as AskBody
+    } catch {
+      return json({ error: "The request body is not valid JSON." }, 400)
+    }
+
+    const parsed = parseAskBody(body)
+    if (!parsed.ok) return json({ error: parsed.error }, 400)
+
+    const caller = (await options.identify?.(request)) ?? undefined
+
+    // The gate runs BEFORE any stage, so a refusal costs nothing at all. It sees
+    // the same context a stage would, built by the pipeline rather than
+    // assembled here, so the two can never disagree about what a request is.
+    const ctx: AskContext = options.pipeline.contextFor({
+      question: parsed.question,
+      history: parsed.history,
+      caller,
+      signal: request.signal,
+    })
+
+    const verdict = await gate.allow(ctx)
+    if (!verdict.allow) {
+      return json(
+        { error: verdict.reason },
+        verdict.status ?? 429,
+        verdict.retryAfterSeconds ? { "retry-after": String(verdict.retryAfterSeconds) } : {},
+      )
+    }
+
+    // The cheap stages run first, whichever path this request takes. Only a
+    // genuine miss reaches the agent, and only that miss is worth streaming.
+    const result = await options.pipeline.run({
+      question: parsed.question,
+      history: parsed.history,
+      caller,
+      signal: request.signal,
+    })
+
+    if (result.answer) {
+      const answer = result.answer
+      await gate.record(ctx, answer)
+      await writeBack(ctx, answer)
+      return json(clientAnswer(answer))
+    }
+
+    if (!options.agent) {
+      return json({ error: "No stage could answer this, and no agent is configured." }, 503)
+    }
+
+    const agentCtx: AskContext = ctx
+
+    if (!shouldStream) {
+      let text = ""
+      let done: {
+        text: string
+        complete: boolean
+        model?: string | null
+        usage?: unknown
+        latencyMs?: number
+      } | null = null
+      let error: string | null = null
+      for await (const event of streamAgent(options.agent, agentCtx)) {
+        if (event.type === "text") text = event.text
+        else if (event.type === "done") done = event
+        else if (event.type === "error") error = event.error
+      }
+      if (!done?.text) return json({ error: error ?? "The agent produced no answer." }, 502)
+      const answer: Answer = {
+        text: done.text || text,
+        citations: [],
+        source: "agent",
+        servedBy: "agent",
+        latencyMs: done.latencyMs ?? 0,
+        model: done.model ?? null,
+        usage: (done.usage as Record<string, number | null> | null) ?? null,
+        complete: done.complete,
+        ...(result.degraded.length ? { degraded: result.degraded } : {}),
+      }
+      await gate.record(agentCtx, answer)
+      await writeBack(agentCtx, answer)
+      return json(clientAnswer(answer))
+    }
+
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const write = (line: string) => controller.enqueue(encoder.encode(line))
+        let text = ""
+        let complete = false
+        let model: string | null = null
+        let usage: Record<string, number | null> | null = null
+        let latencyMs = 0
+        try {
+          for await (const event of streamAgent(options.agent as AgentLike, agentCtx)) {
+            if (event.type === "text") text = event.text
+            else if (event.type === "done") {
+              text = event.text || text
+              complete = event.complete
+              model = event.model ?? null
+              usage = event.usage ?? null
+              latencyMs = event.latencyMs ?? 0
+              // The browser is sent the answer without its cost, for the same
+              // reason the JSON path strips it.
+              write(
+                encodeEvent({
+                  type: "done",
+                  text,
+                  source: "agent",
+                  complete,
+                  model,
+                  latencyMs,
+                  usage: null,
+                }),
+              )
+              continue
+            }
+            write(encodeEvent(event))
+          }
+        } catch (err) {
+          write(encodeEvent({ type: "error", error: err instanceof Error ? err.message : String(err) }))
+        } finally {
+          // Bookkeeping runs after the reader has been served, and none of it
+          // may throw the answer away: it is already on their screen and the
+          // model has already been paid for.
+          const answer: Answer = {
+            text,
+            citations: [],
+            source: "agent",
+            servedBy: "agent",
+            latencyMs,
+            model,
+            usage,
+            complete,
+            ...(result.degraded.length ? { degraded: result.degraded } : {}),
+          }
+          if (text) {
+            await gate
+              .record(agentCtx, answer)
+              .catch((err) => console.error("[rulekit] gate record failed:", err))
+            await writeBack(agentCtx, answer)
+          }
+          controller.close()
+        }
+      },
+    })
+
+    return new Response(stream, {
+      headers: {
+        "content-type": "application/x-ndjson",
+        // A proxy that buffers turns a live answer into a long silence and then
+        // a wall of text.
+        "cache-control": "no-store, no-transform",
+        "x-accel-buffering": "no",
+      },
+    })
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "rulekit-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A grounded, citable rules assistant you can run over your own rulebook.",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.33.4",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "check-types": "tsc --build --force",
+    "clean": "tsc --build --clean",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "test": "node --conditions=development --no-warnings --test \"packages/*/src/**/*.test.ts\"",
+    "rulekit": "node --conditions=development --no-warnings packages/cli/src/bin.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "name": "@rulekit/ui",
+  "version": "0.1.0",
+  "description": "Styled chat components for a rules assistant. Themed with CSS variables.",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    "./styles.css": "./src/styles.css",
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "development": "./src/provider.tsx",
+      "default": "./dist/provider.js"
+    },
+    "./chat": {
+      "types": "./dist/chat.d.ts",
+      "development": "./src/chat.tsx",
+      "default": "./dist/chat.js"
+    },
+    "./message-row": {
+      "types": "./dist/message-row.d.ts",
+      "development": "./src/message-row.tsx",
+      "default": "./dist/message-row.js"
+    },
+    "./composer": {
+      "types": "./dist/composer.d.ts",
+      "development": "./src/composer.tsx",
+      "default": "./dist/composer.js"
+    },
+    "./answer-markdown": {
+      "types": "./dist/answer-markdown.d.ts",
+      "development": "./src/answer-markdown.tsx",
+      "default": "./dist/answer-markdown.js"
+    },
+    "./answer-trace": {
+      "types": "./dist/answer-trace.d.ts",
+      "development": "./src/answer-trace.tsx",
+      "default": "./dist/answer-trace.js"
+    },
+    "./token-text": {
+      "types": "./dist/token-text.d.ts",
+      "development": "./src/token-text.tsx",
+      "default": "./dist/token-text.js"
+    },
+    "./empty-state": {
+      "types": "./dist/empty-state.d.ts",
+      "development": "./src/empty-state.tsx",
+      "default": "./dist/empty-state.js"
+    },
+    "./thinking-indicator": {
+      "types": "./dist/thinking-indicator.d.ts",
+      "development": "./src/thinking-indicator.tsx",
+      "default": "./dist/thinking-indicator.js"
+    },
+    "./chat-session-list": {
+      "types": "./dist/chat-session-list.d.ts",
+      "development": "./src/chat-session-list.tsx",
+      "default": "./dist/chat-session-list.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "dependencies": {
+    "@rulekit/agent": "workspace:*",
+    "@rulekit/react": "workspace:*",
+    "react-markdown": "^10.0.0",
+    "remark-gfm": "^4.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0"
+  }
+}

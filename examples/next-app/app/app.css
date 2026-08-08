@@ -1,0 +1,53 @@
+/* The example's own shell. The chat itself is styled by @rulekit/ui. */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--rk-bg);
+  color: var(--rk-fg);
+}
+
+.app-shell {
+  display: flex;
+  height: 100dvh;
+}
+
+.app-sidebar {
+  width: 260px;
+  flex: none;
+  border-right: 1px solid var(--rk-border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-brand {
+  padding: 16px 16px 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-notice {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--rk-danger);
+  border-radius: var(--rk-radius);
+  color: var(--rk-danger);
+  font-size: 0.85rem;
+}
+
+/* The conversation list costs more than it gives on a narrow screen. */
+@media (max-width: 720px) {
+  .app-sidebar {
+    display: none;
+  }
+}

@@ -1,0 +1,466 @@
+/*
+ * The whole look, in about a dozen variables.
+ *
+ * Override any of them on `:root` or on a wrapper and the chat restyles without
+ * forking a component. That is the point: a component library whose colours are
+ * baked in is one every adopter has to copy and then maintain.
+ *
+ * Plain CSS, no build step, no framework. Import it once.
+ */
+
+.rk-chat,
+:root {
+  --rk-bg: #ffffff;
+  --rk-fg: #16181d;
+  --rk-muted: #62666f;
+  --rk-border: #e3e5ea;
+  --rk-surface: #f6f7f9;
+  --rk-accent: #2f6df6;
+  --rk-accent-fg: #ffffff;
+  --rk-danger: #b42318;
+  --rk-quote-border: #cfd3db;
+  --rk-radius: 12px;
+  --rk-gap: 16px;
+  --rk-width: 46rem;
+  --rk-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --rk-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/*
+ * Dark by preference, unless a host app has set the variables itself. An
+ * interface that ignores the reader's setting is a bright rectangle at night.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rk-bg: #101216;
+    --rk-fg: #e8eaee;
+    --rk-muted: #9aa0ab;
+    --rk-border: #262a32;
+    --rk-surface: #181b21;
+    --rk-quote-border: #343a45;
+    --rk-danger: #f97066;
+  }
+}
+
+.rk-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--rk-bg);
+  color: var(--rk-fg);
+  font-family: var(--rk-font);
+  line-height: 1.6;
+}
+
+.rk-scroller {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rk-column {
+  width: 100%;
+  max-width: var(--rk-width);
+  margin: 0 auto;
+  padding: var(--rk-gap);
+}
+
+.rk-footer {
+  border-top: 1px solid var(--rk-border);
+  background: var(--rk-bg);
+  /* Clear of a phone's home indicator, and of nothing on a desktop. */
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* ---------------------------------------------------------------- messages */
+
+.rk-row {
+  margin-bottom: calc(var(--rk-gap) * 1.5);
+}
+
+.rk-row-user {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rk-bubble-user {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: var(--rk-radius);
+  background: var(--rk-surface);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rk-row-assistant[data-error="true"] .rk-error {
+  padding: 10px 14px;
+  border: 1px solid var(--rk-danger);
+  border-radius: var(--rk-radius);
+  color: var(--rk-danger);
+}
+
+.rk-answer > :first-child {
+  margin-top: 0;
+}
+.rk-answer > :last-child {
+  margin-bottom: 0;
+}
+.rk-answer p {
+  margin: 0 0 0.85em;
+  overflow-wrap: anywhere;
+}
+.rk-answer h3 {
+  margin: 1.2em 0 0.5em;
+  font-size: 1.05rem;
+}
+.rk-answer ul,
+.rk-answer ol {
+  margin: 0 0 0.85em;
+  padding-left: 1.4em;
+}
+.rk-answer li {
+  margin-bottom: 0.3em;
+}
+.rk-answer code {
+  font-family: var(--rk-mono);
+  font-size: 0.9em;
+}
+.rk-answer hr {
+  border: 0;
+  border-top: 1px solid var(--rk-border);
+  margin: 1.2em 0;
+}
+
+/* A quoted rule is the evidence. It reads as a quotation, not as decoration. */
+.rk-quote {
+  margin: 0 0 0.85em;
+  padding: 0.1em 0 0.1em 1em;
+  border-left: 3px solid var(--rk-quote-border);
+  color: var(--rk-fg);
+}
+
+.rk-answer table {
+  border-collapse: collapse;
+  margin-bottom: 0.85em;
+  width: 100%;
+}
+.rk-answer th,
+.rk-answer td {
+  border: 1px solid var(--rk-border);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.rk-card-link {
+  color: var(--rk-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rk-card-image {
+  display: block;
+  max-width: 260px;
+  height: auto;
+  margin: 0.6em 0;
+  border-radius: var(--rk-radius);
+}
+
+.rk-meta,
+.rk-disclaimer,
+.rk-legal {
+  margin-top: 0.5em;
+  color: var(--rk-muted);
+  font-size: 0.8rem;
+}
+
+.rk-legal {
+  margin-top: calc(var(--rk-gap) * 2);
+}
+
+/* ------------------------------------------------------------------- trace */
+
+.rk-trace {
+  margin-bottom: 0.6em;
+  font-size: 0.85rem;
+}
+
+.rk-trace-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--rk-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.rk-trace-summary:hover {
+  color: var(--rk-fg);
+}
+.rk-trace-caret {
+  font-size: 0.7em;
+}
+.rk-trace-failed {
+  color: var(--rk-danger);
+}
+
+.rk-trace-steps {
+  margin: 0.4em 0 0;
+  padding: 0 0 0 0.2em;
+  list-style: none;
+  color: var(--rk-muted);
+}
+
+.rk-trace-steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.rk-trace-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rk-muted);
+  flex: none;
+}
+
+.rk-trace-steps li[data-status="running"] .rk-trace-dot {
+  animation: rk-pulse 1.2s ease-in-out infinite;
+}
+.rk-trace-steps li[data-status="failed"] .rk-trace-dot,
+.rk-trace-steps li[data-status="rejected"] .rk-trace-dot {
+  background: var(--rk-danger);
+}
+
+/* ---------------------------------------------------------------- waiting */
+
+.rk-thinking {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--rk-muted);
+  font-size: 0.9rem;
+}
+
+.rk-thinking-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.rk-thinking-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: rk-pulse 1.2s ease-in-out infinite;
+}
+
+.rk-thinking-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.rk-thinking-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes rk-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* An animation nobody asked for is an accessibility problem, not a flourish. */
+@media (prefers-reduced-motion: reduce) {
+  .rk-thinking-dots span,
+  .rk-trace-steps li[data-status="running"] .rk-trace-dot {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* -------------------------------------------------------------- composer */
+
+.rk-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius);
+  background: var(--rk-bg);
+}
+
+.rk-composer-input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  /* 16px or larger, or a phone zooms the page when the box is focused. */
+  font-size: max(1rem, 16px);
+  max-height: 200px;
+}
+
+.rk-composer-input::placeholder {
+  color: var(--rk-muted);
+}
+.rk-composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rk-composer-count {
+  color: var(--rk-muted);
+  font-size: 0.8rem;
+}
+
+.rk-composer-send {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--rk-accent);
+  color: var(--rk-accent-fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rk-composer-send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ----------------------------------------------------------- empty state */
+
+.rk-empty {
+  padding: calc(var(--rk-gap) * 2) 0;
+}
+.rk-empty-title {
+  margin: 0 0 0.3em;
+  font-size: 1.35rem;
+}
+.rk-empty-subtitle {
+  margin: 0 0 1.2em;
+  color: var(--rk-muted);
+}
+.rk-suggestions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.rk-suggestion {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius);
+  background: var(--rk-bg);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rk-suggestion:hover {
+  background: var(--rk-surface);
+}
+
+/* -------------------------------------------------------------- sessions */
+
+.rk-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--rk-gap);
+}
+
+.rk-session-new {
+  padding: 8px 12px;
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius);
+  background: var(--rk-bg);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.rk-session-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+}
+
+.rk-session-list li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+  padding: 2px 4px;
+}
+
+.rk-session-list li[data-current="true"] {
+  background: var(--rk-surface);
+}
+
+.rk-session-open {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 6px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* One line. A long title must not push the buttons beside it off the edge. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rk-session-action {
+  border: 0;
+  background: none;
+  color: var(--rk-muted);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  /* Revealed on hover, and always present for a keyboard or a touch screen. */
+  opacity: 0;
+}
+
+.rk-session-list li:hover .rk-session-action,
+.rk-session-action:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .rk-session-action {
+    opacity: 1;
+  }
+}
+
+.rk-session-rename {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid var(--rk-accent);
+  border-radius: 6px;
+  background: var(--rk-bg);
+  color: inherit;
+  font: inherit;
+}

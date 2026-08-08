@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "bb7de716-3b9d-4af5-af90-7cc5b007e0d0",
+      "card": {
+        "id": "47da8396-d9e6-4a87-9fb0-146c6abdc613",
+        "name": "Aspirant's Climb",
+        "png_uri": "riftbound/OGN-276.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "d62753e1-56b7-40ed-9df2-cc9f58b80d3c",
+      "card": {
+        "id": "36cecf55-46bd-4384-8c28-ea213233b416",
+        "name": "Called Shot",
+        "png_uri": "riftbound/SFD-122.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-03-30",
+      "reason": "Initial Constructed banlist for sanctioned tournament play.",
+      "patch_note_slug": "2026-03-30-constructed-banlist",
+      "patch_note_title": "Constructed Banlist Update — March 30, 2026"
+    },
+    {
+      "id": "88febadd-daea-4863-97c9-db36a199f577",
+      "card": {
+        "id": "06f137c8-d42c-4e6d-a77c-6a6f4b5cc293",
+        "name": "Draven, Vanquisher",
+        "png_uri": "riftbound/SFD-020.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-03-30",
+      "reason": "Initial Constructed banlist for sanctioned tournament play.",
+      "patch_note_slug": "2026-03-30-constructed-banlist",
+      "patch_note_title": "Constructed Banlist Update — March 30, 2026"
+    },
+    {
+      "id": "be04b66e-09f2-4e8f-9d3e-4a39c027ac31",
+      "card": {
+        "id": "42ee5db1-f97c-4845-80e0-790a23d6f460",
+        "name": "Fight or Flight",
+        "png_uri": "riftbound/OGN-168.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-03-30",
+      "reason": "Initial Constructed banlist for sanctioned tournament play.",
+      "patch_note_slug": "2026-03-30-constructed-banlist",
+      "patch_note_title": "Constructed Banlist Update — March 30, 2026"
+    },
+    {
+      "id": "73611651-45c4-470d-84e0-8bce6b42bae6",
+      "card": {
+        "id": "21517ba3-490a-4faa-9c42-370642703441",
+        "name": "Obelisk of Power",
+        "png_uri": "riftbound/OGN-284.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-03-30",
+      "reason": "Initial Constructed banlist for sanctioned tournament play.",
+      "patch_note_slug": "2026-03-30-constructed-banlist",
+      "patch_note_title": "Constructed Banlist Update — March 30, 2026"
+    },
+    {
+      "id": "52f6e2e1-9fe7-47ca-a844-2a14462b4c44",
+      "card": {
+        "id": "d25bc5f3-7466-4e35-a17f-a44f81a7784f",
+        "name": "Reaver's Row",
+        "png_uri": "riftbound/OGN-285.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-03-30",
+      "reason": "Initial Constructed banlist for sanctioned tournament play.",
+      "patch_note_slug": "2026-03-30-constructed-banlist",
+      "patch_note_title": "Constructed Banlist Update — March 30, 2026"
+    },
+    {
+      "id": "d6f21e0b-3fe6-49d2-8a32-1bc324d9c1b8",
+      "card": {
+        "id": "27740a06-6996-4378-8d23-20cdc331b15e",
+        "name": "Scrapheap",
+        "png_uri": "riftbound/OGN-182.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-03-30",
+      "reason": "Initial Constructed banlist for sanctioned tournament play.",
+      "patch_note_slug": "2026-03-30-constructed-banlist",
+      "patch_note_title": "Constructed Banlist Update — March 30, 2026"
+    },
+    {
+      "id": "ff6be2b2-04a7-4ff7-bcbe-0aa40e1eb9ce",
+      "card": {
+        "id": "a1b4fb93-9553-42e6-9046-bc364a187260",
+        "name": "Stealthy Pursuer",
+        "png_uri": "riftbound/OGN-177.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "1e0a0324-94a0-470f-a6be-c2e38d7571d0",
+      "card": {
+        "id": "ec49f884-8118-4d62-b8b0-3cff1a8111c6",
+        "name": "The Arena's Greatest",
+        "png_uri": "riftbound/OGN-290.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "27e86691-df73-4aca-872a-67fa79ef8926",
+      "card": {
+        "id": "6658e37b-ac88-4f54-a460-0b8f4a74fa08",
+        "name": "The Dreaming Tree",
+        "png_uri": "riftbound/OGN-292.webp"
+      },
+      "format": {
+        "id": "4d916263-7658-4b8c-8672-3717d11fa803",
+        "name": "Constructed",
+        "slug": "constructed"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-03-30",
+      "reason": "Initial Constructed banlist for sanctioned tournament play.",
+      "patch_note_slug": "2026-03-30-constructed-banlist",
+      "patch_note_title": "Constructed Banlist Update — March 30, 2026"
+    },
+    {
+      "id": "ddd42c85-f49f-45cb-bb60-7c07b303d910",
+      "card": {
+        "id": "47da8396-d9e6-4a87-9fb0-146c6abdc613",
+        "name": "Aspirant's Climb",
+        "png_uri": "riftbound/OGN-276.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "4b6d3804-ead5-4b9f-a972-d961b1305293",
+      "card": {
+        "id": "36cecf55-46bd-4384-8c28-ea213233b416",
+        "name": "Called Shot",
+        "png_uri": "riftbound/SFD-122.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "72c14ab3-392c-4db6-8e0c-c411afa60872",
+      "card": {
+        "id": "06f137c8-d42c-4e6d-a77c-6a6f4b5cc293",
+        "name": "Draven, Vanquisher",
+        "png_uri": "riftbound/SFD-020.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "41b6025d-4ea6-4e1a-afb2-c6f198a91613",
+      "card": {
+        "id": "42ee5db1-f97c-4845-80e0-790a23d6f460",
+        "name": "Fight or Flight",
+        "png_uri": "riftbound/OGN-168.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "bad7cc57-54af-4ffd-ac9e-b85e8e32184a",
+      "card": {
+        "id": "6073c0e3-8aac-4d0d-842a-a16882910696",
+        "name": "Master Yi, Wuju Bladesman",
+        "png_uri": "riftbound/OGS-019.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "060b7a4b-2dd9-49c1-8bb3-a4ad6c9cada9",
+      "card": {
+        "id": "21517ba3-490a-4faa-9c42-370642703441",
+        "name": "Obelisk of Power",
+        "png_uri": "riftbound/OGN-284.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "fb42fe53-d2fa-4d9d-accc-5cca5e30677e",
+      "card": {
+        "id": "d25bc5f3-7466-4e35-a17f-a44f81a7784f",
+        "name": "Reaver's Row",
+        "png_uri": "riftbound/OGN-285.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "df29d296-f63e-4b80-bd5b-5b90148d0de2",
+      "card": {
+        "id": "27740a06-6996-4378-8d23-20cdc331b15e",
+        "name": "Scrapheap",
+        "png_uri": "riftbound/OGN-182.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "b4ed60f3-7ce4-4a50-8f06-51d84ec49b03",
+      "card": {
+        "id": "a1b4fb93-9553-42e6-9046-bc364a187260",
+        "name": "Stealthy Pursuer",
+        "png_uri": "riftbound/OGN-177.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "5ae6c6be-010b-4b34-a60e-2fc732c24cd9",
+      "card": {
+        "id": "ec49f884-8118-4d62-b8b0-3cff1a8111c6",
+        "name": "The Arena's Greatest",
+        "png_uri": "riftbound/OGN-290.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    },
+    {
+      "id": "a8bcc787-4ba6-4424-bc78-b02eea60ad90",
+      "card": {
+        "id": "6658e37b-ac88-4f54-a460-0b8f4a74fa08",
+        "name": "The Dreaming Tree",
+        "png_uri": "riftbound/OGN-292.webp"
+      },
+      "format": {
+        "id": "2033202d-867a-46d9-a303-538fb97fed94",
+        "name": "Constructed 2v2",
+        "slug": "constructed-2v2"
+      },
+      "entry_type": "banned",
+      "effective_date": "2026-07-24",
+      "reason": "July 2026 ban list update for Standard and Constructed 2v2.",
+      "patch_note_slug": "2026-07-24-constructed-banlist",
+      "patch_note_title": "Ban List Update — July 24, 2026"
+    }
+  ]
+}

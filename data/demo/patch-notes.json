@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "note-001",
+      "slug": "v1-2-rules-update",
+      "title": "Version 1.2 Rules Update",
+      "version": "1.2",
+      "effective_date": "2026-03-01",
+      "category": "rule_change",
+      "summary": "Starting life rises to 25. Borrowed Hour is banned in Standard and Endless Reprise is restricted.",
+      "body": "Starting life moves from 20 to 25, so an opening hand of removal no longer decides the game. Rule 100.4 replaces rule 100.5, which is kept for reference only.\n\nBorrowed Hour is banned in Standard. Endless Reprise is restricted to one copy.\n\nLanternbearer receives errata: it grants Guard only to units its controller owns.",
+      "affected_rule_ids": ["r-100-4", "r-100-5"],
+      "affected_card_ids": ["pk-005", "pk-011", "pk-009"]
+    },
+    {
+      "id": "note-002",
+      "slug": "v1-1-errata",
+      "title": "Version 1.1 Errata",
+      "version": "1.1",
+      "effective_date": "2026-02-10",
+      "category": "errata",
+      "summary": "Borrowed Hour gains the Fade 1 that was printed on the card but missing from the database.",
+      "body": "Borrowed Hour is printed with Fade 1. The rules database omitted it. The database now matches the printed card.",
+      "affected_rule_ids": [],
+      "affected_card_ids": ["pk-005"]
+    }
+  ]
+}

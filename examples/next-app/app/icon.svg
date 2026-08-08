@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="t">
+  <title id="t">rulekit</title>
+  <rect width="32" height="32" rx="7" fill="#2f6df6"/>
+  <path d="M9 8h9a5 5 0 0 1 1.6 9.74L23 24h-4.2l-3-5.6H13V24H9V8Zm4 3.4v3.8h4.6a1.9 1.9 0 0 0 0-3.8H13Z" fill="#fff"/>
+</svg>

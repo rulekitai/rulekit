@@ -1,0 +1,30 @@
+{
+  "name": "@rulekit/server",
+  "version": "0.1.0",
+  "description": "One web-standard HTTP handler that mounts anywhere.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    "./handler": {
+      "types": "./dist/handler.d.ts",
+      "development": "./src/handler.ts",
+      "default": "./dist/handler.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "test": "node --test src/**/*.test.ts"
+  },
+  "dependencies": {
+    "@rulekit/corpus": "workspace:*",
+    "@rulekit/agent": "workspace:*",
+    "@rulekit/pipeline": "workspace:*"
+  }
+}

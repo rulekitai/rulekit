@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "sec-100",
+      "rule_book_id": "book-core",
+      "section_number": "100",
+      "title": "Game Concepts",
+      "slug": "game-concepts",
+      "description": "The deck, the players, and how a game is won.",
+      "display_order": 0
+    },
+    {
+      "id": "sec-200",
+      "rule_book_id": "book-core",
+      "section_number": "200",
+      "title": "Turn Structure",
+      "slug": "turn-structure",
+      "description": "The phases of a turn and the order players act in.",
+      "display_order": 1
+    },
+    {
+      "id": "sec-300",
+      "rule_book_id": "book-core",
+      "section_number": "300",
+      "title": "Combat",
+      "slug": "combat",
+      "description": "Attacking, blocking, and damage.",
+      "display_order": 2
+    },
+    {
+      "id": "sec-800",
+      "rule_book_id": "book-core",
+      "section_number": "800",
+      "title": "Keyword Glossary",
+      "slug": "keyword-glossary",
+      "description": "Every keyword ability, defined.",
+      "display_order": 3
+    },
+    {
+      "id": "sec-t100",
+      "rule_book_id": "book-tournament",
+      "section_number": "100",
+      "title": "Deck Registration",
+      "slug": "deck-registration",
+      "description": "What a player must submit before a tournament round.",
+      "display_order": 0
+    }
+  ]
+}

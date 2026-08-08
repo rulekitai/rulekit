@@ -1,0 +1,62 @@
+{
+  "game": {
+    "name": "Riftbound",
+    "slug": "riftbound",
+    "description": "Riftbound is a trading card game."
+  },
+  "vocabulary": [
+    {
+      "use": "card text",
+      "insteadOf": ["oracle text"],
+      "means": "It names the text printed in a card's own text box."
+    }
+  ],
+  "cards": {
+    "enabled": true,
+    "linkScheme": "card",
+    "maxInlineImages": 3,
+    "textFields": [
+      { "field": "card_text", "describes": "the card's own text box" },
+      {
+        "field": "effect_text",
+        "describes": "the effect box on a gear card, holding the text the equipped unit gains"
+      },
+      { "field": "attach_text", "describes": "the attach box, saying what a card may attach to" },
+      { "field": "might_bonus", "describes": "the Might that a gear card grants to the unit holding it" }
+    ]
+  },
+  "tokens": {
+    "syntax": "[Fury] or [Shield 2]",
+    "groups": [
+      { "label": "Energy", "examples": ["[0]", "[1]", "[2]", "[3]", "[9]"] },
+      {
+        "label": "Runes and domains",
+        "examples": ["[Rune]", "[Body]", "[Calm]", "[Chaos]", "[Fury]", "[Mind]", "[Order]"]
+      },
+      { "label": "Stats", "examples": ["[Might]", "[Power]"] },
+      {
+        "label": "Card types",
+        "examples": ["[Unit]", "[Spell]", "[Gear]", "[Battlefield]", "[Legend]", "[Tap]"]
+      },
+      {
+        "label": "Keyword abilities",
+        "examples": ["[Shield]", "[Shield 2]", "[Reaction]", "[Hidden]", "[Accelerate]", "[Deflect]"]
+      }
+    ]
+  },
+  "scope": {
+    "answer": [
+      "Rule text and rule numbers.",
+      "A card's text, stats, cost, and how named cards interact.",
+      "Whether a card is banned or restricted, and any change to its printed text.",
+      "Defined terms, keywords, and ability definitions.",
+      "Rule structure: parent rules, sub-rules, related rules, and rulebook sections.",
+      "Update notes and recent rules changes that the tools return."
+    ],
+    "refuse": []
+  },
+  "extraGuidance": [
+    "An equipment card's `card_text` holds only its EQUIP line. Never conclude that such a card \"has no such text\" from `card_text` alone.",
+    "A banned-and-restricted entry and a card-change entry each carry the card's image path, so you can link the card from them without a separate card lookup."
+  ]
+}

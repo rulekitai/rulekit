@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "term-guard",
+      "term": "Guard",
+      "slug": "guard",
+      "definition": "Guard is a keyword ability. While you control a unit with Guard, an attacking unit must be blocked by a unit with Guard before any unit without Guard may block.",
+      "short_definition": "Must be blocked before units without Guard.",
+      "category": "keyword_ability",
+      "aliases": ["Guardian", "Defender"],
+      "defining_rule_id": "r-800-1",
+      "defining_rule_number": "800.1"
+    },
+    {
+      "id": "term-swift",
+      "term": "Swift",
+      "slug": "swift",
+      "definition": "Swift is a keyword ability. A card with Swift may be played at any time a player holds priority, including during the opponent's turn.",
+      "short_definition": "May be played whenever you hold priority.",
+      "category": "keyword_ability",
+      "aliases": ["Quick"],
+      "defining_rule_id": "r-800-2",
+      "defining_rule_number": "800.2"
+    },
+    {
+      "id": "term-bolster",
+      "term": "Bolster",
+      "slug": "bolster",
+      "definition": "Bolster N is a keyword ability. When this unit enters play, put N +1/+1 counters on target unit you control.",
+      "short_definition": "Adds counters to a unit you control on entry.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "r-800-3",
+      "defining_rule_number": "800.3"
+    },
+    {
+      "id": "term-fade",
+      "term": "Fade",
+      "slug": "fade",
+      "definition": "Fade N is a keyword ability. This card enters play with N time counters. Remove one at the start of your turn. When the last is removed, discard this card.",
+      "short_definition": "Leaves play after N of your turns.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "r-800-4",
+      "defining_rule_number": "800.4"
+    },
+    {
+      "id": "term-resolve",
+      "term": "Resolve",
+      "slug": "resolve",
+      "definition": "Resolve is a unit's printed toughness. A unit with damage marked on it equal to or greater than its Resolve is destroyed.",
+      "short_definition": "How much damage a unit survives.",
+      "category": "stat",
+      "aliases": ["Toughness"],
+      "defining_rule_id": "r-300-3-a",
+      "defining_rule_number": "300.3.a"
+    },
+    {
+      "id": "term-strength",
+      "term": "Strength",
+      "slug": "strength",
+      "definition": "Strength is a unit's printed attack value. A unit deals damage equal to its Strength in combat.",
+      "short_definition": "How much damage a unit deals.",
+      "category": "stat",
+      "aliases": ["Power"],
+      "defining_rule_id": "r-300-3",
+      "defining_rule_number": "300.3"
+    }
+  ]
+}

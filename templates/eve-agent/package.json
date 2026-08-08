@@ -1,0 +1,20 @@
+{
+  "name": "rulekit-eve-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The same rules agent, running on Vercel Eve instead of the AI SDK.",
+  "scripts": {
+    "dev": "eve dev",
+    "build": "eve build",
+    "start": "eve start",
+    "deploy": "eve deploy"
+  },
+  "dependencies": {
+    "@rulekit/agent": "workspace:*",
+    "@rulekit/corpus": "workspace:*",
+    "eve": "^0.24.0",
+    "zod": "^3.25.0",
+    "ai": "^7.0.26"
+  }
+}

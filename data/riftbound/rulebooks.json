@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "name": "Riftbound Tournament Rules",
+      "slug": "riftbound-tournament-rules",
+      "version": "2026-07-20",
+      "effective_date": "2026-04-29",
+      "is_active": true
+    },
+    {
+      "id": "968c4c88-9cd3-4dca-8207-d5d660346820",
+      "name": "Riftbound Core Rules",
+      "slug": "riftbound-core-rules",
+      "version": "2026-07-20",
+      "effective_date": "2026-03-30",
+      "is_active": true
+    }
+  ]
+}

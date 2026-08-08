@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "8333924d-ca12-4a3e-ad14-7c7a25d7c4e6",
+      "rule_book_id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "section_number": "000",
+      "title": "Golden Rule",
+      "slug": "riftbound-tournament-rules-000-golden-rule",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "0b0b20b3-6210-45e0-bd2d-a6f200199c7f",
+      "rule_book_id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "section_number": "100",
+      "title": "Introduction",
+      "slug": "riftbound-tournament-rules-100-introduction",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "d3a888b1-5633-4b0d-8f8f-c96254976da4",
+      "rule_book_id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "section_number": "200",
+      "title": "Definitions",
+      "slug": "riftbound-tournament-rules-200-definitions",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "24d1046e-62d5-452c-92e1-5abd44b2e806",
+      "rule_book_id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "section_number": "300",
+      "title": "Eligibility",
+      "slug": "riftbound-tournament-rules-300-eligibility",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "8cb94352-b48d-4f2d-9e1f-f31209694dfa",
+      "rule_book_id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "section_number": "400",
+      "title": "Policies",
+      "slug": "riftbound-tournament-rules-400-policies",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "4a60765e-64a7-4358-861a-4d8199bab84a",
+      "rule_book_id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "section_number": "500",
+      "title": "Communication",
+      "slug": "riftbound-tournament-rules-500-communication",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "c5b6ded7-1244-4547-a636-1bdb5a0ddc43",
+      "rule_book_id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "section_number": "600",
+      "title": "Competition Formats",
+      "slug": "riftbound-tournament-rules-600-competition-formats",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "13fd0d8f-db00-47ff-99e4-5cb8cbf1ccfb",
+      "rule_book_id": "b12bbe4e-4f16-4941-8351-4f0e58d59d78",
+      "section_number": "700",
+      "title": "Enforcement and Penalties",
+      "slug": "riftbound-tournament-rules-700-enforcement-and-penalties",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "2f63184a-3351-4250-8d18-2c983262c008",
+      "rule_book_id": "968c4c88-9cd3-4dca-8207-d5d660346820",
+      "section_number": "000",
+      "title": "Golden and Silver Rules",
+      "slug": "000-golden-and-silver-rules",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "340d3405-535e-4da7-ad3f-59f82c9c9c5e",
+      "rule_book_id": "968c4c88-9cd3-4dca-8207-d5d660346820",
+      "section_number": "100",
+      "title": "Game Concepts",
+      "slug": "100-game-concepts",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "95b9433e-a587-473a-a087-73119fcca7a6",
+      "rule_book_id": "968c4c88-9cd3-4dca-8207-d5d660346820",
+      "section_number": "300",
+      "title": "Playing the Game",
+      "slug": "300-playing-the-game",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "3f61cbaf-b78c-47da-b496-46249fcf2755",
+      "rule_book_id": "968c4c88-9cd3-4dca-8207-d5d660346820",
+      "section_number": "700",
+      "title": "Additional Rules",
+      "slug": "700-additional-rules",
+      "description": null,
+      "display_order": 0
+    },
+    {
+      "id": "c74e79f1-a36f-4305-ad6a-39f4b531383d",
+      "rule_book_id": "968c4c88-9cd3-4dca-8207-d5d660346820",
+      "section_number": "800",
+      "title": "Keywords",
+      "slug": "800-keywords",
+      "description": null,
+      "display_order": 0
+    }
+  ]
+}

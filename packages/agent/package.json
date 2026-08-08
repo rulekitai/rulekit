@@ -1,0 +1,67 @@
+{
+  "name": "@rulekit/agent",
+  "version": "0.1.0",
+  "description": "Tools, instructions, skills, and a runtime for a grounded rules assistant.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    "./tools": {
+      "types": "./dist/tools.d.ts",
+      "development": "./src/tools.ts",
+      "default": "./dist/tools.js"
+    },
+    "./profile": {
+      "types": "./dist/profile.d.ts",
+      "development": "./src/profile.ts",
+      "default": "./dist/profile.js"
+    },
+    "./instructions": {
+      "types": "./dist/instructions.d.ts",
+      "development": "./src/instructions.ts",
+      "default": "./dist/instructions.js"
+    },
+    "./turn": {
+      "types": "./dist/turn.d.ts",
+      "development": "./src/turn.ts",
+      "default": "./dist/turn.js"
+    },
+    "./events": {
+      "types": "./dist/events.d.ts",
+      "development": "./src/events.ts",
+      "default": "./dist/events.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "development": "./src/runtime.ts",
+      "default": "./dist/runtime.js"
+    },
+    "./skills": {
+      "types": "./dist/skills.d.ts",
+      "development": "./src/skills.ts",
+      "default": "./dist/skills.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "test": "node --test src/**/*.test.ts"
+  },
+  "dependencies": {
+    "@rulekit/corpus": "workspace:*",
+    "zod": "^3.25.0"
+  },
+  "peerDependencies": {
+    "ai": "^5.0.0 || ^6.0.0 || ^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
+  }
+}

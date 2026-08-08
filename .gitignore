@@ -1,0 +1,16 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.next/
+out/
+
+# Built corpora. The JSON beside them is the source of truth; the database file
+# is a build artefact that `rulekit build` reproduces in under a second.
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+.env
+.env.local
+.DS_Store

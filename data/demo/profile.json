@@ -1,0 +1,41 @@
+{
+  "game": {
+    "name": "Paper Kingdoms",
+    "slug": "paper-kingdoms",
+    "description": "Paper Kingdoms is an invented trading card game that exists only as an example corpus."
+  },
+  "vocabulary": [
+    {
+      "use": "Resolve",
+      "insteadOf": ["toughness"],
+      "means": "It names how much damage a unit survives."
+    },
+    {
+      "use": "Strength",
+      "insteadOf": ["attack"],
+      "means": "It names how much damage a unit deals."
+    }
+  ],
+  "cards": {
+    "enabled": true,
+    "linkScheme": "card",
+    "maxInlineImages": 2,
+    "textFields": [
+      { "field": "card_text", "describes": "the card's own text box" },
+      { "field": "effect_text", "describes": "the effect box on a gear card, holding the text the equipped unit gains" },
+      { "field": "attach_text", "describes": "the attach box, saying what a card may attach to" }
+    ]
+  },
+  "scope": {
+    "answer": [
+      "Rule text and rule numbers.",
+      "A card's text, stats, cost, and how named cards interact.",
+      "Whether a card is banned or restricted.",
+      "Defined terms and keyword abilities."
+    ],
+    "refuse": []
+  },
+  "extraGuidance": [
+    "Paper Kingdoms has two rulebooks: the Core Rules and the Tournament Rules. Both number their sections from 100, so the same rule number can name two different rules. Say which rulebook you are quoting whenever the number appears in both."
+  ]
+}

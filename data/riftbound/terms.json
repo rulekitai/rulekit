@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "7fc7c7b2-530a-49f3-a55a-82bc4fae8f96",
+      "term": "Accelerate",
+      "slug": "accelerate",
+      "definition": "Accelerate is a Unit ability.\nAccelerate is an Optional Additional Cost to be paid as a player plays the unit with the ability.\nAccelerate has no function while on the board.\nMultiple instances of Accelerate are redundant.\nAccelerate, and whether or not a unit has Accelerate, is a characteristic of the Unit and may be checked or referenced by other Game Effects.\nAccelerate generates a delayed replacement effect that replaces a unit entering the board exhausted with it entering ready. It does not enter exhausted and then become ready.",
+      "short_definition": "Accelerate is a Unit ability.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "9916af57-5312-4336-a8c2-bb9adf3982f8",
+      "defining_rule_number": "805"
+    },
+    {
+      "id": "169e8ea1-2f99-4652-a461-8f3bc638b307",
+      "term": "Action",
+      "slug": "action",
+      "definition": "Action is a Permissive keyword.\nThe card or effect with this keyword is not restricted to showdowns. This permission is inclusive of all other timings and options available to the ability as written or by default.\nAction does not alter the function of any instruction of the corresponding card or effect it is on. It is only permission.\nSome passive abilities may grant a card or ability Action under certain conditions. The card or ability does not have the Action keyword unless and until those circumstances are true.\nAction is a referenceable characteristic.",
+      "short_definition": "Action is a Permissive keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "284076c6-2113-493d-9a9d-ef15911885be",
+      "defining_rule_number": "806"
+    },
+    {
+      "id": "1b11de79-9cbb-4f55-a42d-f4f32bc456ce",
+      "term": "Ambush",
+      "slug": "ambush",
+      "definition": "Ambush is a Passive Ability keyword.\nMultiple instances of Ambush are redundant.\nIf there are no units at the location chosen before Finalization completes for any reason, then it is no longer a valid location by Ambush ’s reasoning and cannot be played there\nAmbush , and whether or not a unit has Ambush , is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Ambush is a Passive Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "957f4d07-5a3f-41f4-a0c7-be88cb48ed4c",
+      "defining_rule_number": "822"
+    },
+    {
+      "id": "5d8afecc-4a0f-4407-b648-47ed2c46f34e",
+      "term": "Assault",
+      "slug": "assault",
+      "definition": "Assault is a Passive Ability keyword.\nIf a Unit has Assault or has been granted Assault and is granted Assault by an additional source, the Assault Value of all granted Assault keywords is summed.\nAssault, and whether or not a unit has Assault, is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Assault is a Passive Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "a5e41ebd-9700-42a4-b1b5-5a87c52ccf56",
+      "defining_rule_number": "807"
+    },
+    {
+      "id": "896754ba-8862-43ad-8ec5-bbf09e311d0c",
+      "term": "Backline",
+      "slug": "backline",
+      "definition": "Backline is a Passive Ability keyword.\nIt is present on Units.\nIt is functionally short for “I must be assigned lethal damage after any other unit with the same controller as me that does not have [Backline] during the Combat Damage step.”\nIt alters how players can elect to assign combat damage during combat.\nMultiple Instances of Backline are redundant.\nBackline, and whether or not a unit has Backline, is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Backline is a Passive Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "e113a118-3ed6-4262-81f8-de0693ac6a7d",
+      "defining_rule_number": "826"
+    },
+    {
+      "id": "26b4a500-fc26-4c41-85cb-3cca492f78e1",
+      "term": "Deathknell",
+      "slug": "deathknell",
+      "definition": "Deathknell is a Triggered Ability keyword.\nEach instance of Deathknell a Permanent may have will trigger separately.\nDeathknell, and whether or not a permanent has Deathknell, is a characteristic of the permanent and may be checked or referenced by other Game Effects.",
+      "short_definition": "Deathknell is a Triggered Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "f574bb70-d9da-406c-935a-901f13fca94c",
+      "defining_rule_number": "808"
+    },
+    {
+      "id": "9a612f4a-c6d2-49c8-954d-290c4b189a40",
+      "term": "Deflect",
+      "slug": "deflect",
+      "definition": "Deflect is a Passive Ability keyword.\nIf a Game Object has Deflect, or has been granted Deflect, and is granted Deflect by an additional source, the Deflect Value of all granted Deflect keywords is summed.\nDeflect, and whether or not a Game Object has Deflect, is a characteristic of the permanent and may be checked or referenced by other Game Effects.",
+      "short_definition": "Deflect is a Passive Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "35ef17d7-c091-4a4c-943a-2ce6d39af6e3",
+      "defining_rule_number": "809"
+    },
+    {
+      "id": "822dab04-da3d-42b4-ad74-21d7bb3142b3",
+      "term": "Empower",
+      "slug": "empower",
+      "definition": "Empower is an Activated Ability keyword.\nWhen the Empower action completes from this keyword, the source permanent or legend becomes Empowered.\nMultiple instances of Empower are equivalent to multiple activated abilities and can each be activated separately by paying the corresponding costs.\nEmpower and whether a permanent or legend has Empower are a characteristic of those Game Objects and may be checked or referenced by other Game Effects.",
+      "short_definition": "Empower is an Activated Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "6d9cbfda-5daf-46fb-8158-07eed2d918d6",
+      "defining_rule_number": "827"
+    },
+    {
+      "id": "da3bb3a0-0464-4f93-a518-b8ef5c6e6e2c",
+      "term": "Empowered",
+      "slug": "empowered",
+      "definition": "Empowered is a Dependent Keyword.\nEmpowered and whether or not a card has an Empowered Ability is a characteristic of the card that may be checked or referenced by other Game Effects.",
+      "short_definition": "Empowered is a Dependent Keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "d1a45891-bb59-44f3-a122-520599ea4977",
+      "defining_rule_number": "828"
+    },
+    {
+      "id": "f45f2c5b-538c-4215-bac2-4e37d82e4151",
+      "term": "Equip",
+      "slug": "equip",
+      "definition": "Equip is an Activated Ability keyword.\nWhen the Attach action completes from this keyword, the Unit that was chosen is considered to have been Equipped by the Gear with this ability.\nEquipped is the state of a Top-Most Card being Attached by one or more cards that are Equipment.\nMultiple instances of Equip are equivalent to multiple Activated Abilities and can each be activated separately by paying the corresponding costs.\nEquip, and whether or not a Gear has Equip, is a characteristic of the Gear and may be checked or referenced by other Game Effects.",
+      "short_definition": "Equip is an Activated Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "140927bf-801e-45c0-a154-6104bfd69ece",
+      "defining_rule_number": "818"
+    },
+    {
+      "id": "6e51daed-5cc2-4ad8-b432-6598a44dac24",
+      "term": "Flow",
+      "slug": "flow",
+      "definition": "Flow is a passive ability keyword.\nFlow , and whether or not a spell has Flow , is a characteristic of the Spell and may be checked or referenced by other Game Effects.",
+      "short_definition": "Flow is a passive ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "af8dda17-9b69-48ef-be43-b06966736172",
+      "defining_rule_number": "829"
+    },
+    {
+      "id": "cfca3d0b-3e8d-428a-9f51-261b3ffd96a3",
+      "term": "Ganking",
+      "slug": "ganking",
+      "definition": "Ganking is a Passive Ability keyword.\nMultiple instances of Ganking are redundant.\nGanking, and whether or not a unit has Ganking, is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Ganking is a Passive Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "ff7df2ee-b02f-4195-a3da-a2e635cec913",
+      "defining_rule_number": "810"
+    },
+    {
+      "id": "9fbe5aee-bd86-4c8c-821c-c71211ec46ce",
+      "term": "Hidden",
+      "slug": "hidden",
+      "definition": "Hidden is a keyword that acts as a prerequisite to perform the Hide Discretionary Action.\nAbilities and instructions of hidden cards other than the choices listed above function as normal.\nInstead of being hidden, a card with Hidden may be played for its cost as normal, at its normal timing with no restrictions on targeting.\nMultiple instances of Hidden are redundant.\nHidden, and whether or not a card has Hidden, is a characteristic of the card and may be checked or referenced by other Game Effects.\nA card that is Hidden gains Reaction while facedown or played from facedown, and may be played any time a card with Reaction may be played as a result.",
+      "short_definition": "Hidden is a keyword that acts as a prerequisite to perform the Hide Discretionary Action.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "fbced578-07bb-480b-a8e9-d730d85d4e1b",
+      "defining_rule_number": "811"
+    },
+    {
+      "id": "e1ed2897-8552-44e8-ab2b-4343f22f28e9",
+      "term": "Hunt",
+      "slug": "hunt",
+      "definition": "Hunt is a Triggered Ability keyword.\nIf a Unit has Hunt , or has been granted Hunt , and is granted Hunt by an additional source, the Hunt Value of all granted Hunt keywords is summed.\nHunt , and whether or not a unit has Hunt , is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Hunt is a Triggered Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "12d4a35c-aab1-4ed3-8548-d50fa3ff205f",
+      "defining_rule_number": "823"
+    },
+    {
+      "id": "6ffae001-4adf-46aa-b889-d81182609ddb",
+      "term": "Legion",
+      "slug": "legion",
+      "definition": "Legion is a Dependent Keyword.\nAll instances of Legion on cards a player controls are satisfied by that player playing a single card.\nLegion , and whether or not a card has Legion , is a characteristic of the card and may be checked or referenced by other Game Effects.",
+      "short_definition": "Legion is a Dependent Keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "bf2df377-e410-4803-9498-21d3e10a9dd5",
+      "defining_rule_number": "812"
+    },
+    {
+      "id": "2b876cd5-ce53-4256-8816-252dc60b69e8",
+      "term": "Level",
+      "slug": "level",
+      "definition": "Level is a Dependent Keyword.\nLevel, and whether or not a card has Level is a characteristic of the card and may be checked or referenced by other Game Effects.",
+      "short_definition": "Level is a Dependent Keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "9f197ee8-773c-4074-9a41-349250abd5ce",
+      "defining_rule_number": "824"
+    },
+    {
+      "id": "6d7ef3a3-bb7e-476a-bf75-01ba67a5bb4f",
+      "term": "Quick-Draw",
+      "slug": "quick-draw",
+      "definition": "Quick-Draw is a Triggered Ability keyword. It is also a Permissive keyword.\nMultiple instances of Quick-Draw do not trigger separately and have no effect beyond the first.\nQuick-Draw , and whether or not a gear has Quick-Draw , is a characteristic of the Gear and may be checked or referenced by other Game Effects.",
+      "short_definition": "Quick-Draw is a Triggered Ability keyword. It is also a Permissive keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "53ec943d-ce57-41df-a786-91fb9643e184",
+      "defining_rule_number": "819"
+    },
+    {
+      "id": "2183e5c4-6fcf-4680-ab93-880cd7e80548",
+      "term": "Reaction",
+      "slug": "reaction",
+      "definition": "Reaction is a Permissive keyword.\nThe corresponding card or effect with this keyword is not restricted to Closed States or Showdowns . This permission is inclusive of all other timings and options available to the ability as written, Action's permissions, or by default.\nReaction does not alter the function of any instruction of the Card, Rune, or Effect it is on. It is only Permission.\nSome passive abilities may grant a card or ability Reaction under certain conditions. The card or ability does not have the Reaction keyword unless and until those circumstances are true.\nReaction is a referencable characteristic.",
+      "short_definition": "Reaction is a Permissive keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "88159fce-e4b5-4821-aa24-d71c0f0c2993",
+      "defining_rule_number": "813"
+    },
+    {
+      "id": "ba0e906d-d901-4f3a-ac49-ebef0d85a880",
+      "term": "Repeat",
+      "slug": "repeat",
+      "definition": "Repeat is an Optional Additional Cost keyword.\nWhen a spell or ability’s effect is performed an additional time with Repeat , choices must be made at the usual time during the Make Relevant Choices step of Playing a Card. See rule for more information.\nMultiple instances of Repeat can be paid for separately. The spell or ability’s instructions will be executed an additional time on resolution for each instance of Repeat that is paid for.\nRepeat , and whether or not a spell or ability has Repeat , is a characteristic of the spell or ability and may be checked or referenced by other Game Effects.",
+      "short_definition": "Repeat is an Optional Additional Cost keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "4a521e6d-e7e0-4a6a-aaf4-48e3cd5ae3f2",
+      "defining_rule_number": "820"
+    },
+    {
+      "id": "d94ff87d-db21-4cea-98cc-5dd25abeff55",
+      "term": "Shield",
+      "slug": "shield",
+      "definition": "Shield is a Passive Ability keyword.\nIf a Unit has Shield, or has been granted Shield, and is granted Shield by an additional source, the Shield Value of all granted Shield keywords is summed.\nShield, and whether or not a unit has Shield, is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Shield is a Passive Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "89237fe7-70cb-42a1-8db8-7b4b4d35b075",
+      "defining_rule_number": "814"
+    },
+    {
+      "id": "51b4d262-6c38-46ae-925a-fa79e56f791e",
+      "term": "Tank",
+      "slug": "tank",
+      "definition": "Tank is a Passive Ability keyword.\nMultiple instances of Tank are redundant.\nTank, and whether or not a unit has Tank, is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Tank is a Passive Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "934bb0f5-6cf8-44d7-b05d-fa8e023fdf14",
+      "defining_rule_number": "815"
+    },
+    {
+      "id": "a78be8e6-e7c6-41c6-8aa0-7f878f1e66ac",
+      "term": "Temporary",
+      "slug": "temporary",
+      "definition": "Temporary is a Triggered Ability keyword.\nMultiple instances of Temporary are redundant.\nTemporary, and whether or not a permanent has Temporary, is a characteristic of the permanent and may be checked or referenced by other Game Effects.",
+      "short_definition": "Temporary is a Triggered Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "8d003851-1734-474f-a9f6-f70da0f4f5a6",
+      "defining_rule_number": "816"
+    },
+    {
+      "id": "6104cdaf-b3e1-48b7-858f-650f98e0d493",
+      "term": "Unique",
+      "slug": "unique",
+      "definition": "Unique is a Deck Constraint Permission.\nIt is normally present on main deck cards.\nUnique is not functionally short for any rules text, and instead provides a restriction to players during Deck Construction.\nCards with Unique have no additional effects during gameplay.\nUnique , and whether or not a Card has Unique , is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Unique is a Deck Constraint Permission.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "9bce1bb2-2272-42a9-a6d7-1809111802c9",
+      "defining_rule_number": "825"
+    },
+    {
+      "id": "c811f35a-805a-431c-938b-129b996660e6",
+      "term": "Vision",
+      "slug": "vision",
+      "definition": "Vision is a Triggered Ability keyword.\nMultiple instances of Vision trigger separately.\nVision, and whether or not a permanent has Vision, is a characteristic of the permanent and may be checked or referenced by other Game Effects.",
+      "short_definition": "Vision is a Triggered Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "ed66b9c3-554c-4a09-947e-89915c4c8335",
+      "defining_rule_number": "817"
+    },
+    {
+      "id": "52f6d572-528e-4449-bea2-70c1036394f1",
+      "term": "Weaponmaster",
+      "slug": "weaponmaster",
+      "definition": "Weaponmaster is a Triggered Ability keyword.\nWeaponmaster has no function while on the board.\nWeaponmaster , and whether or not a unit has Weaponmaster , is a characteristic of the Unit and may be checked or referenced by other Game Effects.",
+      "short_definition": "Weaponmaster is a Triggered Ability keyword.",
+      "category": "keyword_ability",
+      "aliases": [],
+      "defining_rule_id": "d2cf9332-8e0e-4411-b029-92cca3bfc871",
+      "defining_rule_number": "821"
+    }
+  ]
+}

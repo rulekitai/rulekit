@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "err-001",
+      "card": { "id": "pk-009", "name": "Lanternbearer", "png_uri": "paper-kingdoms/PK-009.webp" },
+      "effective_date": "2026-03-01",
+      "original_text": "Fade 3. While Lanternbearer is in play, units have Guard.",
+      "errata_text": "Fade 3. While Lanternbearer is in play, units you control have Guard.",
+      "explanation": "The printed text granted Guard to every unit in play, including the opponent's. It was always meant to affect only its controller's units.",
+      "patch_note_slug": "v1-2-rules-update",
+      "patch_note_title": "Version 1.2 Rules Update"
+    },
+    {
+      "id": "err-002",
+      "card": { "id": "pk-005", "name": "Borrowed Hour", "png_uri": "paper-kingdoms/PK-005.webp" },
+      "effective_date": "2026-02-10",
+      "original_text": "Swift. Take an extra turn after this one.",
+      "errata_text": "Swift. Take an extra turn after this one. Fade 1.",
+      "explanation": "Fade 1 was printed on the card face but omitted from the rules database.",
+      "patch_note_slug": "v1-1-errata",
+      "patch_note_title": "Version 1.1 Errata"
+    }
+  ]
+}

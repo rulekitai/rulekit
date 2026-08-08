@@ -1,0 +1,79 @@
+{
+  "name": "@rulekit/pipeline",
+  "version": "0.1.0",
+  "description": "The answer pipeline: stages, cache, gate, and credentials.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "development": "./src/types.ts",
+      "default": "./dist/types.js"
+    },
+    "./pipeline": {
+      "types": "./dist/pipeline.d.ts",
+      "development": "./src/pipeline.ts",
+      "default": "./dist/pipeline.js"
+    },
+    "./cache": {
+      "types": "./dist/cache.d.ts",
+      "development": "./src/cache.ts",
+      "default": "./dist/cache.js"
+    },
+    "./gate": {
+      "types": "./dist/gate.d.ts",
+      "development": "./src/gate.ts",
+      "default": "./dist/gate.js"
+    },
+    "./oauth": {
+      "types": "./dist/oauth.d.ts",
+      "development": "./src/oauth.ts",
+      "default": "./dist/oauth.js"
+    },
+    "./stages/static": {
+      "types": "./dist/stages/static.d.ts",
+      "development": "./src/stages/static.ts",
+      "default": "./dist/stages/static.js"
+    },
+    "./stages/static-classify": {
+      "types": "./dist/stages/static-classify.d.ts",
+      "development": "./src/stages/static-classify.ts",
+      "default": "./dist/stages/static-classify.js"
+    },
+    "./stages/static-render": {
+      "types": "./dist/stages/static-render.d.ts",
+      "development": "./src/stages/static-render.ts",
+      "default": "./dist/stages/static-render.js"
+    },
+    "./stages/cache": {
+      "types": "./dist/stages/cache.d.ts",
+      "development": "./src/stages/cache.ts",
+      "default": "./dist/stages/cache.js"
+    },
+    "./stages/glossary": {
+      "types": "./dist/stages/glossary.d.ts",
+      "development": "./src/stages/glossary.ts",
+      "default": "./dist/stages/glossary.js"
+    },
+    "./stages/agent": {
+      "types": "./dist/stages/agent.d.ts",
+      "development": "./src/stages/agent.ts",
+      "default": "./dist/stages/agent.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "test": "node --test src/**/*.test.ts"
+  },
+  "dependencies": {
+    "@rulekit/corpus": "workspace:*",
+    "@rulekit/agent": "workspace:*"
+  }
+}
