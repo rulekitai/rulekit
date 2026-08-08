@@ -15,15 +15,29 @@ test.skip(
   "No model credential. Set AI_GATEWAY_API_KEY to run the streaming spec; the other specs need none.",
 )
 
-/** A question no free stage can answer, so it always reaches the model. */
-const REASONING_QUESTION = "how does Deflect interact with Shield when both are granted to the same unit"
+/**
+ * A question no free stage can answer, and a DIFFERENT one per test.
+ *
+ * The first answer to any question is cached, so a second test asking the same
+ * thing gets it back instantly with no trace and no streaming — and then
+ * measures nothing it set out to measure. Giving each test its own question is
+ * what keeps every one of them a real model turn.
+ */
+const QUESTIONS = {
+  trace: "how does Deflect interact with Shield when both are granted to the same unit",
+  opensTrace: "what happens when a unit with Shield is stunned during combat",
+  streams: "can a player use two Reactions in a single turn and how do they resolve",
+  cites: "how does Accelerate change the cost of playing a unit",
+  scroll: "explain how combat damage is assigned when several units are blocking",
+  conversation: "what happens if a Hidden unit is targeted by an opponent ability",
+}
 
 test.beforeEach(async ({ page }) => {
   await openFreshChat(page)
 })
 
 test("shows the tool calls as they happen, then the answer", async ({ page }) => {
-  await ask(page, REASONING_QUESTION)
+  await ask(page, QUESTIONS.trace)
 
   // The waiting indicator appears first, because the model takes seconds.
   await expect(page.locator(".rk-thinking")).toBeVisible({ timeout: 15_000 })
@@ -39,7 +53,7 @@ test("shows the tool calls as they happen, then the answer", async ({ page }) =>
 })
 
 test("the trace opens to name each lookup", async ({ page }) => {
-  await ask(page, REASONING_QUESTION)
+  await ask(page, QUESTIONS.opensTrace)
   await waitForAnswer(page, 180_000)
   await lastAnswer(page).locator(".rk-trace-summary").click()
   const steps = lastAnswer(page).locator(".rk-trace-steps li")
@@ -51,15 +65,15 @@ test("the trace opens to name each lookup", async ({ page }) => {
 test("text arrives before the turn ends", async ({ page }) => {
   // Streaming is the whole reason this path exists. If the text only appears at
   // the end, a reader waits half a minute at a blank screen.
-  await ask(page, REASONING_QUESTION)
+  await ask(page, QUESTIONS.streams)
   const answerText = lastAnswer(page).locator(".rk-answer")
   await expect(answerText).not.toBeEmpty({ timeout: 120_000 })
   // The composer is still disabled, so the turn has not finished yet.
-  await expect(page.locator(".rk-composer-send")).toBeDisabled()
+  await expect(page.locator(".rk-composer-input")).toBeDisabled()
 })
 
 test("the answer cites rules from the corpus", async ({ page }) => {
-  await ask(page, REASONING_QUESTION)
+  await ask(page, QUESTIONS.cites)
   const answer = await waitForAnswer(page, 180_000)
   await expect(answer).toContainText(/\d{3}\.\d/)
   await expect(answer.locator(".rk-quote").first()).toBeVisible()
@@ -69,7 +83,7 @@ test("stops following the answer once the reader scrolls up", async ({ page }) =
   // The single most irritating thing a chat can do is drag somebody back to the
   // bottom while they are reading. The view follows only while they are already
   // at the bottom.
-  await ask(page, REASONING_QUESTION)
+  await ask(page, QUESTIONS.scroll)
   const scroller = page.locator(".rk-scroller")
   await expect(lastAnswer(page).locator(".rk-answer")).not.toBeEmpty({ timeout: 120_000 })
 
@@ -90,7 +104,7 @@ test("saves the answer into the conversation it was asked in", async ({ page }) 
   await waitForAnswer(page)
 
   await page.locator(".rk-session-new").click()
-  await ask(page, REASONING_QUESTION)
+  await ask(page, QUESTIONS.conversation)
   await expect(lastAnswer(page).locator(".rk-answer")).not.toBeEmpty({ timeout: 120_000 })
 
   // Switch away while the model is still writing.

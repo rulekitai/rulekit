@@ -35,13 +35,18 @@ export function lastAnswer(page: Page): Locator {
   return answers(page).last()
 }
 
-/** Wait for an answer to arrive and settle. */
+/**
+ * Wait for an answer to arrive and settle.
+ *
+ * The INPUT is the signal, not the send button. The button is also disabled
+ * whenever the box is empty, which it always is right after sending, so waiting
+ * on it waits for something that never happens.
+ */
 export async function waitForAnswer(page: Page, timeout = 30_000): Promise<Locator> {
   const answer = lastAnswer(page)
   await expect(answer).toBeVisible({ timeout })
-  // The composer re-enables only once the turn is over, which is a more reliable
-  // signal than the text having stopped changing.
-  await expect(page.locator(".rk-composer-send")).toBeEnabled({ timeout })
+  await expect(page.locator(".rk-composer-input")).toBeEnabled({ timeout })
+  await expect(page.locator(".rk-thinking")).toHaveCount(0, { timeout })
   return answer
 }
 

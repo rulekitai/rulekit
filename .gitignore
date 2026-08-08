@@ -21,3 +21,8 @@ out/
 # Eve build output.
 .eve/
 .output/
+
+# Playwright output.
+test-results/
+playwright-report/
+blob-report/

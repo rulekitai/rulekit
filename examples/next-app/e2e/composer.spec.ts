@@ -45,14 +45,13 @@ test("clears the box after sending", async ({ page }) => {
   await expect(page.locator(".rk-composer-input")).toHaveValue("")
 })
 
-test("refuses a second question while one is being answered", async ({ page }) => {
-  // Without this, a second question interleaves into the first one's stream and
-  // both answers arrive scrambled.
-  await page.locator(".rk-composer-input").fill("what does rule 814.1 say")
-  await page.locator(".rk-composer-input").press("Enter")
-  // The composer must be disabled at some point during the turn, and enabled
-  // again once it ends.
+test("the input is usable again once a turn ends", async ({ page }) => {
+  // While a turn runs the composer is disabled, so a second question cannot
+  // interleave into the first one's stream. It must come back afterwards.
+  await ask(page, "what does rule 814.1 say")
   await waitForAnswer(page)
+  await expect(page.locator(".rk-composer-input")).toBeEnabled()
+  await page.locator(".rk-composer-input").fill("another question")
   await expect(page.locator(".rk-composer-send")).toBeEnabled()
 })
 
