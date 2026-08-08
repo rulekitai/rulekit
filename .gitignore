@@ -14,3 +14,6 @@ out/
 .env
 .env.local
 .DS_Store
+
+# Local probing scripts, not part of the project.
+.scratch/
