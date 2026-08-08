@@ -29,6 +29,27 @@ const MAX_RESULTS = 20
 const MAX_CARDS = 20
 const MAX_RULE_CHARS = 2000
 
+/**
+ * Drop every field a card does not actually carry.
+ *
+ * A card record has seventeen fields and no game fills them all: the shipped
+ * Riftbound corpus leaves four permanently empty. Sending those as nulls costs
+ * tokens on every card in every call, and it invites the model to narrate the
+ * absence — one answer explained that "there is no effect_text recorded",
+ * naming an internal field to a reader who has never heard of it.
+ *
+ * An absent field and an empty one mean the same thing here, so neither is sent.
+ */
+function withoutEmptyFields<T extends Record<string, unknown>>(row: T): Partial<T> {
+  const out: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(row)) {
+    if (value === null || value === undefined || value === "") continue
+    if (Array.isArray(value) && value.length === 0) continue
+    out[key] = value
+  }
+  return out as Partial<T>
+}
+
 /** Trim a rule to what an answer can quote, dropping fields nothing reads. */
 function shapeRule(rule: Rule) {
   return {
@@ -304,8 +325,9 @@ export function defineRulesTools(store: RuleStore, profile: Profile): RuleTool[]
           ids: z.array(z.string().min(1)).min(1).max(MAX_CARDS).describe("Card ids returned by search_cards"),
         }),
         async execute(input: { ids: string[] }) {
-          const cards = await store.getCards(input.ids)
-          const missing = input.ids.filter((id) => !cards.some((c) => c.id === id))
+          const found = await store.getCards(input.ids)
+          const cards = found.map(withoutEmptyFields)
+          const missing = input.ids.filter((id) => !found.some((c) => c.id === id))
           // Name the ids that matched nothing rather than returning a short
           // list silently. A model that cannot tell "no such card" from "I
           // forgot to ask" will assert the card does not exist.

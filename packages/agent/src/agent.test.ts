@@ -370,6 +370,19 @@ describe("tools over the demo corpus", () => {
     assert.deepEqual(found.entries, [])
   })
 
+  test("get_cards sends no empty fields", async () => {
+    // A card record has seventeen fields and no game fills them all. Sending
+    // the empty ones costs tokens on every call and invites the model to
+    // narrate an internal field name to a reader who has never heard of it.
+    const found = await run(findTool(tools, "get_cards"), { ids: ["pk-005"] })
+    const card = found.cards[0] as Record<string, unknown>
+    assert.ok("card_text" in card, "a field it carries is present")
+    assert.ok(!("might" in card), "a field it does not carry is absent, not null")
+    for (const value of Object.values(card)) {
+      assert.ok(value !== null && value !== "", "no empty value reaches the model")
+    }
+  })
+
   test("get_cards keeps every text box", async () => {
     const found = await run(findTool(tools, "get_cards"), { ids: ["pk-006"] })
     assert.equal(found.cards[0].card_text, "Equip 2.")

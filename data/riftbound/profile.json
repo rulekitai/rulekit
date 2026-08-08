@@ -21,7 +21,6 @@
         "field": "effect_text",
         "describes": "the effect box on a gear card, holding the text the equipped unit gains"
       },
-      { "field": "attach_text", "describes": "the attach box, saying what a card may attach to" },
       { "field": "might_bonus", "describes": "the Might that a gear card grants to the unit holding it" }
     ]
   },
@@ -56,7 +55,7 @@
     "refuse": []
   },
   "extraGuidance": [
-    "An equipment card's `card_text` holds only its EQUIP line. Never conclude that such a card \"has no such text\" from `card_text` alone.",
+    "A gear card's `card_text` often holds only its EQUIP line. What the equipped unit gains is in `effect_text`, and the Might it grants is in `might_bonus`. Read all three before you say what a gear card does, and never conclude from `card_text` alone that a card has no such text.",
     "A banned-and-restricted entry and a card-change entry each carry the card's image path, so you can link the card from them without a separate card lookup."
   ]
 }
