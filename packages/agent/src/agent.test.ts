@@ -10,6 +10,7 @@ import { decodeEvents, deriveLabel, encodeEvent } from "./events.ts"
 import { buildInstructions } from "./instructions.ts"
 import { minimalProfile, type Profile, parseProfile } from "./profile.ts"
 import * as proseModule from "./prose.ts"
+import { type AgentAnswer, resolveAnswer } from "./runtime.ts"
 import { builtinSkills, findSkill } from "./skills.ts"
 import { defineRulesTools, findTool, type RuleTool } from "./tools.ts"
 import {
@@ -159,6 +160,39 @@ describe("building the message", () => {
 
   test("ignores a retrieved rule with no text", () => {
     assert.equal(buildMessage("q", [], [{ rule_number: "1", content: "" }]), "q")
+  })
+})
+
+describe("what a finished turn returns", () => {
+  const answer = (text: string): AgentAnswer => ({
+    text,
+    complete: true,
+    steps: [],
+    usage: null,
+    model: null,
+    latencyMs: 0,
+  })
+
+  test("a failure that wrote nothing throws rather than returning a blank", () => {
+    // The stream reports the error and still ends with a terminal event, so
+    // the blank would otherwise be returned as a successful empty answer. A
+    // caller grading answers scores a blank as clean, because it cites nothing
+    // and quotes nothing: an outage would read as a perfect score.
+    assert.throws(() => resolveAnswer(answer(""), "budget exceeded"), /budget exceeded/)
+  })
+
+  test("a failure that wrote something returns what it wrote", () => {
+    assert.equal(resolveAnswer(answer("half an answer"), "connection lost").text, "half an answer")
+  })
+
+  test("an empty answer with no error is still an answer", () => {
+    // A model may legitimately end a turn having written nothing, and that is
+    // not the same event as a provider failing.
+    assert.equal(resolveAnswer(answer(""), null).text, "")
+  })
+
+  test("no terminal event at all throws", () => {
+    assert.throws(() => resolveAnswer(null, null), /without an answer/)
   })
 })
 

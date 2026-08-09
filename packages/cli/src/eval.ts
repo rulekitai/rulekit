@@ -155,6 +155,10 @@ export async function commandEval(options: EvalOptions): Promise<number> {
         const result = await agent.ask({ question: question.question })
         answer = result.text
         steps = result.usage?.agent_steps ?? 0
+        // An answer of no characters is not an answer. It cites nothing and
+        // quotes nothing, so both fabrication gates pass it, and a run that
+        // died halfway through would report a perfect score.
+        if (!answer.trim()) failure = "the agent returned an empty answer"
       } catch (error) {
         failure = error instanceof Error ? error.message : String(error)
       }

@@ -131,17 +131,26 @@ run before adopting a model or changing the instructions, not one for every push
 Add `--regrade <file>` to grade a previous run's saved answers again, with no
 model calls at all.
 
-**Measured, 18 questions, `anthropic/claude-sonnet-5`, the shipped Riftbound
-corpus:** 17 of 18 clean. One fabricated citation — rule `315.1.b.1`, which does
-not exist, where `315.1.b` does. Zero fabricated quotations. Citation recall 38%.
+**Measured, `anthropic/claude-sonnet-5`, the shipped Riftbound corpus:** the
+first 12 of the 18 questions ran before the model key hit its spending limit.
+11 were clean. One fabricated a citation — rule `315.1.b.1`, which does not
+exist, where `315.1.b` does. Zero fabricated quotations. Citation recall 26%
+across the questions that ran.
 
-That one fabrication is why the gate exists, and why it exits non-zero.
+That one fabrication is why the gate exists, and why it exits non-zero. It is
+the same rule the same question invented on an earlier corpus, so it is a
+reproducible weakness of this model on this rulebook rather than a one-off.
+
+**A run that stops early is reported as failing, not as passing.** A question
+that produced no answer cites nothing and quotes nothing, so every check on the
+content passes it; counting those as clean would let an outage read as a perfect
+score.
 
 ## Verify it
 
 ```bash
 pnpm check-types      # every package
-pnpm test             # 255 tests, no model and no network
+pnpm test             # 266 tests, no model and no network
 pnpm rulekit validate data/demo
 pnpm test:e2e         # the interface, in a browser
 ```

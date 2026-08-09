@@ -103,6 +103,24 @@ type StreamTextFn = (options: Record<string, unknown>) => {
   fullStream: AsyncIterable<Record<string, unknown>>
 }
 
+/**
+ * The answer a finished turn produced, or the reason there is none.
+ *
+ * A turn that failed before writing a word is a failure, not an empty answer.
+ * The stream reports the error and STILL ends with a terminal event, because
+ * that event is the only one carrying what the failed steps cost. Returning it
+ * would turn a provider outage into a silent blank, and a caller grading
+ * answers would score the blank as clean: it cites nothing and quotes nothing,
+ * so every check on the content passes.
+ *
+ * Partial text survives. A model that wrote something and then failed returns
+ * what it wrote, marked incomplete, because that is worth more than nothing.
+ */
+export function resolveAnswer(done: AgentAnswer | null, error: string | null): AgentAnswer {
+  if (done && (done.text || !error)) return done
+  throw new Error(error ?? "the agent stream ended without an answer")
+}
+
 /** Load the AI SDK lazily, with an error a reader can act on. */
 async function loadAiSdk(): Promise<{ streamText: StreamTextFn; tool: (spec: unknown) => unknown }> {
   try {
@@ -277,10 +295,7 @@ export function createRulesAgent(options: RulesAgentOptions) {
       }
     }
 
-    if (done) return done
-    // The stream always ends with a done event, so reaching here means it was
-    // interrupted. Report what there is rather than an empty success.
-    throw new Error(error ?? "the agent stream ended without an answer")
+    return resolveAnswer(done, error)
   }
 
   /** The same turn as an NDJSON byte stream, ready to return from a route. */
