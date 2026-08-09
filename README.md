@@ -67,7 +67,7 @@ justifies the setup.
 |---|---|
 | `@rulekit/corpus` | The JSON schema, a SQLite builder, and one read interface |
 | `@rulekit/agent` | Tools, instructions, procedures, and an AI SDK runtime |
-| `@rulekit/pipeline` | The stages, the cache, the gate, and credentials |
+| `@rulekit/pipeline` | The stages, the cache, the permission check, and credentials |
 | `@rulekit/server` | One web-standard HTTP handler |
 | `@rulekit/react` | Headless hooks. No styling |
 | `@rulekit/ui` | Styled chat components, themed with CSS variables |
@@ -88,9 +88,11 @@ parser. A corpus is an input in a documented shape, and how you produce one is
 yours to decide. That keeps this repository small and free of anybody else's
 page layout, rate limit, or terms.
 
-**There is no pricing model.** The shipped gate allows everything and records
-nothing. A fork adds quotas or billing by implementing `Gate`, and never edits
-anything inside these packages to do it.
+**There is no pricing model.** Before it answers anything, the server asks one
+question: is this caller allowed? The shipped answer is always yes, and it
+records nothing. A fork replaces that with its own quotas or billing by writing
+one object, the `Gate` interface, and never edits anything inside these
+packages to do it.
 
 **No provider is required.** The model is a `"provider/model"` string, so
 changing provider is one environment variable. Read a key from the environment,
@@ -112,19 +114,25 @@ it calls things, how its symbols are written. You write a profile, not a prompt.
 ## Check that it does not lie
 
 The design rests on one claim: every answer comes from the corpus. `rulekit eval`
-is what checks it, and it applies two gates that no model judges.
+asks a list of test questions and then checks the answers for two things the
+assistant must never do. No model judges either one; both are string matching
+against the corpus.
 
 ```bash
 pnpm rulekit eval data/riftbound
 ```
 
-- **Fabricated citation.** Every rule number in an answer must exist in the
+- **It made up a rule number.** Every rule number in an answer must exist in the
   corpus. A confidently cited wrong rule reads exactly like a correct one.
-- **Fabricated quotation.** Every quoted passage must be corpus text. A real
-  rule number wrapped around invented words is the same lie wearing a citation.
+- **It made up a quotation.** Every quoted passage must appear in the corpus. A
+  real rule number wrapped around invented words is the same lie wearing a
+  citation.
 
-Either failure exits non-zero. Citation recall is reported and is never a gate:
-an answer can cite four of seven expected rules and be completely right.
+Either one exits non-zero, so a script can refuse to deploy.
+
+It also reports how many of the rules a question was expected to cite the answer
+actually cited. That figure is only ever information: an answer can cite four of
+seven expected rules and still be completely right, so it never fails a run.
 
 It needs a model credential and takes about ten minutes, so it is a command you
 run before adopting a model or changing the instructions, not one for every push.
@@ -137,9 +145,10 @@ first 12 of the 18 questions ran before the model key hit its spending limit.
 exist, where `315.1.b` does. Zero fabricated quotations. Citation recall 26%
 across the questions that ran.
 
-That one fabrication is why the gate exists, and why it exits non-zero. It is
-the same rule the same question invented on an earlier corpus, so it is a
-reproducible weakness of this model on this rulebook rather than a one-off.
+That one invented rule number is why this command exists and why it exits
+non-zero. The same question invented the same rule against an earlier copy of
+the corpus, so it is a repeatable weakness of this model on this rulebook rather
+than a one-off.
 
 **A run that stops early is reported as failing, not as passing.** A question
 that produced no answer cites nothing and quotes nothing, so every check on the
