@@ -71,7 +71,7 @@ justifies the setup.
 | `@rulekit/server` | One web-standard HTTP handler |
 | `@rulekit/react` | Headless hooks. No styling |
 | `@rulekit/ui` | Styled chat components, themed with CSS variables |
-| `@rulekit/cli` | `rulekit validate`, `build`, `init`, `ask` |
+| `@rulekit/cli` | `rulekit validate`, `build`, `init`, `ask`, `eval` |
 
 Plus `templates/eve-agent`, the same agent on [Vercel Eve](https://eve.dev), and
 `examples/next-app`, a chat you can fork.
