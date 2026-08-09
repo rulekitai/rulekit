@@ -105,7 +105,7 @@ export class JsonStore implements RuleStore {
     this.#cardIndex = new Bm25Index(corpus.cards, (c) => [
       { text: c.name, weight: 8 },
       { text: c.type_line ?? "", weight: 1 },
-      { text: [c.card_text, c.effect_text, c.attach_text].filter(Boolean).join("\n"), weight: 2 },
+      { text: Object.values(c.text).join("\n"), weight: 2 },
     ])
     this.#noteIndex = new Bm25Index(corpus.patchNotes, (n) => [
       { text: n.title, weight: 4 },

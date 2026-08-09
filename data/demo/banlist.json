@@ -1,10 +1,18 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "items": [
     {
       "id": "ban-001",
-      "card": { "id": "pk-005", "name": "Borrowed Hour", "png_uri": "paper-kingdoms/PK-005.webp" },
-      "format": { "id": "fmt-standard", "name": "Standard", "slug": "standard" },
+      "card": {
+        "id": "pk-005",
+        "name": "Borrowed Hour",
+        "png_uri": "paper-kingdoms/PK-005.webp"
+      },
+      "format": {
+        "id": "fmt-standard",
+        "name": "Standard",
+        "slug": "standard"
+      },
       "entry_type": "banned",
       "effective_date": "2026-03-01",
       "reason": "Repeated extra turns produced games a second player could not act in.",
@@ -13,8 +21,16 @@
     },
     {
       "id": "ban-002",
-      "card": { "id": "pk-011", "name": "Endless Reprise", "png_uri": "paper-kingdoms/PK-011.webp" },
-      "format": { "id": "fmt-standard", "name": "Standard", "slug": "standard" },
+      "card": {
+        "id": "pk-011",
+        "name": "Endless Reprise",
+        "png_uri": "paper-kingdoms/PK-011.webp"
+      },
+      "format": {
+        "id": "fmt-standard",
+        "name": "Standard",
+        "slug": "standard"
+      },
       "entry_type": "restricted",
       "effective_date": "2026-03-01",
       "reason": "Limited to one copy per deck. Its own text overrides the 3-copy limit in rule 100.1.",
@@ -23,8 +39,16 @@
     },
     {
       "id": "ban-003",
-      "card": { "id": "pk-002", "name": "Stonewall Sentry, Awakened", "png_uri": "paper-kingdoms/PK-002.webp" },
-      "format": { "id": "fmt-open", "name": "Open", "slug": "open" },
+      "card": {
+        "id": "pk-002",
+        "name": "Stonewall Sentry, Awakened",
+        "png_uri": "paper-kingdoms/PK-002.webp"
+      },
+      "format": {
+        "id": "fmt-open",
+        "name": "Open",
+        "slug": "open"
+      },
       "entry_type": "banned",
       "effective_date": "2026-01-15",
       "reason": "Stalled games past the tournament round length in rule 100.2 of the tournament rules.",

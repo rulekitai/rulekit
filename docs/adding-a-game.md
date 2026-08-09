@@ -70,6 +70,10 @@ turn and teaches the model to distrust the result.
 in a profile. Without it, a model reads the first field, finds an equip line, and
 reports that the card does nothing.
 
+`field` names a key of a card's `text` map, so these are your game's own names.
+A card's `stats` need no entry here: the model reads them by the name you gave
+them.
+
 ### Symbols
 
 ```json

@@ -226,12 +226,7 @@ async function corpusText(store: RuleStore): Promise<string[]> {
     ...errata.flatMap((e) => [e.errata_text ?? "", e.original_text ?? "", e.explanation ?? ""]),
     ...banlist.map((b) => b.reason ?? ""),
     ...notes.flatMap((n) => [n.summary ?? "", n.body ?? ""]),
-    ...cards.flatMap((c) => [
-      c.card_text ?? "",
-      c.effect_text ?? "",
-      c.attach_text ?? "",
-      c.flavor_text ?? "",
-    ]),
+    ...cards.flatMap((c) => Object.values(c.text)),
   ].filter(Boolean)
 }
 

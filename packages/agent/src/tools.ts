@@ -1,5 +1,5 @@
 import type { RuleStore } from "@rulekit/corpus/store"
-import type { Rule } from "@rulekit/corpus/types"
+import type { Card, Rule } from "@rulekit/corpus/types"
 import { z } from "zod"
 import type { Profile } from "./profile.ts"
 
@@ -30,24 +30,34 @@ const MAX_CARDS = 20
 const MAX_RULE_CHARS = 2000
 
 /**
- * Drop every field a card does not actually carry.
+ * One flat card for the model, from the two maps the corpus stores.
  *
- * A card record has seventeen fields and no game fills them all: the shipped
- * Riftbound corpus leaves four permanently empty. Sending those as nulls costs
- * tokens on every card in every call, and it invites the model to narrate the
- * absence — one answer explained that "there is no effect_text recorded",
- * naming an internal field to a reader who has never heard of it.
+ * The corpus keeps a card's text boxes and its printed attributes in named maps
+ * so that no game has to carry another game's columns. A model reads a flat
+ * object more reliably than a nested one, so the nesting stops here: every box
+ * and every attribute becomes a top-level key with the name the game gave it.
  *
- * An absent field and an empty one mean the same thing here, so neither is sent.
+ * Anything the card does not carry is absent rather than null. An empty field
+ * costs tokens on every call and invites the model to narrate the absence — one
+ * answer explained that "there is no effect_text recorded", naming an internal
+ * field to a reader who has never heard of it.
  */
-function withoutEmptyFields<T extends Record<string, unknown>>(row: T): Partial<T> {
-  const out: Record<string, unknown> = {}
-  for (const [key, value] of Object.entries(row)) {
-    if (value === null || value === undefined || value === "") continue
-    if (Array.isArray(value) && value.length === 0) continue
-    out[key] = value
+function flatCard(card: Card): Record<string, unknown> {
+  const out: Record<string, unknown> = {
+    id: card.id,
+    name: card.name,
+    type_line: card.type_line,
+    rarity: card.rarity,
+    set_name: card.set_name,
+    png_uri: card.png_uri,
+    ...card.text,
+    ...card.stats,
   }
-  return out as Partial<T>
+  if (card.tags.length) out.tags = card.tags
+  for (const [key, value] of Object.entries(out)) {
+    if (value === null || value === undefined || value === "") delete out[key]
+  }
+  return out
 }
 
 /** Trim a rule to what an answer can quote, dropping fields nothing reads. */
@@ -326,7 +336,7 @@ export function defineRulesTools(store: RuleStore, profile: Profile): RuleTool[]
         }),
         async execute(input: { ids: string[] }) {
           const found = await store.getCards(input.ids)
-          const cards = found.map(withoutEmptyFields)
+          const cards = found.map(flatCard)
           const missing = input.ids.filter((id) => !found.some((c) => c.id === id))
           // Name the ids that matched nothing rather than returning a short
           // list silently. A model that cannot tell "no such card" from "I

@@ -87,10 +87,8 @@ CREATE INDEX patch_notes_slug ON patch_notes(slug);
 
 CREATE TABLE cards (
   id TEXT PRIMARY KEY, name TEXT NOT NULL, name_key TEXT NOT NULL, name_stem TEXT NOT NULL,
-  type_line TEXT, super_type TEXT, rarity TEXT, set_name TEXT, png_uri TEXT,
-  card_text TEXT, effect_text TEXT, attach_text TEXT, flavor_text TEXT,
-  colors TEXT, color_identity TEXT, might TEXT, might_bonus TEXT,
-  energy TEXT, power TEXT, mana_cost TEXT, tags TEXT
+  type_line TEXT, rarity TEXT, set_name TEXT, png_uri TEXT,
+  tags TEXT, text TEXT, stats TEXT
 );
 CREATE INDEX cards_name_key ON cards(name_key);
 CREATE INDEX cards_name_stem ON cards(name_stem);
@@ -318,9 +316,8 @@ function populate(db: DatabaseSync, corpus: Corpus): void {
   }
 
   const card = db.prepare(
-    `INSERT INTO cards (id, name, name_key, name_stem, type_line, super_type, rarity, set_name, png_uri,
-      card_text, effect_text, attach_text, flavor_text, colors, color_identity, might, might_bonus,
-      energy, power, mana_cost, tags) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    `INSERT INTO cards (id, name, name_key, name_stem, type_line, rarity, set_name, png_uri,
+      tags, text, stats) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
   )
   const cardFts = db.prepare("INSERT INTO cards_fts (name, type_line, card_text, card_id) VALUES (?,?,?,?)")
   for (const c of corpus.cards) {
@@ -330,28 +327,17 @@ function populate(db: DatabaseSync, corpus: Corpus): void {
       normalizeName(c.name),
       nameStem(c.name),
       c.type_line,
-      c.super_type,
       c.rarity,
       c.set_name,
       c.png_uri,
-      c.card_text,
-      c.effect_text,
-      c.attach_text,
-      c.flavor_text,
-      encodeValue(c.colors),
-      encodeValue(c.color_identity),
-      encodeValue(c.might),
-      encodeValue(c.might_bonus),
-      encodeValue(c.energy),
-      encodeValue(c.power),
-      c.mana_cost,
       encodeValue(c.tags),
+      encodeValue(c.text),
+      encodeValue(c.stats),
     )
-    // All three text boxes go into one indexed column. A reader searching for a
+    // Every text box goes into one indexed column. A reader searching for a
     // phrase does not know or care which box printed it, and indexing only the
     // main box makes an equipment card look like it has almost no text.
-    const allText = [c.card_text, c.effect_text, c.attach_text].filter(Boolean).join("\n")
-    cardFts.run(c.name, c.type_line ?? "", allText, c.id)
+    cardFts.run(c.name, c.type_line ?? "", Object.values(c.text).join("\n"), c.id)
   }
 }
 

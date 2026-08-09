@@ -152,26 +152,24 @@ const toPatchNote = (row: Row): PatchNote => ({
   affected_card_ids: parseList(row.affected_card_ids),
 })
 
+/** A stored map, back as a map. Anything that is not one reads as empty rather than throwing. */
+const toMap = <T>(v: unknown): Record<string, T> => {
+  const decoded = decodeValue(v)
+  return decoded && typeof decoded === "object" && !Array.isArray(decoded)
+    ? (decoded as Record<string, T>)
+    : {}
+}
+
 const toCard = (row: Row): Card => ({
   id: str(row.id),
   name: str(row.name),
   type_line: nul(row.type_line),
-  super_type: nul(row.super_type),
   rarity: nul(row.rarity),
   set_name: nul(row.set_name),
   png_uri: nul(row.png_uri),
-  card_text: nul(row.card_text),
-  effect_text: nul(row.effect_text),
-  attach_text: nul(row.attach_text),
-  flavor_text: nul(row.flavor_text),
-  colors: decodeValue(row.colors),
-  color_identity: decodeValue(row.color_identity),
-  might: decodeValue(row.might),
-  might_bonus: decodeValue(row.might_bonus),
-  energy: decodeValue(row.energy),
-  power: decodeValue(row.power),
-  mana_cost: nul(row.mana_cost),
-  tags: decodeValue(row.tags),
+  tags: (decodeValue(row.tags) as string[]) ?? [],
+  text: toMap<string>(row.text),
+  stats: toMap<unknown>(row.stats),
 })
 
 const toCardSummary = (row: Row): CardSummary => ({

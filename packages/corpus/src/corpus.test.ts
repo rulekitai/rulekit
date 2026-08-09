@@ -237,12 +237,22 @@ for (const kind of ["sqlite", "json"] as const) {
       )
     })
 
-    test("keeps all three text boxes on a gear card", async () => {
+    test("keeps every text box on a gear card, and its stats", async () => {
       const [gear] = await store.getCards(["pk-006"])
-      assert.equal(gear?.card_text, "Equip 2.")
-      assert.equal(gear?.effect_text, "The equipped unit has Guard.")
-      assert.ok(gear?.attach_text)
-      assert.equal(gear?.might_bonus, 2)
+      assert.equal(gear?.text.card_text, "Equip 2.")
+      assert.equal(gear?.text.effect_text, "The equipped unit has Guard.")
+      assert.ok(gear?.text.attach_text)
+      // A number stays a number. SQLite columns are TEXT, so a stat that came
+      // back as "2" would compare equal to nothing and sort as a string.
+      assert.equal(gear?.stats.might_bonus, 2)
+    })
+
+    test("carries no key the card does not use", async () => {
+      // The point of the two maps: a game writes the keys it has, and a card
+      // that prints no flavour text has no flavour key rather than a null one.
+      const [gear] = await store.getCards(["pk-006"])
+      assert.ok(!("flavor_text" in (gear?.text ?? {})))
+      assert.ok(!("might" in (gear?.stats ?? {})))
     })
 
     test("finds a card by its printed text, not only its name", async () => {

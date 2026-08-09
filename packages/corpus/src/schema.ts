@@ -11,7 +11,7 @@ import { z } from "zod"
  * Bump it whenever a field is renamed, removed, or changes meaning. Adding an
  * optional field does not need a bump, because an older corpus still reads.
  */
-export const SCHEMA_VERSION = 1
+export const SCHEMA_VERSION = 2
 
 /** Trim to a string, or null. An empty or whitespace-only value counts as absent. */
 const nullableText = z.union([z.string(), z.null(), z.undefined()]).transform((v) => {
@@ -151,35 +151,39 @@ export const patchNoteSchema = z.object({
   affected_card_ids: stringList,
 })
 
+/** Drop the keys with no value. A key this game does not use must be absent, not empty. */
+const namedValues = <T extends z.ZodType>(value: T) =>
+  z
+    .union([z.record(z.string(), value), z.null(), z.undefined()])
+    .transform((v) => Object.fromEntries(Object.entries(v ?? {}).filter(([, x]) => !isEmpty(x))))
+
+const isEmpty = (v: unknown) =>
+  v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0)
+
 /**
  * One card, trimmed to what a rules answer needs.
  *
- * A card can carry its printed text in more than one box, which is why three
- * text fields exist rather than one. `card_text` is the card's own box,
- * `effect_text` is the box an equipped holder gains, and `attach_text` is the
- * attach box. Reading only `card_text` off an equipment card reads only its
- * equip line and misses what the card does.
+ * Only identity is fixed, because only identity is the same in every game. A
+ * card's text boxes and its printed attributes are exactly the parts that
+ * differ, so each is a map you name yourself: a game with Attack and Defence
+ * writes those keys, another writes Might and Energy, and neither has to
+ * pretend to be the other or carry the other's empty columns.
+ *
+ * **`text` usually holds more than one box.** An equipment card commonly prints
+ * almost nothing in its own box and everything in the box its holder gains, so
+ * an assistant reading one box reports that the card does nothing. Name every
+ * box you use in the profile's `cards.textFields` and all of them get read.
  */
 export const cardSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   type_line: nullableText,
-  super_type: nullableText,
   rarity: nullableText,
   set_name: nullableText,
   png_uri: nullableText,
-  card_text: nullableText,
-  effect_text: nullableText,
-  attach_text: nullableText,
-  flavor_text: nullableText,
-  colors: z.unknown().transform((v): unknown => v ?? null),
-  color_identity: z.unknown().transform((v): unknown => v ?? null),
-  might: z.unknown().transform((v): unknown => v ?? null),
-  might_bonus: z.unknown().transform((v): unknown => v ?? null),
-  energy: z.unknown().transform((v): unknown => v ?? null),
-  power: z.unknown().transform((v): unknown => v ?? null),
-  mana_cost: nullableText,
-  tags: z.unknown().transform((v): unknown => v ?? null),
+  tags: stringList,
+  text: namedValues(z.string()),
+  stats: namedValues(z.unknown()),
 })
 
 /** Every collection file on disk. The key is also the file name, without `.json`. */

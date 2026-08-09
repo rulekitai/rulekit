@@ -1,257 +1,326 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "items": [
     {
       "id": "pk-001",
       "name": "Stonewall Sentry",
       "type_line": "Unit — Soldier",
-      "super_type": "Unit",
       "rarity": "common",
       "set_name": "First Folio",
       "png_uri": "paper-kingdoms/PK-001.webp",
-      "card_text": "Guard.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": "It has stood at that gate longer than the gate has.",
-      "colors": ["stone"],
-      "color_identity": ["stone"],
-      "might": 2,
-      "might_bonus": null,
-      "energy": 3,
-      "power": 5,
-      "mana_cost": "3",
-      "tags": ["defensive"]
+      "tags": [
+        "defensive"
+      ],
+      "text": {
+        "card_text": "Guard.",
+        "flavor_text": "It has stood at that gate longer than the gate has."
+      },
+      "stats": {
+        "super_type": "Unit",
+        "colors": [
+          "stone"
+        ],
+        "color_identity": [
+          "stone"
+        ],
+        "might": 2,
+        "energy": 3,
+        "power": 5,
+        "mana_cost": "3"
+      }
     },
     {
       "id": "pk-002",
       "name": "Stonewall Sentry, Awakened",
       "type_line": "Unit — Soldier",
-      "super_type": "Unit",
       "rarity": "rare",
       "set_name": "Second Folio",
       "png_uri": "paper-kingdoms/PK-002.webp",
-      "card_text": "Guard. Bolster 1.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["stone"],
-      "color_identity": ["stone"],
-      "might": 3,
-      "might_bonus": null,
-      "energy": 4,
-      "power": 6,
-      "mana_cost": "4",
-      "tags": ["defensive"]
+      "tags": [
+        "defensive"
+      ],
+      "text": {
+        "card_text": "Guard. Bolster 1."
+      },
+      "stats": {
+        "super_type": "Unit",
+        "colors": [
+          "stone"
+        ],
+        "color_identity": [
+          "stone"
+        ],
+        "might": 3,
+        "energy": 4,
+        "power": 6,
+        "mana_cost": "4"
+      }
     },
     {
       "id": "pk-003",
       "name": "Quickstep Courier",
       "type_line": "Unit — Scout",
-      "super_type": "Unit",
       "rarity": "common",
       "set_name": "First Folio",
       "png_uri": "paper-kingdoms/PK-003.webp",
-      "card_text": "Swift. When Quickstep Courier enters play, draw a card.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["wind"],
-      "color_identity": ["wind"],
-      "might": 1,
-      "might_bonus": null,
-      "energy": 2,
-      "power": 1,
-      "mana_cost": "2",
-      "tags": ["tempo"]
+      "tags": [
+        "tempo"
+      ],
+      "text": {
+        "card_text": "Swift. When Quickstep Courier enters play, draw a card."
+      },
+      "stats": {
+        "super_type": "Unit",
+        "colors": [
+          "wind"
+        ],
+        "color_identity": [
+          "wind"
+        ],
+        "might": 1,
+        "energy": 2,
+        "power": 1,
+        "mana_cost": "2"
+      }
     },
     {
       "id": "pk-004",
       "name": "Emberlight Adept",
       "type_line": "Unit — Mage",
-      "super_type": "Unit",
       "rarity": "uncommon",
       "set_name": "First Folio",
       "png_uri": "paper-kingdoms/PK-004.webp",
-      "card_text": "Bolster 2.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": "Every apprentice learns the same first lesson twice.",
-      "colors": ["ember"],
-      "color_identity": ["ember"],
-      "might": 2,
-      "might_bonus": null,
-      "energy": 3,
-      "power": 2,
-      "mana_cost": "3",
-      "tags": ["support"]
+      "tags": [
+        "support"
+      ],
+      "text": {
+        "card_text": "Bolster 2.",
+        "flavor_text": "Every apprentice learns the same first lesson twice."
+      },
+      "stats": {
+        "super_type": "Unit",
+        "colors": [
+          "ember"
+        ],
+        "color_identity": [
+          "ember"
+        ],
+        "might": 2,
+        "energy": 3,
+        "power": 2,
+        "mana_cost": "3"
+      }
     },
     {
       "id": "pk-005",
       "name": "Borrowed Hour",
       "type_line": "Spell",
-      "super_type": "Spell",
       "rarity": "rare",
       "set_name": "First Folio",
       "png_uri": "paper-kingdoms/PK-005.webp",
-      "card_text": "Swift. Take an extra turn after this one. Fade 1.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["wind"],
-      "color_identity": ["wind"],
-      "might": null,
-      "might_bonus": null,
-      "energy": 6,
-      "power": null,
-      "mana_cost": "6",
-      "tags": ["combo"]
+      "tags": [
+        "combo"
+      ],
+      "text": {
+        "card_text": "Swift. Take an extra turn after this one. Fade 1."
+      },
+      "stats": {
+        "super_type": "Spell",
+        "colors": [
+          "wind"
+        ],
+        "color_identity": [
+          "wind"
+        ],
+        "energy": 6,
+        "mana_cost": "6"
+      }
     },
     {
       "id": "pk-006",
       "name": "Ironbrand Blade",
       "type_line": "Gear — Weapon",
-      "super_type": "Gear",
       "rarity": "uncommon",
       "set_name": "Second Folio",
       "png_uri": "paper-kingdoms/PK-006.webp",
-      "card_text": "Equip 2.",
-      "effect_text": "The equipped unit has Guard.",
-      "attach_text": "Attach to a unit you control.",
-      "flavor_text": null,
-      "colors": ["stone"],
-      "color_identity": ["stone"],
-      "might": null,
-      "might_bonus": 2,
-      "energy": 2,
-      "power": null,
-      "mana_cost": "2",
-      "tags": ["equipment"]
+      "tags": [
+        "equipment"
+      ],
+      "text": {
+        "card_text": "Equip 2.",
+        "effect_text": "The equipped unit has Guard.",
+        "attach_text": "Attach to a unit you control."
+      },
+      "stats": {
+        "super_type": "Gear",
+        "colors": [
+          "stone"
+        ],
+        "color_identity": [
+          "stone"
+        ],
+        "might_bonus": 2,
+        "energy": 2,
+        "mana_cost": "2"
+      }
     },
     {
       "id": "pk-007",
       "name": "Tidecaller Oracle",
       "type_line": "Unit — Mage",
-      "super_type": "Unit",
       "rarity": "mythic",
       "set_name": "Second Folio",
       "png_uri": "paper-kingdoms/PK-007.webp",
-      "card_text": "Swift. When Tidecaller Oracle enters play, look at the top 3 cards of your deck and put one into your hand.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["tide"],
-      "color_identity": ["tide"],
-      "might": 3,
-      "might_bonus": null,
-      "energy": 5,
-      "power": 3,
-      "mana_cost": "5",
-      "tags": ["value"]
+      "tags": [
+        "value"
+      ],
+      "text": {
+        "card_text": "Swift. When Tidecaller Oracle enters play, look at the top 3 cards of your deck and put one into your hand."
+      },
+      "stats": {
+        "super_type": "Unit",
+        "colors": [
+          "tide"
+        ],
+        "color_identity": [
+          "tide"
+        ],
+        "might": 3,
+        "energy": 5,
+        "power": 3,
+        "mana_cost": "5"
+      }
     },
     {
       "id": "pk-008",
       "name": "Hollow Verdict",
       "type_line": "Spell",
-      "super_type": "Spell",
       "rarity": "rare",
       "set_name": "Second Folio",
       "png_uri": "paper-kingdoms/PK-008.webp",
-      "card_text": "Destroy target unit. Its controller draws a card.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["dusk"],
-      "color_identity": ["dusk"],
-      "might": null,
-      "might_bonus": null,
-      "energy": 3,
-      "power": null,
-      "mana_cost": "3",
-      "tags": ["removal"]
+      "tags": [
+        "removal"
+      ],
+      "text": {
+        "card_text": "Destroy target unit. Its controller draws a card."
+      },
+      "stats": {
+        "super_type": "Spell",
+        "colors": [
+          "dusk"
+        ],
+        "color_identity": [
+          "dusk"
+        ],
+        "energy": 3,
+        "mana_cost": "3"
+      }
     },
     {
       "id": "pk-009",
       "name": "Lanternbearer",
       "type_line": "Unit — Scout",
-      "super_type": "Unit",
       "rarity": "common",
       "set_name": "First Folio",
       "png_uri": "paper-kingdoms/PK-009.webp",
-      "card_text": "Fade 3. While Lanternbearer is in play, units you control have Guard.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["ember"],
-      "color_identity": ["ember"],
-      "might": 1,
-      "might_bonus": null,
-      "energy": 1,
-      "power": 1,
-      "mana_cost": "1",
-      "tags": ["defensive"]
+      "tags": [
+        "defensive"
+      ],
+      "text": {
+        "card_text": "Fade 3. While Lanternbearer is in play, units you control have Guard."
+      },
+      "stats": {
+        "super_type": "Unit",
+        "colors": [
+          "ember"
+        ],
+        "color_identity": [
+          "ember"
+        ],
+        "might": 1,
+        "energy": 1,
+        "power": 1,
+        "mana_cost": "1"
+      }
     },
     {
       "id": "pk-010",
       "name": "Thornwood Warden",
       "type_line": "Unit — Beast",
-      "super_type": "Unit",
       "rarity": "uncommon",
       "set_name": "First Folio",
       "png_uri": "paper-kingdoms/PK-010.webp",
-      "card_text": "Guard. Thornwood Warden cannot be blocked by units with Swift.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["thorn"],
-      "color_identity": ["thorn"],
-      "might": 4,
-      "might_bonus": null,
-      "energy": 4,
-      "power": 4,
-      "mana_cost": "4",
-      "tags": ["defensive"]
+      "tags": [
+        "defensive"
+      ],
+      "text": {
+        "card_text": "Guard. Thornwood Warden cannot be blocked by units with Swift."
+      },
+      "stats": {
+        "super_type": "Unit",
+        "colors": [
+          "thorn"
+        ],
+        "color_identity": [
+          "thorn"
+        ],
+        "might": 4,
+        "energy": 4,
+        "power": 4,
+        "mana_cost": "4"
+      }
     },
     {
       "id": "pk-011",
       "name": "Endless Reprise",
       "type_line": "Spell",
-      "super_type": "Spell",
       "rarity": "mythic",
       "set_name": "Second Folio",
       "png_uri": "paper-kingdoms/PK-011.webp",
-      "card_text": "Return target unit from your discard pile to play. A deck may contain any number of copies of Endless Reprise.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["dusk"],
-      "color_identity": ["dusk"],
-      "might": null,
-      "might_bonus": null,
-      "energy": 4,
-      "power": null,
-      "mana_cost": "4",
-      "tags": ["recursion"]
+      "tags": [
+        "recursion"
+      ],
+      "text": {
+        "card_text": "Return target unit from your discard pile to play. A deck may contain any number of copies of Endless Reprise."
+      },
+      "stats": {
+        "super_type": "Spell",
+        "colors": [
+          "dusk"
+        ],
+        "color_identity": [
+          "dusk"
+        ],
+        "energy": 4,
+        "mana_cost": "4"
+      }
     },
     {
       "id": "pk-012",
       "name": "Gatecrash Vanguard",
       "type_line": "Unit — Soldier",
-      "super_type": "Unit",
       "rarity": "rare",
       "set_name": "Second Folio",
       "png_uri": "paper-kingdoms/PK-012.webp",
-      "card_text": "Gatecrash Vanguard cannot be blocked by units with Guard.",
-      "effect_text": null,
-      "attach_text": null,
-      "flavor_text": null,
-      "colors": ["ember"],
-      "color_identity": ["ember"],
-      "might": 3,
-      "might_bonus": null,
-      "energy": 3,
-      "power": 2,
-      "mana_cost": "3",
-      "tags": ["aggressive"]
+      "tags": [
+        "aggressive"
+      ],
+      "text": {
+        "card_text": "Gatecrash Vanguard cannot be blocked by units with Guard."
+      },
+      "stats": {
+        "super_type": "Unit",
+        "colors": [
+          "ember"
+        ],
+        "color_identity": [
+          "ember"
+        ],
+        "might": 3,
+        "energy": 3,
+        "power": 2,
+        "mana_cost": "3"
+      }
     }
   ]
 }

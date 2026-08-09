@@ -35,10 +35,10 @@ because "empty" and "I forgot to write this" must not look the same.
 Each file is an object, not a bare list:
 
 ```json
-{ "schemaVersion": 1, "items": [] }
+{ "schemaVersion": 2, "items": [] }
 ```
 
-`game.json` is the exception: `{ "schemaVersion": 1, "game": { ... } }`.
+`game.json` is the exception: `{ "schemaVersion": 2, "game": { ... } }`.
 
 **`schemaVersion` is checked before anything is read.** A version the reader does
 not know is refused outright rather than read anyway, because a field that moved
@@ -48,7 +48,7 @@ between versions would otherwise arrive empty and an assistant that quietly lost
 ## game.json
 
 ```json
-{ "schemaVersion": 1, "game": { "slug": "paper-kingdoms", "name": "Paper Kingdoms" } }
+{ "schemaVersion": 2, "game": { "slug": "paper-kingdoms", "name": "Paper Kingdoms" } }
 ```
 
 The corpus names itself and nothing else. How the assistant *talks* about the
@@ -143,19 +143,39 @@ look: a reader who types a synonym reaches the definition or reaches nothing.
 | Field | Type |
 |---|---|
 | `id`, `name` | string, required |
-| `type_line`, `super_type`, `rarity`, `set_name` | string or null |
+| `type_line`, `rarity`, `set_name` | string or null |
 | `png_uri` | string or null |
-| `card_text`, `effect_text`, `attach_text`, `flavor_text` | string or null |
-| `colors`, `color_identity`, `might`, `might_bonus`, `energy`, `power`, `tags` | anything |
-| `mana_cost` | string or null |
+| `tags` | list of strings |
+| `text` | a map of your own text-box names to their text |
+| `stats` | a map of your own attribute names to their values |
 
-**Three text fields, not one.** A card can print text in more than one box, and
-an equipment card commonly holds almost nothing in the first. List each one your
-game uses in `profile.json` so the assistant reads all of them before it says a
+Only identity is fixed, because only identity is the same in every game. Your
+game's text boxes and printed attributes go in the two maps, under whatever
+names your game prints:
+
+```json
+{
+  "id": "pk-006", "name": "Ironbrand Blade", "type_line": "Gear — Weapon",
+  "text": { "card_text": "Equip 2.", "effect_text": "The equipped unit has Guard." },
+  "stats": { "energy": 2, "might_bonus": 2, "colors": ["stone"] }
+}
+```
+
+A game with Attack and Defence writes those keys. Nobody carries anybody else's
+empty columns, and nothing is called `mana_cost` in a game that has no mana.
+
+**A key with no value must be absent, not empty.** `"flavor_text": null` and
+`"flavor_text": ""` are both dropped on load, because "this card has no flavour
+text" and "this game has no flavour text" are the same thing to a reader, and an
+empty field sent to a model invites it to remark on the absence.
+
+**`text` usually holds more than one box.** An equipment card commonly prints
+almost nothing in its own box and everything in the box its holder gains. Name
+each one in `profile.json` so the assistant reads all of them before it says a
 card does not do something.
 
-The loose fields hold whatever your game uses: a number, a string, or a list. The
-type survives the round trip through the database unchanged.
+A `stats` value can be a number, a string, or a list. The type survives the round
+trip through the database unchanged, so a `2` comes back as a number.
 
 `png_uri` is a relative path. Nothing renders it until a host app says where
 images live, via `cardImageUrl` on the provider.

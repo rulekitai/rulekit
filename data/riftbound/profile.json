@@ -20,8 +20,7 @@
       {
         "field": "effect_text",
         "describes": "the effect box on a gear card, holding the text the equipped unit gains"
-      },
-      { "field": "might_bonus", "describes": "the Might that a gear card grants to the unit holding it" }
+      }
     ]
   },
   "tokens": {
