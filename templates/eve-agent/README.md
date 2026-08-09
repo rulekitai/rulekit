@@ -1,35 +1,38 @@
 # The Eve template
 
-The same agent, on [Vercel Eve](https://eve.dev) instead of the AI SDK.
+This is the same agent on [Vercel Eve](https://eve.dev), in place of the AI SDK.
 
-Use this if you already run Eve, or if you want its durable sessions, its
-sandbox, or its deployment path. If neither of those means anything to you, use
-`@rulekit/agent/runtime` instead: it needs one model key and no separate process.
+Use this template if you already run Eve, or if you want its durable sessions,
+its sandbox, or its deployment path. If none of those apply to you, use
+`@rulekit/agent/runtime` instead. That runtime needs one model key and no
+separate process.
 
-**Both emit the same events**, so the same interface drives either. That is what
-the shared wire contract in `@rulekit/agent/events` is for.
+**Both runtimes send the same events**, so one interface drives either one. The
+shared wire contract in `@rulekit/agent/events` makes this possible.
 
-It is checked rather than asserted:
+A command checks this. It does not assume it.
 
 ```bash
 cd templates/eve-agent && pnpm dev     # needs Node 24
 pnpm compare-runtimes "what is the Shield keyword"
 ```
 
-Measured, both against the shipped corpus: the same event sequence
-(`step → text → done`) and the same fields on the terminal event. The answers
-differ in length and wording, which is two runs of a model and not a broken
-contract, so the comparison reads types and keys and never text.
+The command measured both runtimes against the corpus that ships. Both sent the
+same sequence of events (`step`, then `text`, then `done`), and both put the
+same fields on the final event. The two answers differ in length and in wording,
+because two runs of one model differ. The contract is intact. So the comparison
+reads types and field names, and it never reads the text.
 
 ## Before you start
 
-**Eve needs Node 24 or newer**, and refuses to run on anything older. The rest of
-this repository runs on Node 22. If `pnpm dev` here says so, that is why.
+**Eve needs Node 24 or newer**, and it refuses to run on an older version. The
+rest of this repository runs on Node 22. If `pnpm dev` reports this, that is the
+cause.
 
 ## Run it
 
 ```bash
-pnpm eve build            # verifies the layout
+pnpm eve build            # checks the layout
 cp .env.example .env      # set one model credential
 pnpm dev
 ```
@@ -38,32 +41,34 @@ pnpm dev
 
 | File | What it does |
 |---|---|
-| `agent/agent.ts` | The model, its effort, and the session budget. |
+| `agent/agent.ts` | Sets the model, its effort, and the session budget. |
 | `agent/instructions.ts` | Builds the prompt from the corpus profile. |
-| `agent/tools/<name>.ts` | One file per tool. **Eve names a tool after its file.** |
-| `agent/channels/ask.ts` | `POST /eve/v1/ask/stream`, emitting the shared events. |
-| `lib/rules-tools.ts` | Adapts the corpus tools. Outside `agent/` on purpose. |
+| `agent/tools/<name>.ts` | One file for each tool. **Eve gives a tool the name of its file.** |
+| `agent/channels/ask.ts` | Serves `POST /eve/v1/ask/stream`, and sends the shared events. |
+| `lib/rules-tools.ts` | Adapts the corpus tools. It sits outside `agent/` on purpose. |
 
-## Three rules Eve enforces on this layout
+## Three rules that Eve applies to this layout
 
-Each one fails the build rather than failing at run time, which is the right
-trade, but the messages are terse. They cost real time to work out, so:
+Each rule fails the build. It does not fail at run time. That is the correct
+behaviour, but each message is short, and each one costs real time to
+understand. So:
 
-1. **A file under `agent/tools/` is one tool, and its filename is the tool's
-   name.** A file exporting several tools fails. A helper module there fails.
-   That is why `lib/` exists.
-2. **Instructions live in `agent/instructions.ts`, never in `defineAgent`.**
-   Passing them to `defineAgent` fails with `Unknown key "instructions"`.
-3. **Tool schemas cross the boundary as JSON Schema, not as Zod.** Eve accepts
-   either, but a Zod object here fails with
-   `Cannot read properties of undefined (reading 'input')`: Eve reads a Standard
-   Schema field that Zod 3 declares for the type system and does not create at
-   run time. `lib/rules-tools.ts` converts, so the Zod schema stays the single
+1. **One file in `agent/tools/` is one tool, and the file name is the tool
+   name.** A file that exports more than one tool fails the build. A helper
+   module in that directory also fails. This is the reason `lib/` exists.
+2. **Instructions belong in `agent/instructions.ts`, and never in
+   `defineAgent`.** If you pass them to `defineAgent`, the build fails with
+   `Unknown key "instructions"`.
+3. **A tool schema crosses the boundary as JSON Schema, and not as Zod.** Eve
+   accepts either one, but a Zod object here fails with `Cannot read properties
+   of undefined (reading 'input')`. Eve reads a Standard Schema field that Zod 3
+   declares for the type system and does not create at run time.
+   `lib/rules-tools.ts` converts the schema, so the Zod schema stays the one
    definition.
 
-## Why the built-in tools are switched off
+## Why the built-in tools are off
 
-An Eve agent starts with tools for reading files, running commands, and fetching
-web pages. A rules assistant needs none of them, and each one is a way for a
+An Eve agent starts with tools that read files, run commands, and fetch web
+pages. A rules assistant needs none of them. Each one is also a route for a
 question to reach something other than the corpus. Switching them off also stops
-Eve starting a container it would otherwise need for the shell.
+Eve from starting a container that it would otherwise need for the shell.

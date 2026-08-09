@@ -1,29 +1,32 @@
 # data
 
-The MIT licence at the root of this repository covers the code under
-`packages/`, `templates/`, and `examples/`. The contents of this directory are
-game reference data and are outside that grant.
+The MIT licence at the root of this repository covers the code in `packages/`,
+`templates/`, and `examples/`. The MIT grant does not cover the contents of this
+directory. They are game reference data.
 
-This is a scope line, not an attribution. It exists because a licence file at
-the root of a repository reads as covering everything beside it, and a corpus is
-not the project's to license.
+This statement sets the scope of the licence. It does not give attribution.
+
+A licence file at the root of a repository reads as though it covers everything
+beside it. This project cannot license a corpus that is not its own. So the
+statement is here.
 
 ## What is here
 
-| Directory | What it is |
+| Directory | What it holds |
 |---|---|
-| `demo/` | A small invented game. The tests and the continuous-integration workflow read this one, so nothing in the test suite depends on a real corpus. |
-| `riftbound/` | A built corpus for the Riftbound trading card game. |
+| `demo/` | A small invented game. The tests read this one, so no test depends on a real corpus. |
+| `riftbound/` | A corpus for the Riftbound trading card game. |
 
-## Producing your own
+## Make your own
 
-A corpus is an input. This project ships no importer, no scraper, and no parser,
-and it never fetches anything. Write the JSON however you like, then:
+A corpus is an input. This project holds no importer, no scraper, and no parser,
+and it fetches nothing. Write the JSON in the way you prefer. Then run these two
+commands:
 
 ```bash
 pnpm rulekit validate data/<your-game>
 pnpm rulekit build data/<your-game>
 ```
 
-`docs/corpus-format.md` states the shape field by field. `demo/` is a complete
-worked example you can copy.
+`docs/corpus-format.md` states each field. `demo/` is a complete example that
+you can copy.
