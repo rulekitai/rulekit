@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs"
+import { dirname } from "node:path"
 import { DatabaseSync } from "node:sqlite"
 import { buildDatabase, CARD_WEIGHTS, RULE_WEIGHTS, TERM_WEIGHTS } from "./build.ts"
 import type { ListOptions, RuleStore, SearchOptions } from "./store.ts"
@@ -201,8 +203,23 @@ export class SqliteStore implements RuleStore {
     this.#db = db
   }
 
-  /** Open a built database. Read-only, so two processes can share one file. */
+  /**
+   * Open a built database. Read-only, so two processes can share one file.
+   *
+   * A corpus directory holds JSON, and the database is built from it. The
+   * database is not in version control, so a fresh clone has the JSON and no
+   * database. SQLite reports that as "unable to open database file", which
+   * names no cause and no cure, so this says which file is missing and which
+   * command writes it.
+   */
   static open(path: string): SqliteStore {
+    if (!existsSync(path)) {
+      const dir = dirname(path)
+      throw new Error(
+        `No corpus database at ${path}. Build it first:\n\n  rulekit build ${dir}\n\n` +
+          `The database is built from the JSON in ${dir}, and it is not in version control.`,
+      )
+    }
     return new SqliteStore(new DatabaseSync(path, { readOnly: true }))
   }
 

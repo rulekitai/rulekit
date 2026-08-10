@@ -304,3 +304,15 @@ for (const kind of ["sqlite", "json"] as const) {
     })
   })
 }
+
+describe("opening a database that is not there", () => {
+  test("names the file and the command that writes it", () => {
+    // A fresh clone holds the JSON and no database, and SQLite reports only
+    // "unable to open database file". That names no cause and no cure.
+    assert.throws(
+      () => SqliteStore.open(resolve(DEMO, "no-such-corpus.db")),
+      /rulekit build/,
+      "the error must say which command builds it",
+    )
+  })
+})
