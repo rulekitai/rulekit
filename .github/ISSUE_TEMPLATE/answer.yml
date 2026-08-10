@@ -1,0 +1,82 @@
+name: Wrong or missing answer
+description: The assistant answered a rules question incorrectly, or it answered nothing.
+labels: ["answer-quality"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A wrong answer is a bug in this project, and it is not a security
+        problem. The cause is usually one of three things, and the answers
+        below separate them:
+
+        - The corpus has a gap, so the model filled it.
+        - A field is unset, so a heading or a superseded rule reached the top.
+        - A text field is missing from `cards.textFields` in the profile.
+
+  - type: dropdown
+    id: corpus
+    attributes:
+      label: Which corpus
+      options:
+        - data/chess
+        - data/texas-holdem
+        - data/estate-line
+        - data/demo
+        - data/riftbound
+        - A corpus that I wrote
+    validations:
+      required: true
+
+  - type: input
+    id: question
+    attributes:
+      label: The question you asked
+      placeholder: how does a knight move
+    validations:
+      required: true
+
+  - type: textarea
+    id: answer
+    attributes:
+      label: The answer you received
+      description: Paste all of it, with the sources it gave.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: The correct answer, and where it is in the corpus
+      description: Give the rule number, the term, or the card name that holds it.
+      placeholder: Rule 200.6 states the move of the knight.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: fault
+    attributes:
+      label: Which fault this is, if you know
+      options:
+        - The answer invented a rule number that does not exist
+        - The answer invented a quotation
+        - The answer quoted a real rule that does not apply
+        - The answer read a card incorrectly
+        - The assistant gave no answer
+        - I do not know
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Which stage answered
+      description: The command and the interface both name the stage.
+      options:
+        - static
+        - glossary
+        - cache
+        - agent
+        - I do not know
+    validations:
+      required: false

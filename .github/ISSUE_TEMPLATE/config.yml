@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security problem
+    url: https://github.com/rulekitai/rulekit/security/advisories/new
+    about: Report it privately. Do not open a public issue for a security problem.
+  - name: How to add your own game
+    url: https://github.com/rulekitai/rulekit/blob/main/docs/adding-a-game.md
+    about: The four steps, from the first JSON file to the finished profile.
+  - name: The corpus format
+    url: https://github.com/rulekitai/rulekit/blob/main/docs/corpus-format.md
+    about: Every field of the eight JSON files.

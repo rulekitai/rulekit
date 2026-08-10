@@ -1,0 +1,74 @@
+name: Bug report
+description: Something in the code does not work.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Four facts reproduce almost every problem in this project: the corpus,
+        the question, the answer you received, and the answer you expected.
+
+        For a security problem, do not use this form. Read SECURITY.md.
+
+  - type: dropdown
+    id: corpus
+    attributes:
+      label: Which corpus
+      options:
+        - data/chess
+        - data/texas-holdem
+        - data/estate-line
+        - data/demo
+        - data/riftbound
+        - A corpus that I wrote
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: The steps that reproduce it
+      description: Give the exact command, or the exact question you asked.
+      placeholder: pnpm rulekit ask data/chess "what does rule 200.6 say"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Paste the whole output, including any error.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: The commit you tested
+      description: Run `git rev-parse --short HEAD`.
+    validations:
+      required: true
+
+  - type: input
+    id: node
+    attributes:
+      label: Your Node version
+      description: Run `node --version`. This project needs Node 22 or later.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you send this
+      options:
+        - label: I ran `pnpm rulekit validate <dir>` and it printed `Valid.`
+        - label: I built the database again after I changed the JSON files
