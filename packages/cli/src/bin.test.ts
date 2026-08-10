@@ -1,12 +1,19 @@
 import assert from "node:assert/strict"
-import { existsSync } from "node:fs"
-import { cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
+import { existsSync, realpathSync } from "node:fs"
+import { cp, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { after, before, describe, test } from "node:test"
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, pathToFileURL } from "node:url"
 import { loadCorpus } from "@rulekitai/corpus/load"
-import { checkProfileFields, commandAsk, commandBuild, commandInit, commandValidate } from "./bin.ts"
+import {
+  checkProfileFields,
+  commandAsk,
+  commandBuild,
+  commandInit,
+  commandValidate,
+  isMainModule,
+} from "./bin.ts"
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..")
 const DEMO = resolve(ROOT, "data/demo")
@@ -282,5 +289,37 @@ describe("a profile that names a field no card carries", () => {
     const result = await loadCorpus(DEMO)
     assert.ok(result.ok)
     assert.deepEqual(checkProfileFields("/no/such/directory", result.corpus), [])
+  })
+})
+
+describe("isMainModule", () => {
+  test("recognises the file when it runs through a symlink, as npm installs it", async () => {
+    // npm puts a `bin` in node_modules/.bin as a SYMLINK to the real file, so
+    // argv[1] is the link and import.meta.url is its target. Comparing them
+    // unresolved made every published command exit 0 and print nothing.
+    const real = join(scratch, "real-bin.js")
+    const link = join(scratch, "linked-bin")
+    await writeFile(real, "// the command\n")
+    await symlink(real, link)
+
+    assert.equal(isMainModule(link, pathToFileURL(realpathSync(real)).href), true)
+  })
+
+  test("recognises the file when it runs by its own path", async () => {
+    const real = join(scratch, "plain-bin.js")
+    await writeFile(real, "// the command\n")
+    assert.equal(isMainModule(real, pathToFileURL(realpathSync(real)).href), true)
+  })
+
+  test("says no for a different file, so an import never runs the program", async () => {
+    const real = join(scratch, "other-bin.js")
+    await writeFile(real, "// a different file\n")
+    assert.equal(isMainModule(real, pathToFileURL(join(scratch, "not-me.js")).href), false)
+    assert.equal(isMainModule(undefined, "file:///anything"), false)
+  })
+
+  test("compares a path that cannot be resolved rather than throwing", async () => {
+    const missing = join(scratch, "no-such-file.js")
+    assert.equal(isMainModule(missing, pathToFileURL(missing).href), true)
   })
 })

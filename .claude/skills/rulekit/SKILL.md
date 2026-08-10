@@ -17,8 +17,8 @@ Read this page, pick the branch, then open that skill.
 2. **Most questions never reach a model.** Rule lookups, ban checks, and
    glossary definitions read straight from the corpus in a few milliseconds.
    Only a genuine miss costs a model call.
-3. **Nothing is published to npm.** Fork the repository, or copy `packages/`
-   into your own. See `rulekit-serve`.
+3. **The packages are on npm under `@rulekitai/`.** Install the ones the task
+   needs. See `rulekit-serve`.
 
 ## Pick the branch
 

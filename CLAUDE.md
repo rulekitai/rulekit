@@ -20,8 +20,9 @@ correct one of the other five.
 
 ## Facts that save the most time
 
-1. **Nothing is published to npm.** Fork this repository, or copy `packages/`
-   into another one.
+1. **The seven packages are on npm under `@rulekitai/`.** Install them, or work
+   in this repository. A release goes out from a version tag, and
+   `CONTRIBUTING.md` states how.
 2. **Five corpora already ship**, so check before writing one: `riftbound`,
    `chess`, `texas-holdem`, `estate-line`, and `demo`. Four of the five are
    public domain. `riftbound` is Riot Games' property and permits

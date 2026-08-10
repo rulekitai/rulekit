@@ -1,6 +1,6 @@
 {
   "name": "@rulekitai/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The rulekit command: validate, build, init, and ask.",
   "keywords": [
     "rules",

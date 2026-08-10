@@ -109,10 +109,20 @@ agent searches the corpus with tools, then it writes an answer with its sources.
 | `@rulekitai/ui` | Chat components, with CSS variables for the theme |
 | `@rulekitai/cli` | `rulekit validate`, `build`, `init`, `ask`, and `eval` |
 
-This project publishes no package to npm. Make a fork of this repository, or
-copy `packages/` into a different one. The directory `templates/eve-agent`
-contains the same agent on [Vercel Eve](https://eve.dev). The directory
-`examples/next-app` contains a chat that you can copy.
+Each package is on npm. Install the ones you need:
+
+```bash
+pnpm add @rulekitai/corpus @rulekitai/agent @rulekitai/pipeline @rulekitai/server
+pnpm add @rulekitai/react @rulekitai/ui   # a React interface
+pnpm add -D @rulekitai/cli                # validate, build, ask, and eval
+```
+
+The `ai` package is a peer dependency of `@rulekitai/agent`, and `react` is a
+peer dependency of `@rulekitai/react` and `@rulekitai/ui`.
+
+The directory `templates/eve-agent` contains the same agent on
+[Vercel Eve](https://eve.dev). The directory `examples/next-app` contains a chat
+that you can copy.
 
 ## Where to read more
 

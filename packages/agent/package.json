@@ -1,6 +1,6 @@
 {
   "name": "@rulekitai/agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tools, instructions, skills, and a runtime for a grounded rules assistant.",
   "keywords": [
     "rules",

@@ -62,5 +62,7 @@ what a caller can spend.
 
 ## Supported versions
 
-This project publishes no package to npm and cuts no releases yet. The `main`
-branch is the supported version. A fix lands on `main`.
+The latest version on npm is the supported version, and `main` is where a fix
+lands first. This project publishes every package from a tag, through npm
+trusted publishing, so each release carries a provenance attestation that links
+it to the commit and the workflow that built it.

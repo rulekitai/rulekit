@@ -7,21 +7,23 @@ description: Install rulekit and mount its ask endpoint in a server. Covers fork
 
 ## Step 1: get the packages
 
-Nothing is on npm. Choose by where their app lives.
-
-**Their app is new, or they can move it.** Fork the repository. Put their app
-beside `examples/next-app` as another workspace. This is the layout the
-repository expects.
-
-**Their app already exists elsewhere.** Copy `packages/` into their repository
-and add the six names to their workspace file. A git dependency pulls the whole
-repository, not one package inside it, so it does not help here.
-
-Then run:
+Install them from npm, in their own application:
 
 ```bash
-pnpm install
-pnpm rulekit build data/riftbound    # writes corpus.db, about 65 ms
+pnpm add @rulekitai/corpus @rulekitai/agent @rulekitai/pipeline @rulekitai/server
+pnpm add -D @rulekitai/cli
+pnpm add ai                          # a peer dependency of the agent
+```
+
+Add `@rulekitai/react` and `@rulekitai/ui` for a React interface. Read the
+`rulekit-interface` skill for the three levels.
+
+Their application also needs a corpus. Copy one of the four public-domain
+corpora from the repository, or write one. The `rulekit-corpus` skill covers a
+new one.
+
+```bash
+pnpm rulekit build path/to/corpus    # writes corpus.db, about 65 ms
 ```
 
 `corpus.db` is not in git. Build it after every clone, and after every change to

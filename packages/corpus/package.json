@@ -1,6 +1,6 @@
 {
   "name": "@rulekitai/corpus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The rules corpus: a JSON schema, a SQLite builder, and one read interface.",
   "keywords": [
     "rules",

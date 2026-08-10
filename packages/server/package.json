@@ -1,6 +1,6 @@
 {
   "name": "@rulekitai/server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "One web-standard HTTP handler that mounts anywhere.",
   "keywords": [
     "rules",

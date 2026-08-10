@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs"
+import { readFileSync, realpathSync } from "node:fs"
 import { cp, mkdir, readFile, stat } from "node:fs/promises"
 import { dirname, join, relative, resolve } from "node:path"
 import { argv, cwd, exit, stderr, stdout } from "node:process"
@@ -374,14 +374,29 @@ async function main(): Promise<number> {
 }
 
 /**
- * Run only when this file IS the command, never when it is imported.
+ * Is this file the command that was run, rather than a module somebody imported?
  *
- * Without the guard, importing a command to test it runs the whole program and
+ * Without this check, importing a command to test it runs the whole program and
  * calls `exit`, which kills the test runner before a single assertion.
+ *
+ * RESOLVE THE SYMLINK BEFORE COMPARING. npm installs a `bin` as a symlink in
+ * `node_modules/.bin`, so `process.argv[1]` is the link and `import.meta.url`
+ * is its target. An unresolved comparison therefore fails for every user who
+ * installs from npm, and the command exits 0 and prints nothing. It works when
+ * run from a path inside the repository, so no test here saw it.
  */
-const isDirectRun = process.argv[1] ? import.meta.url === pathToFileURL(process.argv[1]).href : false
+export function isMainModule(argv1: string | undefined, metaUrl: string): boolean {
+  if (!argv1) return false
+  let target = argv1
+  try {
+    target = realpathSync(argv1)
+  } catch {
+    // A path that cannot be resolved is compared as it arrived.
+  }
+  return metaUrl === pathToFileURL(target).href
+}
 
-if (isDirectRun) {
+if (isMainModule(process.argv[1], import.meta.url)) {
   main()
     .then((code) => exit(code))
     .catch((error) => {
