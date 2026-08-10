@@ -1,8 +1,8 @@
 # Architecture
 
-Four diagrams, one per concern. Only the last one costs a model call.
+Four diagrams, one for each concern. Only the fourth one costs a model call.
 
-## 1. A corpus is compiled, once
+## 1. The command compiles a corpus, one time
 
 ```mermaid
 flowchart LR
@@ -11,12 +11,13 @@ flowchart LR
     BUILD --> DB[("corpus.db<br>SQLite, full-text search")]
 ```
 
-No model runs here, and nothing is fetched. `profile.json` sits beside those
-files and is read when a server starts, not compiled into the database.
+No model runs in this step, and the command fetches nothing. The file
+`profile.json` is in the same directory. A server reads it at start up, and the
+build does not compile it into the database.
 
-`docs/corpus-format.md` states every field of those eight files.
+The file `docs/corpus-format.md` states every field of those eight files.
 
-## 2. An agent is born, once per server process
+## 2. The code makes an agent, one time for each server process
 
 ```mermaid
 flowchart TB
@@ -33,11 +34,13 @@ flowchart TB
     STORE --> PIPELINE["createPipeline<br>the free stages, in order of cost"]
 ```
 
-The corpus is a file, so this takes milliseconds and needs no database server.
+The corpus is a file. This step takes milliseconds, and it needs no database
+server.
 
-`examples/next-app/app/lib/rulekit.ts` is this diagram as code, in 60 lines.
+The file `examples/next-app/app/lib/rulekit.ts` is this diagram as code, in 60
+lines.
 
-## 3. A question walks the free stages
+## 3. A question goes through the free stages
 
 ```mermaid
 flowchart TB
@@ -54,16 +57,17 @@ flowchart TB
     TURN --> ANSWER
 ```
 
-The first stage that can answer wins. The gate runs before every stage, so a
-refusal reads nothing and costs nothing.
+The pipeline uses the first stage that can answer. The gate runs before every
+stage, so a refusal reads nothing and costs nothing.
 
-A stage that fails degrades to a miss and the run continues. The failure is
-reported, never swallowed: a stage that returns nothing while broken looks
-exactly like a stage with nothing to say, and the difference is the whole
-diagnosis.
+If a stage fails, the run continues to the next stage. The pipeline reports the
+failure, and it does not hide it. A broken stage returns nothing. A healthy
+stage with nothing to say also returns nothing. The report is the only way to
+tell the two conditions apart.
 
-Two more stages ship switched off, because each needs an account you may not
-want: a semantic cache, and a pass with a cheap model.
+Two more stages are available, and this project ships them in the off state.
+Each one needs an account that you can prefer to avoid: a semantic cache, and a
+step that uses a cheap model.
 
 ## 4. The agent turn
 
@@ -75,28 +79,30 @@ flowchart TB
     MODEL -->|"stops calling tools"| ANSWER(["The answer, quoting those rows"])
 ```
 
-Each pass around the loop is one model call. The turn ends by itself when the
-model answers without calling a tool.
+Each pass through this loop is one model call. The turn ends when the model
+writes an answer and calls no tool.
 
-| The tools | When they are offered |
+| The tools | When the agent offers them |
 |---|---|
 | `search_all`, `search_rules`, `get_rule`, `get_rule_context`, `search_terms`, `list_rulebooks`, `list_sections` | Always |
 | `list_errata`, `list_banlist`, `list_patch_notes` | When that collection holds a row |
-| `search_cards`, `get_cards` | When the profile enables cards |
+| `search_cards`, `get_cards` | When the profile permits cards |
 
-No ceiling is set on the steps one turn may take. A turn ends when the model
-answers. A cap is a cost control, and cost is your decision, so set `stepCap`
-when you pay per token. A capped turn hands the reader whatever was written
-when the ceiling hit, which can be half a sentence.
+This project sets no limit on the number of steps in one turn. A turn ends when
+the model writes an answer. A limit is a cost control, and the cost is your
+decision, so set `stepCap` if you pay for each token. A turn that reaches the
+limit stops immediately. It gives the reader only the text that the model wrote
+before that point, and that text can be a part of a sentence.
 
-## Three decisions the diagrams show
+## Three decisions that the diagrams show
 
-1. **The profile reaches both the tools and the prompt.** It decides what a tool
-   is called and what the model is told a printed value means, so a chess tool
-   says "piece" and never "card".
-2. **A tool exists only when the corpus can answer with it.** `corpusContents`
-   counts the rows first. A game with an empty banned list is never given a
-   banned-list tool.
-3. **A skill is a page the model reads for one shape of question.** The three
-   that ship cover reading a card, two things at once, and order and timing.
-   `card_lookup` is left out when a corpus holds no cards.
+1. **The profile supplies both the tools and the prompt.** It decides the name
+   of a tool, and it tells the model what a printed value means. A chess tool
+   therefore says "piece", and it never says "card".
+2. **The agent offers a tool only when the corpus can answer with it.** The
+   function `corpusContents` counts the rows first. A game with an empty banned
+   list gets no banned-list tool.
+3. **A skill is one page that the model reads for one type of question.** The
+   three skills in this project cover a card, two things at the same time, and
+   order and timing. A corpus with no cards does not get the `card_lookup`
+   skill.

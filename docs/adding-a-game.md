@@ -1,48 +1,50 @@
 # Adding a game
 
-Four steps. Two of them are writing JSON.
+Four steps. You write JSON in two of them.
 
 ```bash
-pnpm rulekit init my-game        # copy the worked example
-# ... replace its contents with yours ...
-pnpm rulekit validate my-game    # names every problem
-pnpm rulekit build my-game       # compiles to my-game/corpus.db
+pnpm rulekit init my-game        # copy the complete example
+# ... replace its contents with your own ...
+pnpm rulekit validate my-game    # this names every problem
+pnpm rulekit build my-game       # this compiles my-game/corpus.db
 pnpm rulekit ask my-game "what is <a keyword in your game>"
 ```
 
-That last command answers with no model and no key, so you can judge a corpus
-before you connect anything. It runs the free stages only, so it answers a rule
-number and a keyword. It reports a miss for a question of any other shape, and a
-miss here says nothing about the corpus. The agent answers those questions.
+The last command needs no model and no key, so you can judge a corpus before you
+connect anything. It runs the free stages only, and it answers a rule number and
+a keyword. For a question of a different type it reports that it cannot answer.
+That report tells you nothing about the corpus, because the agent answers those
+questions.
 
 ## 1. The corpus
 
-`docs/corpus-format.md` states every field. `data/demo/` is a complete example
-of all of them.
+The file `docs/corpus-format.md` states every field. The directory `data/demo/`
+is a complete example of all of them.
 
-Start with `rules.json` alone if you like. Terms, cards, errata, and the banned
-list may all be empty lists, and the assistant works without them. It simply
-answers fewer kinds of question.
+You can start with `rules.json` alone. The terms, the cards, the errata, and the
+banned list can all be empty lists, and the assistant works without them. It
+answers fewer types of question.
 
-**Fill `cards.json` with the pieces of your game a player can name.** The name
-comes from trading card games and the file is not limited to them: chess lists
-its six pieces there, and poker lists the 52 cards of the pack.
+**Put the pieces that a player can name into `cards.json`.** The name comes from
+trading card games, and the file accepts more than trading cards. Chess puts its
+six pieces there, and poker puts the 52 cards of the pack there.
 
 ## 2. The profile
 
-`profile.json` holds everything about your game the instructions cannot know.
-The grounding rules — cite everything, quote rather than restate, never invent —
-are built in and cannot be removed by a profile. This adds to them.
+The file `profile.json` holds the facts about your game that the instructions
+cannot know. The grounding rules are part of the code: give a source for
+everything, quote in place of a summary, and invent nothing. A profile adds to
+those rules, and it cannot remove them.
 
-The shortest profile that works:
+This is the shortest profile that works:
 
 ```json
 { "game": { "name": "My Game" }, "cards": { "enabled": false } }
 ```
 
-Then sharpen it.
+Then make it more exact.
 
-### Your game's words
+### The words of your game
 
 ```json
 "vocabulary": [
@@ -50,9 +52,9 @@ Then sharpen it.
 ]
 ```
 
-Worth doing. A model trained on other games will reach for their words, and a
-player reading their own game's rules in another game's vocabulary loses trust
-fast.
+Write this section. A model that learned other games uses the words of those
+games. A player who reads the rules of their own game in the words of a
+different game stops trusting the answer.
 
 ### Cards
 
@@ -69,25 +71,28 @@ fast.
 }
 ```
 
-**"Cards" means the pieces of your game a player can name.** Chess lists its six
-pieces. Poker lists the 52 cards of the pack. A property game lists its deeds.
+**"Cards" means the pieces of your game that a player can name.** Chess lists its
+six pieces. Poker lists the 52 cards of the pack. A property game lists its
+deeds.
 
-**Set `noun` to what your game calls one of them.** Every sentence the model
-reads about the card tools is built from it, so a chess assistant is offered a
-tool to "find Chess pieces" and never one for "Chess cards". It defaults to
-"card". Set `nounPlural` too when adding an "s" gives the wrong word.
+**Set `noun` to the word that your game uses for one of them.** The code builds
+every sentence about the card tools from this word. A chess assistant therefore
+gets a tool to "find Chess pieces", and it never gets a tool for "Chess cards".
+The default is "card". Also set `nounPlural` when an added "s" gives the wrong
+word.
 
-Set `enabled` to false only when your game has no nameable pieces at all, and
-the card tools are then not registered. Offering a tool that can only answer
-"nothing found" wastes a turn and teaches the model to distrust the result.
+Set `enabled` to false only when your game has no pieces that a player can name.
+The code then creates no card tools. A tool that can answer only "nothing found"
+costs one turn, and it teaches the model to distrust the result.
 
-**List every text field your cards use.** This is the single highest-value line
-in a profile. Without it, a model reads the first field, finds an equip line, and
-reports that the card does nothing.
+**List every text field that your cards use.** This is the most valuable line in
+a profile. Without it, a model reads the first field, finds an equipment line,
+and reports that the card does nothing.
 
-`field` names a key of a card's `text` map, so these are your game's own names.
+The key `field` names a key of the `text` map of a card, so these are the names
+that your own game uses.
 
-**Describe the printed values a name does not explain**, in `statFields`:
+**Describe each printed value whose name does not explain it**, in `statFields`:
 
 ```json
 "statFields": [
@@ -96,8 +101,8 @@ reports that the card does nothing.
 ]
 ```
 
-List only those. `rarity` explains itself, and a described stat costs prompt on
-every card question.
+List only those values. The name `rarity` explains itself, and each described
+value costs prompt text for every card question.
 
 ### Symbols
 
@@ -108,9 +113,9 @@ every card question.
 }
 ```
 
-Leave it out for a game with no symbols, and answers use plain words. A rulebook
-uses square brackets in ordinary prose too, so nothing is rewritten unless you
-ask for it.
+Omit this section for a game with no symbols, and the answers then use plain
+words. A rulebook also uses square brackets in ordinary sentences, so the code
+rewrites nothing until you ask for it.
 
 ### Scope
 
@@ -121,18 +126,18 @@ ask for it.
 }
 ```
 
-The universal refusals — strategy, prices, real people, off-topic questions —
-are built in. This adds to them.
+The refusals that apply to every game are part of the code: strategy, prices,
+real people, and questions about a different subject. This section adds to them.
 
-## 3. Wire it up
+## 3. Connect it
 
-The example app reads one variable:
+The example application reads one variable:
 
 ```bash
 RULEKIT_CORPUS=my-game pnpm dev
 ```
 
-In your own app it is a handful of lines:
+In your own application, the connection is a few lines:
 
 ```ts
 import { parseProfile } from "@rulekit/agent/profile"
@@ -157,33 +162,35 @@ export const POST = createAskHandler({
 })
 ```
 
-`createAskHandler` returns a plain function from `Request` to `Response`, so the
-same export works in Next.js, Hono, Bun, Deno, and a Cloudflare Worker.
+The function `createAskHandler` returns a plain function from `Request` to
+`Response`. The same export therefore works in Next.js, Hono, Bun, Deno, and a
+Cloudflare Worker.
 
 ## 4. Judge it
 
-Ask the questions your players actually ask. Watch for three failures:
+Ask the questions that your players ask. Watch for three failures:
 
-**It invents.** Something is missing from the corpus and the model filled the
-gap. Add the data. If it keeps happening on questions the corpus does cover,
+**The assistant invents an answer.** The corpus has a gap, and the model filled
+it. Add the data. If this continues for questions that the corpus does cover,
 your `content` fields are probably too short to answer from.
 
-**It quotes the wrong rule.** Usually `rule_type` or `is_deprecated` is not set,
-so headings and superseded text are crowding the search results.
+**The assistant quotes the wrong rule.** The usual cause is an unset `rule_type`
+or `is_deprecated` field. Headings and superseded text then fill the search
+results.
 
-**It reads a card wrong.** Almost always a missing entry in
+**The assistant reads a card incorrectly.** The usual cause is a missing entry in
 `cards.textFields`.
 
-## Tuning what happens for free
+## Adjust the free stages
 
-The order of the stages is yours:
+You choose the order of the stages:
 
 ```ts
 stages: [exactCacheStage(), staticAnswersStage(store), glossaryStage(store)]
 ```
 
-The static stage's patterns are configurable, because different games number
-rules differently and ask about legality in different words:
+You can configure the patterns of the static stage. Different games number their
+rules in different ways, and they ask about legality with different words:
 
 ```ts
 staticAnswersStage(store, {
@@ -195,13 +202,13 @@ staticAnswersStage(store, {
 })
 ```
 
-Every word list is closed on purpose. A wildcard here would let "is the red one
-banned" resolve "the red" and answer confidently about a card nobody asked
-about.
+Each word list is closed on purpose. A wildcard here lets the question "is the
+red one banned" resolve the words "the red". The assistant then answers with
+confidence about a card that nobody asked about.
 
-## Adding quotas or billing
+## Add a quota or a payment
 
-Implement `Gate`. Nothing inside these packages changes.
+Write a `Gate` object. Nothing inside these packages changes.
 
 ```ts
 const gate: Gate = {
@@ -219,25 +226,26 @@ const gate: Gate = {
 createAskHandler({ pipeline, agent, gate, identify: (req) => ({ id: readUserId(req) }) })
 ```
 
-`allow` runs before any stage, so a refusal costs nothing at all. `record` runs
-after, with the full answer including what it cost. The browser never receives
-that figure.
+The method `allow` runs before every stage, so a refusal costs nothing. The
+method `record` runs after the answer, and it receives the cost. The browser
+does not receive that number.
 
-### What an answer costs
+### The cost of an answer
 
-`answer.usage` carries the token counts and, when a provider reports one, the
-price:
+The field `answer.usage` holds the token counts. It also holds the price, when a
+provider reports one:
 
 ```ts
 { prompt_tokens: 39663, completion_tokens: 930, cost_usd: 0.0886,
   cache_read_input_tokens: 0, cache_creation_input_tokens: null, agent_steps: 5 }
 ```
 
-**`cost_usd` comes from the provider, never from a price table here.** A gateway
-that already priced the call reports it and this reads that figure. A provider
-that reports nothing leaves it null, and null is not zero: a zero reads as a
-genuinely free answer and would drag any average you compute downwards.
+**The value `cost_usd` comes from the provider, and never from a price table in
+this project.** A gateway that priced the call reports the price, and this field
+holds that number. A provider that reports no price leaves the field null. Null
+is different from zero: a zero reads as a free answer, and it makes any average
+that you calculate too low.
 
-If your provider reports no price, price the tokens yourself in `record`. This
-project ships no table, because a table of per-model prices goes stale silently
-and is the fork's to keep, not this project's.
+If your provider reports no price, calculate the price of the tokens yourself in
+`record`. This project ships no price table. A table of prices for each model
+becomes wrong without any warning, and it belongs to your fork.

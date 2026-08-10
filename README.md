@@ -1,54 +1,77 @@
 # rulekit
 
-A rules assistant that answers from your own rulebook, quotes it, and gives the
-source of every claim.
+rulekit is a rules assistant. It answers questions from your own rulebook, it
+quotes that rulebook, and it gives the source of each claim.
 
-It reads a corpus of JSON files that you supply. Every answer comes from that
-corpus. Each claim carries its rule number, its card name, or its date. When the
-corpus holds no answer, the assistant says so. It does not invent one.
+You supply a corpus of JSON files. Every answer comes from that corpus. Each
+claim gives its rule number, its card name, or its date. When the corpus has no
+answer, the assistant tells you. It does not invent an answer.
 
-No game is built in, and no model provider is required. Apache 2.0 licence, no
-pricing model, and no account except one model key.
+This project contains no game. It works with any rulebook, and it needs no
+particular model provider. The code uses the Apache 2.0 licence. There is no
+price and no account, except one model key.
 
-## Run it
+## Install
 
 ```bash
-git clone <this repository> && cd rulekit
-pnpm install                       # 2 seconds
-pnpm rulekit build data/riftbound  # 65 ms, 3317 rules and 941 cards
-
-cd examples/next-app
-cp .env.example .env               # set one model key
-pnpm dev                           # http://localhost:3210
+git clone <this repository>
+cd rulekit
+pnpm install
 ```
 
-A clean clone reaches a working chat in **21 seconds**. The example app's first
-build takes 17 of them. Use Node 22 or newer. An `.nvmrc` file is here.
+Use Node 22 or a later version. This repository includes an `.nvmrc` file.
 
-To check the repository: `pnpm lint && pnpm check-types && pnpm test` runs 284
-tests with no model and no network.
+## Ask your first question
 
-## Try it with no model key
-
-Most questions need no key. A rule lookup, a legality question, and a keyword
-definition are read straight from the corpus in a few milliseconds.
+This command needs no model key. It answers in a few milliseconds.
 
 ```bash
 pnpm rulekit ask data/riftbound "is Called Shot banned"
+```
+
+```
+[served by static in 4 ms]
+
+[Called Shot](card:riftbound/SFD-122.webp) is on the banned list:
+- **banned** in **Constructed 2v2**, effective 2026-07-24 — source: Ban List Update — July 24, 2026
+- **banned** in **Constructed**, effective 2026-03-30 — source: Constructed Banlist Update — March 30, 2026
+
+Effective 2026-07-24.
+```
+
+Two more questions that need no key:
+
+```bash
 pnpm rulekit ask data/chess "what does rule 200.6 say"
 pnpm rulekit ask data/chess "what is castling"
 ```
 
-`rulekit ask` runs those free stages only, and never calls the agent. It reports
-a miss for a question of any other shape. Start the example app above to reach
-the agent.
+The `ask` command runs the free stages only. It does not call the agent. For a
+question of a different type, it tells you that it cannot answer. It then shows
+you a question of each type that it does answer. To reach the agent, start the
+chat application.
 
-## The five corpora that ship
+## Start the chat application
 
-They are deliberately unalike, and **no two share a single attribute name**.
-Chess pieces carry a piece value and a notation symbol, poker cards carry a rank
-and a suit, and a deed carries a price and five levels of rent. Same format,
-same code, no change between them.
+```bash
+pnpm rulekit build data/riftbound   # 65 ms for 3317 rules and 941 cards
+cd examples/next-app
+cp .env.example .env                # write one model key in this file
+pnpm dev                            # http://localhost:3210
+```
+
+A new clone gives you a working chat in 21 seconds. The first build of the
+example application takes 17 of those seconds.
+
+To check the repository, run `pnpm lint && pnpm check-types && pnpm test`. The
+tests use no model and no network.
+
+## The five corpora in this repository
+
+The five corpora are different from each other on purpose, and **no two of them
+use the same attribute name**. A chess piece has a piece value and a notation
+symbol. A poker card has a rank and a suit. A deed has a price and five levels
+of rent. The format is the same for all five, and the code does not change.
 
 | Corpus | The game | Rules | Terms | Its named pieces |
 |---|---|---|---|---|
@@ -58,63 +81,67 @@ same code, no change between them.
 | `data/demo/` | An invented trading card game | 27 | 6 | 12 cards |
 | `data/riftbound/` | Riftbound | 3317 | 25 | 941 cards |
 
-## How an answer is made
+## How the assistant makes an answer
 
-A question goes through a chain of stages. The first stage that can answer wins.
+A question goes through a set of stages in order. The assistant uses the first
+stage that can answer.
 
 | Stage | It answers | It costs |
 |---|---|---|
-| Exact cache | A question somebody asked before | Nothing |
+| Exact cache | A question that somebody asked before | Nothing |
 | Static answers | "What does rule 300.2 say?", "Is X banned?" | Nothing |
 | Glossary | "What is Shield?" | Nothing |
 | **The agent** | Every other question | One model turn |
 
-Only a question that all three stages miss goes to the agent. The agent searches
-the corpus with tools, then writes an answer with sources.
-[`docs/architecture.md`](docs/architecture.md) draws all four steps.
+If the three free stages give no answer, the agent answers the question. The
+agent searches the corpus with tools, then it writes an answer with its sources.
+[`docs/architecture.md`](docs/architecture.md) shows all four steps as diagrams.
 
 ## The packages
 
-| Package | What it holds |
+| Package | What it contains |
 |---|---|
 | `@rulekit/corpus` | The JSON schema, a SQLite builder, and one read interface |
 | `@rulekit/agent` | Tools, instructions, procedures, and an AI SDK runtime |
 | `@rulekit/pipeline` | The stages, the cache, the permission check, and credentials |
 | `@rulekit/server` | One HTTP handler that uses web standards |
 | `@rulekit/react` | Hooks with no styling |
-| `@rulekit/ui` | Chat components, themed with CSS variables |
+| `@rulekit/ui` | Chat components, with CSS variables for the theme |
 | `@rulekit/cli` | `rulekit validate`, `build`, `init`, `ask`, and `eval` |
 
-Nothing is published to npm. Fork this repository, or copy `packages/` into
-another one. `templates/eve-agent` holds the same agent on
-[Vercel Eve](https://eve.dev), and `examples/next-app` holds a chat you can copy.
+This project publishes no package to npm. Make a fork of this repository, or
+copy `packages/` into a different one. The directory `templates/eve-agent`
+contains the same agent on [Vercel Eve](https://eve.dev). The directory
+`examples/next-app` contains a chat that you can copy.
 
-## Where to go next
+## Where to read more
 
-| Document | It covers |
+| Document | What it covers |
 |---|---|
-| [`docs/adding-a-game.md`](docs/adding-a-game.md) | Write a corpus and a profile for your own game |
-| [`docs/corpus-format.md`](docs/corpus-format.md) | Every field of the eight JSON files |
-| [`docs/architecture.md`](docs/architecture.md) | How a corpus becomes an agent, and how a turn runs |
-| [`docs/verifying-answers.md`](docs/verifying-answers.md) | Prove that the answers invent nothing |
-| [`docs/design-decisions.md`](docs/design-decisions.md) | Why a file, no data collection, and no pricing model |
+| [`docs/adding-a-game.md`](docs/adding-a-game.md) | How to write a corpus and a profile for your own game |
+| [`docs/corpus-format.md`](docs/corpus-format.md) | Each field of the eight JSON files |
+| [`docs/architecture.md`](docs/architecture.md) | How the code makes an agent, and how one turn runs |
+| [`docs/verifying-answers.md`](docs/verifying-answers.md) | How to prove that the answers invent nothing |
+| [`docs/design-decisions.md`](docs/design-decisions.md) | Why one file, no data collection, and no price |
 
-`.claude/skills/` holds six skills that tell an AI coding agent how to put
-rulekit into an application. Start with the `rulekit` skill. It sends the agent
-to the correct one of the other five.
+The directory `.claude/skills/` contains six skills. They tell an AI coding
+agent how to add rulekit to an application. Read the `rulekit` skill first. It
+sends the agent to the correct one of the other five.
 
 ## Licence
 
-**Apache 2.0 for the code**: everything in `packages/`, `templates/`, and
-`examples/`. **Game data carries its own terms**, and the Apache licence does not
-cover `data/`. Four of the five corpora are CC0 1.0 public domain and were
-written for this project. `data/riftbound/` is Riot Games' property and permits
-non-commercial use only.
+**The code uses the Apache 2.0 licence.** This covers `packages/`, `templates/`,
+and `examples/`.
+
+**Each corpus has its own terms of use.** The Apache licence does not cover
+`data/`. Four of the five corpora use the CC0 1.0 licence, and this project
+wrote them. The corpus `data/riftbound/` is the property of Riot Games, and its
+terms permit non-commercial use only.
 
 To use rulekit in a commercial product, use one of the four public-domain
-corpora, or supply your own. [`data/README.md`](data/README.md) states every
-term in full, and `NOTICE` travels with every copy of the code.
+corpora, or supply your own. [`data/README.md`](data/README.md) states each term
+in full, and the `NOTICE` file is included with every copy of the code.
 
-rulekit was created under Riot Games' "Legal Jibber Jabber" policy using assets
-owned by Riot Games. Riot Games does not endorse or sponsor this project.
-Riftbound and Riot Games are trademarks of Riot Games, Inc.
+Riot Games' "Legal Jibber Jabber" policy permitted the creation of rulekit with
+assets that Riot Games owns. Riot Games does not endorse or sponsor this
+project. Riftbound and Riot Games are trademarks of Riot Games, Inc.

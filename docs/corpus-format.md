@@ -1,54 +1,55 @@
 # The corpus format
 
-A corpus is a directory of JSON files. It is the only input this project takes,
-and how you produce it is entirely yours.
+A corpus is a directory of JSON files. It is the only input that this project
+accepts, and you decide how to produce it.
 
-Start by copying the worked example:
+Start with a copy of the complete example:
 
 ```bash
 pnpm rulekit init my-game
 pnpm rulekit validate my-game
 ```
 
-`data/demo/` is that example. Every field below appears in it.
+The directory `data/demo/` is that example. Every field below appears in it.
 
 ## The files
 
-| File | Holds | Required |
+| File | What it holds | Necessary |
 |---|---|---|
-| `game.json` | The game's name and slug | Yes |
+| `game.json` | The name and the slug of the game | Yes |
 | `rules.json` | Every rule | Yes |
-| `rulebooks.json` | The books the rules belong to | Yes |
+| `rulebooks.json` | The books that hold the rules | Yes |
 | `sections.json` | The chapters inside a book | Yes |
-| `terms.json` | Defined terms and keywords | Yes, may be empty |
-| `errata.json` | Published changes to a piece's text | Yes, may be empty |
-| `banlist.json` | Banned and restricted cards | Yes, may be empty |
-| `patch-notes.json` | Update notes | Yes, may be empty |
-| `cards.json` | The pieces of the game a player can name | Yes, may be empty |
-| `profile.json` | How the assistant talks about this game | No, but write one |
+| `terms.json` | Defined terms and keywords | Yes. It can be empty. |
+| `errata.json` | Published changes to the text of a piece | Yes. It can be empty. |
+| `banlist.json` | Banned and restricted cards | Yes. It can be empty. |
+| `patch-notes.json` | Update notes | Yes. It can be empty. |
+| `cards.json` | The pieces of the game that a player can name | Yes. It can be empty. |
+| `profile.json` | How the assistant speaks about this game | No. Write one. |
 
-A file that must exist may hold an empty list. A missing file fails the load,
-because "empty" and "I forgot to write this" must not look the same.
+A necessary file can hold an empty list. An absent file stops the load. "This
+list is empty" and "I forgot to write this file" must look different.
 
-**An empty file costs nothing at run time.** The assistant is offered a tool for
+**An empty file costs nothing at run time.** The assistant gets a tool for
 `errata.json`, `banlist.json`, and `patch-notes.json` only when that file holds
-something. A game with no banned list is never offered a tool for one, so it
-never spends a turn reading an empty answer.
+a row. A game with no banned list therefore gets no banned-list tool, and it
+never spends a turn on an empty answer.
 
-## The shape of every file
+## The format of every file
 
-Each file is an object, not a bare list:
+Each file is an object, and not a list:
 
 ```json
 { "schemaVersion": 2, "items": [] }
 ```
 
-`game.json` is the exception: `{ "schemaVersion": 2, "game": { ... } }`.
+The file `game.json` is the exception:
+`{ "schemaVersion": 2, "game": { ... } }`.
 
-**`schemaVersion` is checked before anything is read.** A version the reader does
-not know is refused outright rather than read anyway, because a field that moved
-between versions would otherwise arrive empty and an assistant that quietly lost
-`content` answers every question from nothing.
+**The loader examines `schemaVersion` before it reads anything else.** It
+refuses a version that it does not know, and it does not read the file. A field
+that moved between versions would otherwise arrive empty. An assistant that lost
+its `content` field answers every question from nothing.
 
 ## game.json
 
@@ -56,29 +57,29 @@ between versions would otherwise arrive empty and an assistant that quietly lost
 { "schemaVersion": 2, "game": { "slug": "paper-kingdoms", "name": "Paper Kingdoms" } }
 ```
 
-The corpus names itself and nothing else. How the assistant *talks* about the
-game belongs in `profile.json`.
+The corpus states its own name here, and nothing else. The way that the
+assistant speaks about the game belongs in `profile.json`.
 
 ## rulebooks.json
 
 | Field | Type | Notes |
 |---|---|---|
-| `id` | string | Unique. Anything stable. |
+| `id` | string | Unique. Any stable value. |
 | `name` | string | |
 | `slug` | string | |
 | `version` | string or null | |
 | `effective_date` | string or null | `YYYY-MM-DD` |
-| `is_active` | boolean | Defaults to true |
+| `is_active` | boolean | The default is true |
 
-The order matters. When a rule number appears in more than one book, the first
-active book in this list wins.
+The order is important. When a rule number appears in more than one book, the
+code uses the first active book in this list.
 
 ## sections.json
 
 | Field | Type | Notes |
 |---|---|---|
 | `id` | string | Unique |
-| `rule_book_id` | string | Must name a rulebook |
+| `rule_book_id` | string | It must name a rulebook |
 | `section_number` | string | |
 | `title` | string | |
 | `slug` | string or null | |
@@ -87,44 +88,44 @@ active book in this list wins.
 
 ## rules.json
 
-The important file.
+This is the most important file.
 
 | Field | Type | Notes |
 |---|---|---|
 | `id` | string | Unique |
-| `rule_book_id` | string | Must name a rulebook |
-| `section_id` | string or null | Must name a section |
-| `parent_id` | string or null | Must name another rule |
-| `rule_number` | string | As printed, e.g. `300.2.a` |
+| `rule_book_id` | string | It must name a rulebook |
+| `section_id` | string or null | It must name a section |
+| `parent_id` | string or null | It must name a different rule |
+| `rule_number` | string | As printed, for example `300.2.a` |
 | `slug` | string or null | |
 | `title` | string or null | |
-| `content` | string | The rule text. May be empty for a heading |
+| `content` | string | The rule text. It can be empty for a heading. |
 | `example` | string or null | |
 | `depth` | number | 0 for a top-level rule |
-| `display_order` | number | Order among its siblings |
+| `display_order` | number | The order among the rules at the same level |
 | `rule_type` | string | `rule`, `sub_rule`, `section_header` |
 | `keywords` | string[] | |
-| `cross_references` | string[] | Rule NUMBERS this rule points at |
+| `cross_references` | string[] | The rule NUMBERS that this rule points at |
 | `is_deprecated` | boolean | |
 | `deprecation_note` | string or null | |
 
-Three fields decide whether the assistant works well:
+Three fields decide the quality of the assistant:
 
-**`parent_id` is data, not something to infer.** Rule numbers repeat across
-books, so the same number can name two rules with two different parents. Write
-the link; do not expect it to be derived.
+**`parent_id` is data. The code does not calculate it.** Rule numbers repeat
+between books, so one number can name two rules with two different parents.
+Write the link.
 
-**`rule_type` separates a heading from a rule.** A heading with empty `content`
-is kept out of search results, because a search that returns blank rows puts
+**`rule_type` separates a heading from a rule.** The code keeps a heading with
+empty `content` out of the search results. A search that returns empty rows puts
 nothing at the top of the answer.
 
-**`is_deprecated` keeps superseded text out of search.** A deprecated rule stays
-reachable by number, so somebody can still look it up, but it never answers a
-current question. Quoting superseded text as current is a wrong answer, not an
-incomplete one.
+**`is_deprecated` keeps superseded text out of the search results.** A rule with
+this flag stays available by its number, so a reader can still find it, and it
+never answers a current question. A quotation of superseded text as current text
+is a wrong answer, and not an incomplete one.
 
-`cross_references` holds rule NUMBERS, not ids, because that is what a printed
-rule cites. They are resolved inside the same book.
+The field `cross_references` holds rule NUMBERS, and not ids, because a printed
+rule cites a number. The code resolves them inside the same book.
 
 ## terms.json
 
@@ -135,30 +136,31 @@ rule cites. They are resolved inside the same book.
 | `slug` | string | |
 | `definition` | string | The full definition |
 | `short_definition` | string or null | |
-| `category` | string or null | e.g. `keyword_ability` |
-| `aliases` | string[] | Other spellings readers use |
-| `defining_rule_id` | string or null | Must name a rule |
+| `category` | string or null | For example `keyword_ability` |
+| `aliases` | string[] | Other spellings that readers use |
+| `defining_rule_id` | string or null | It must name a rule |
 | `defining_rule_number` | string or null | |
 
-Terms are what make "what is X?" free and exact. `aliases` matter more than they
-look: a reader who types a synonym reaches the definition or reaches nothing.
+The terms make "what is X?" free and exact. The field `aliases` is more valuable
+than it appears. A reader who types a synonym reaches the definition, or reaches
+nothing.
 
 ## cards.json
 
 | Field | Type |
 |---|---|
-| `id`, `name` | string, required |
+| `id`, `name` | string, necessary |
 | `type_line`, `rarity`, `set_name` | string or null |
 | `png_uri` | string or null |
-| `tags` | list of strings |
-| `text` | a map of your own text-box names to their text |
-| `stats` | a map of your own attribute names to their values |
+| `tags` | a list of strings |
+| `text` | a map from your own text-box names to their text |
+| `stats` | a map from your own attribute names to their values |
 
 **"Cards" means the pieces of your game that a player can name.** The word comes
-from trading card games, and it fits them, but the file is for any nameable
-game object. Fill it with whatever a player points at and asks about:
+from trading card games, and it fits them. The file also accepts any game object
+that has a name. Put the things that a player points at into it:
 
-| Your game | What goes in `cards.json` |
+| Your game | What goes into `cards.json` |
 |---|---|
 | A trading card game | The cards |
 | Chess | The six pieces. `data/chess/` does this. |
@@ -166,18 +168,18 @@ game object. Fill it with whatever a player points at and asks about:
 | A property board game | The deeds and the fortune cards. `data/estate-line/` does this. |
 | A sport | The positions, or the equipment |
 
-**Leave it empty only when your game has no nameable pieces at all.** A reader
-who asks "what is a knight" gets a real answer when the knight is in this file,
-and gets nothing when it is not.
+**Leave this file empty only when your game has no pieces that a player can
+name.** A reader who asks "what is a knight" gets a real answer when the knight
+is in this file. That reader gets nothing when the knight is absent.
 
-A piece often belongs in `terms.json` as well. The two do different work: a term
-gives a short definition with no model call, and a card gives the numbers and
-the printed text the assistant reasons with. `data/chess/` lists each piece in
-both.
+A piece often belongs in `terms.json` as well. The two files do different work.
+A term gives a short definition with no model call. A card gives the numbers and
+the printed text that the assistant reads. The corpus `data/chess/` lists each
+piece in both files.
 
-Only identity is fixed, because only identity is the same in every game. Your
-game's text boxes and printed attributes go in the two maps, under whatever
-names your game prints:
+Only the identity of a card is fixed, because only the identity is the same in
+every game. The text boxes and the printed attributes of your game go in the two
+maps, under the names that your game prints:
 
 ```json
 {
@@ -187,7 +189,7 @@ names your game prints:
 }
 ```
 
-The same file, for a game with no cards in it at all:
+Here is the same file for a game that has no cards:
 
 ```json
 {
@@ -197,35 +199,38 @@ The same file, for a game with no cards in it at all:
 }
 ```
 
-A game with Attack and Defence writes those keys. Nobody carries anybody else's
-empty columns, and nothing is called `mana_cost` in a game that has no mana.
+A game with Attack and Defence writes those two keys. No game holds the empty
+columns of a different game, and no field is called `mana_cost` in a game that
+has no mana.
 
-**A key with no value must be absent, not empty.** `"flavor_text": null` and
-`"flavor_text": ""` are both dropped on load, because "this card has no flavour
-text" and "this game has no flavour text" are the same thing to a reader, and an
-empty field sent to a model invites it to remark on the absence.
+**A key with no value must be absent.** The loader removes both
+`"flavor_text": null` and `"flavor_text": ""`. To a reader, "this card has no
+flavour text" and "this game has no flavour text" are the same. An empty field
+also invites the model to write a sentence about the absence.
 
-**`text` usually holds more than one box.** An equipment card commonly prints
-almost nothing in its own box and everything in the box its holder gains. Name
-each one in `profile.json` so the assistant reads all of them before it says a
-card does not do something.
+**The `text` map usually holds more than one box.** An equipment card often
+prints almost nothing in its own box, and everything in the box that its holder
+gains. Name each box in `profile.json`. The assistant then reads all of them
+before it states that a card does not do something.
 
-A `stats` value can be a number, a string, or a list. The type survives the round
-trip through the database unchanged, so a `2` comes back as a number.
+A value in `stats` can be a number, a text string, or a list. The type stays the
+same through the database, so a `2` returns as a number.
 
-**Describe a value whose name does not explain it.** A stat reaches the
-assistant as a bare name and a number, which is enough for `rarity` and not
-enough for `price: 70`, which names no currency, or `rank_value: 14`, which
-names no scale. `cards.statFields` in `profile.json` gives each one a sentence.
-List only the values a reader could not work out: a described stat costs prompt
-on every card question, and "price is the price" teaches nothing.
+**Describe a value whose name does not explain it.** A value reaches the
+assistant as a name and a number. That is enough for `rarity`. It is not enough
+for `price: 70`, which names no currency, or for `rank_value: 14`, which names
+no scale. The field `cards.statFields` in `profile.json` gives each one a
+sentence. List only the values that a reader cannot calculate. Each described
+value costs prompt text for every card question, and "price is the price"
+teaches nothing.
 
-`png_uri` is a relative path. Nothing renders it until a host app says where
-images live, via `cardImageUrl` on the provider.
+The field `png_uri` holds a relative path. Nothing shows the image until a host
+application states where the images are, with `cardImageUrl` on the provider.
 
 ## errata.json and banlist.json
 
-Both name a card inline, so a legality answer needs no card lookup:
+Both files name a card inside the row, so a legality answer needs no card
+lookup:
 
 ```json
 { "id": "ban-001",
@@ -236,35 +241,37 @@ Both name a card inline, so a legality answer needs no card lookup:
   "reason": "…" }
 ```
 
-Errata carries `original_text`, `errata_text`, and `explanation` instead of a
+An erratum holds `original_text`, `errata_text`, and `explanation` in place of a
 format and a type.
 
-**`effective_date` is not optional in practice.** The assistant will not state
-that a card is *not* banned unless the list carries a date, because a verdict
-with no date cannot be audited against the list it was read from.
+**In practice, `effective_date` is necessary.** The assistant does not state
+that a card is legal unless the list holds a date. Nobody can audit a statement
+with no date against the list that produced it.
 
 ## patch-notes.json
 
-`id`, `slug`, `title`, `version`, `effective_date`, `category`, `summary`,
-`body`, plus `affected_rule_ids` and `affected_card_ids`.
+This file holds `id`, `slug`, `title`, `version`, `effective_date`, `category`,
+`summary`, and `body`. It also holds `affected_rule_ids` and
+`affected_card_ids`.
 
-## What validation checks
+## What validation examines
 
-`rulekit validate` checks more than shapes:
+The command `rulekit validate` examines more than the format:
 
 - Every `rule_book_id`, `section_id`, `parent_id`, and `defining_rule_id` names
   something that exists.
-- No rule is its own parent, and no parent chain forms a cycle. A cycle hangs
-  every tool that walks upward, and finding it here costs a second.
-- The corpus holds at least one rule.
+- No rule is its own parent, and no chain of parents forms a cycle. A cycle
+  stops every tool that reads upward, and this check finds it in one second.
+- The corpus holds one rule or more.
 
-A row that fails validation is dropped and reported; the rest still load. One
-malformed card must not cost a reader the whole rulebook.
+The loader removes a row that fails validation, and it reports that row. The
+other rows still load. One incorrect card must not cost a reader the whole
+rulebook.
 
-## Producing a corpus
+## How to produce a corpus
 
-However you like. Write the JSON by hand, export it from a database you already
-have, or write a scraper in any language. This project ships no importer on
-purpose: data collection is where every source-specific detail lives, and a
-project carrying none of it stays neutral and does not go stale when somebody
-else changes their page.
+Use any method. Write the JSON by hand, export it from a database that you
+already have, or write a scraper in any language. This project ships no importer
+on purpose. Data collection holds every detail that is specific to one source. A
+project with no importer stays neutral, and it stays correct when another person
+changes their page.
