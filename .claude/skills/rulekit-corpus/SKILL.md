@@ -109,14 +109,17 @@ Then add these, in this order of value:
 1. **`cards.textFields`**: every text box a card uses. **This is the highest
    value line in the file.** Without it a model reads the first box, finds an
    equip line, and reports that the card does nothing.
-2. **`cards.statFields`**: the printed values whose names do not explain them.
+2. **`cards.noun`**: what the game calls one piece. Every sentence the model
+   reads about the card tools is built from it, so chess sets `"piece"` and its
+   tools say "find Chess pieces". It defaults to `"card"`.
+3. **`cards.statFields`**: the printed values whose names do not explain them.
    `price: 70` names no currency. `rank_value: 14` names no scale. List only
    those: `rarity` explains itself, and each entry costs prompt on every card
    question.
-3. **`vocabulary`**: the game's own words. A model trained on other games
+4. **`vocabulary`**: the game's own words. A model trained on other games
    reaches for their words, and a player loses trust fast.
-4. **`tokens`**: how symbols are written, if the game has them.
-5. **`scope`**: what to answer, and what to refuse.
+5. **`tokens`**: how symbols are written, if the game has them.
+6. **`scope`**: what to answer, and what to refuse.
 
 Set `cards.enabled` to `false` **only when the game has no nameable pieces at
 all**. The card tools are then not registered, which is right for a corpus that

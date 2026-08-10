@@ -50,7 +50,8 @@
         "field": "suit_symbol",
         "describes": "The one letter that stands for the suit in hand notation, such as s for Spades."
       }
-    ]
+    ],
+    "noun": "card"
   },
   "tokens": {
     "syntax": "[As] for the ace of spades, or [Kh] for the king of hearts. The first letter is the rank, the second letter is the suit.",

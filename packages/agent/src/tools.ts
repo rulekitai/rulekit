@@ -1,7 +1,7 @@
 import type { RuleStore } from "@rulekit/corpus/store"
 import type { Card, Rule } from "@rulekit/corpus/types"
 import { z } from "zod"
-import type { Profile } from "./profile.ts"
+import { type Profile, pieceNoun } from "./profile.ts"
 
 /**
  * One tool, in the shape every runtime here accepts.
@@ -84,16 +84,56 @@ const limitField = (fallback: number) =>
  * tool that does not exist cannot be called, which is a stronger guarantee than
  * a list of operations somebody has to keep correct.
  */
-export function defineRulesTools(store: RuleStore, profile: Profile): RuleTool[] {
+/**
+ * What a corpus actually holds, so a tool that can answer nothing is not offered.
+ *
+ * A game with no banned list still had a tool for one. The model spends a step
+ * calling it, reads an empty list, and learns that this project's tools return
+ * nothing. Chess, poker, and the property game each carried three such tools.
+ */
+export type CorpusContents = {
+  errata: boolean
+  banlist: boolean
+  patchNotes: boolean
+}
+
+/** Read which collections hold anything. One cheap count each. */
+export async function corpusContents(store: RuleStore): Promise<CorpusContents> {
+  const [errata, banlist, patchNotes] = await Promise.all([
+    store.listErrata({ limit: 1 }),
+    store.listBanlist({ limit: 1 }),
+    store.listPatchNotes({ limit: 1 }),
+  ])
+  return { errata: errata.length > 0, banlist: banlist.length > 0, patchNotes: patchNotes.length > 0 }
+}
+
+const ALL_PRESENT: CorpusContents = { errata: true, banlist: true, patchNotes: true }
+
+export function defineRulesTools(
+  store: RuleStore,
+  profile: Profile,
+  contents: CorpusContents = ALL_PRESENT,
+): RuleTool[] {
   const game = profile.game.name
+  const { one: piece, many: pieces } = pieceNoun(profile)
+
+  // Name only the collections this corpus holds. A list of five where two are
+  // always empty teaches the model to expect nothing from any of them.
+  const searchable = [
+    "rules",
+    "defined terms",
+    contents.errata ? `changes to a ${piece}'s text` : null,
+    contents.banlist ? "the banned and restricted list" : null,
+    contents.patchNotes ? "update notes" : null,
+  ].filter(Boolean)
 
   const tools: RuleTool[] = [
     {
       name: "search_all",
       description:
-        `Search every ${game} collection at once: rules, defined terms, card changes, the banned and ` +
-        "restricted list, and update notes. This is the right FIRST call for almost any question — a " +
-        "topic, a card name, or a rule in plain words. Use a more specific tool only when this misses.",
+        `Search every ${game} collection at once: ${searchable.join(", ")}. This is the right FIRST ` +
+        `call for almost any question — a topic, the name of a ${piece}, or a rule in plain words. ` +
+        "Use a more specific tool only when this misses.",
       inputSchema: z.object({
         query: z.string().min(1).describe("The reader's question, or the key words from it"),
         limit: limitField(8),
@@ -124,7 +164,7 @@ export function defineRulesTools(store: RuleStore, profile: Profile): RuleTool[]
       name: "search_rules",
       description:
         "Search the rule text only. Use it when a question is about the rules and a wider search " +
-        "returned card rows that got in the way. Superseded rules are left out.",
+        `returned ${piece} rows that got in the way. Superseded rules are left out.`,
       inputSchema: z.object({
         query: z.string().min(1).describe("Words to search the rule text for"),
         limit: limitField(8),
@@ -214,64 +254,6 @@ export function defineRulesTools(store: RuleStore, profile: Profile): RuleTool[]
     },
 
     {
-      name: "list_errata",
-      description:
-        "Read the published changes to a card's printed text. Use it whenever a reader asks whether a " +
-        "card was changed, reworded, or corrected. Report the corrected text, the original text, and " +
-        "the effective date. Call it with no card name to read every change.",
-      inputSchema: z.object({
-        card_name: z.string().optional().describe("The card's printed name. Omit to read them all."),
-        limit: limitField(20),
-      }),
-      async execute(input: { card_name?: string; limit?: number }) {
-        const rows = await store.listErrata({ cardName: input.card_name, limit: input.limit ?? 20 })
-        return { errata: rows, count: rows.length }
-      },
-    },
-
-    {
-      name: "list_banlist",
-      description:
-        "Read which cards are banned or restricted, and in which format. Use it for any question about " +
-        "whether a card may be played. Report the entry type and the effective date. An empty result " +
-        "means the list holds no entry for that card — say that, and say which list you read.",
-      inputSchema: z.object({
-        card_name: z.string().optional().describe("The card's printed name. Omit to read the whole list."),
-        format: z.string().optional().describe("Limit to one format, by name or slug"),
-        limit: limitField(20),
-      }),
-      async execute(input: { card_name?: string; format?: string; limit?: number }) {
-        const rows = await store.listBanlist({
-          cardName: input.card_name,
-          format: input.format,
-          limit: input.limit ?? 20,
-        })
-        return { entries: rows, count: rows.length }
-      },
-    },
-
-    {
-      name: "list_patch_notes",
-      description:
-        "Read the update notes: what changed in the rules or on the cards, and when. Use it for a " +
-        "question about recent changes, or to name the source of a change you are reporting.",
-      inputSchema: z.object({
-        slug: z.string().optional().describe("Read one note in full by its slug"),
-        limit: limitField(10),
-      }),
-      async execute(input: { slug?: string; limit?: number }) {
-        if (input.slug) {
-          const note = await store.getPatchNote(input.slug)
-          return note ? { note } : { note: null, error: "No update note carries that slug." }
-        }
-        const notes = await store.listPatchNotes({ limit: input.limit ?? 10 })
-        // The body of every note at once is a large payload nothing reads. The
-        // summary is enough to choose one, and `slug` fetches that one in full.
-        return { notes: notes.map(({ body: _body, ...rest }) => rest) }
-      },
-    },
-
-    {
       name: "list_rulebooks",
       description:
         "List the rulebooks in this corpus, with their versions and effective dates. Use it when a " +
@@ -302,6 +284,77 @@ export function defineRulesTools(store: RuleStore, profile: Profile): RuleTool[]
   // Card tools exist only when the corpus holds cards. A tool that can only
   // answer "nothing found" wastes a step and teaches the model to distrust the
   // result, so it is better not to offer it.
+  // Offered only when the corpus holds one. A tool that can answer nothing
+  // costs a step and teaches the model that these tools return nothing.
+  if (contents.errata)
+    tools.push({
+      name: "list_errata",
+      description:
+        `Read the published changes to a ${piece}'s printed text. Use it whenever a reader asks ` +
+        `whether a ${piece} was changed, reworded, or corrected. Report the corrected text, the ` +
+        `original text, and the effective date. Call it with no name to read every change.`,
+      inputSchema: z.object({
+        card_name: z.string().optional().describe(`The ${piece}'s printed name. Omit to read them all.`),
+        limit: limitField(20),
+      }),
+      async execute(input: { card_name?: string; limit?: number }) {
+        const rows = await store.listErrata({ cardName: input.card_name, limit: input.limit ?? 20 })
+        return { errata: rows, count: rows.length }
+      },
+    })
+
+  // Offered only when the corpus holds one. A tool that can answer nothing
+  // costs a step and teaches the model that these tools return nothing.
+  if (contents.banlist)
+    tools.push({
+      name: "list_banlist",
+      description:
+        `Read which ${pieces} are banned or restricted, and in which format. Use it for any question ` +
+        `about whether a ${piece} may be played. Report the entry type and the effective date. An ` +
+        `empty result means the list holds no entry for that ${piece} — say that, and say which list ` +
+        "you read.",
+      inputSchema: z.object({
+        card_name: z
+          .string()
+          .optional()
+          .describe(`The ${piece}'s printed name. Omit to read the whole list.`),
+        format: z.string().optional().describe("Limit to one format, by name or slug"),
+        limit: limitField(20),
+      }),
+      async execute(input: { card_name?: string; format?: string; limit?: number }) {
+        const rows = await store.listBanlist({
+          cardName: input.card_name,
+          format: input.format,
+          limit: input.limit ?? 20,
+        })
+        return { entries: rows, count: rows.length }
+      },
+    })
+
+  // Offered only when the corpus holds one. A tool that can answer nothing
+  // costs a step and teaches the model that these tools return nothing.
+  if (contents.patchNotes)
+    tools.push({
+      name: "list_patch_notes",
+      description:
+        `Read the update notes: what changed in the rules or on the ${pieces}, and when. Use it for ` +
+        "a question about recent changes, or to name the source of a change you are reporting.",
+      inputSchema: z.object({
+        slug: z.string().optional().describe("Read one note in full by its slug"),
+        limit: limitField(10),
+      }),
+      async execute(input: { slug?: string; limit?: number }) {
+        if (input.slug) {
+          const note = await store.getPatchNote(input.slug)
+          return note ? { note } : { note: null, error: "No update note carries that slug." }
+        }
+        const notes = await store.listPatchNotes({ limit: input.limit ?? 10 })
+        // The body of every note at once is a large payload nothing reads. The
+        // summary is enough to choose one, and `slug` fetches that one in full.
+        return { notes: notes.map(({ body: _body, ...rest }) => rest) }
+      },
+    })
+
   if (profile.cards.enabled) {
     const textFields = profile.cards.textFields.map((f) => f.field)
     const readAll = textFields.length
@@ -312,11 +365,11 @@ export function defineRulesTools(store: RuleStore, profile: Profile): RuleTool[]
       {
         name: "search_cards",
         description:
-          `Find ${game} cards by name, and get each one's id. This returns identity only, not the ` +
-          "card's text: pass the ids to get_cards to read what a card does. It also matches a " +
-          "description, so a reader who describes a card instead of naming it still reaches it.",
+          `Find ${game} ${pieces} by name, and get each one's id. This returns identity only, not ` +
+          `the text: pass the ids to get_cards to read what a ${piece} does. It also matches a ` +
+          `description, so a reader who describes a ${piece} instead of naming it still reaches it.`,
         inputSchema: z.object({
-          query: z.string().min(1).describe("A card name, part of one, or a description"),
+          query: z.string().min(1).describe(`A ${piece} name, part of one, or a description`),
           limit: limitField(8),
         }),
         async execute(input: { query: string; limit?: number }) {
@@ -327,8 +380,9 @@ export function defineRulesTools(store: RuleStore, profile: Profile): RuleTool[]
       {
         name: "get_cards",
         description:
-          `Read the full printed detail of one or more ${game} cards, by id, from search_cards. ` +
-          "Pass EVERY id in one call when a question involves several cards, such as an interaction." +
+          `Read the full printed detail of one or more ${game} ${pieces}, by id, from search_cards. ` +
+          `Pass EVERY id in one call when a question involves several ${pieces}, such as an ` +
+          "interaction." +
           readAll +
           " Ground every claim about a card in this text. Never rely on memory for card text.",
         inputSchema: z.object({

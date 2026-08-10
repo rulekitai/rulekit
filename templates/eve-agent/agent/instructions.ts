@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { buildInstructions } from "@rulekit/agent/instructions"
 import { parseProfile } from "@rulekit/agent/profile"
-import { builtinSkills } from "@rulekit/agent/skills"
 import { defineInstructions } from "eve/instructions"
 import { CORPUS_DIR } from "../lib/corpus.ts"
 
@@ -17,13 +16,15 @@ import { CORPUS_DIR } from "../lib/corpus.ts"
  * game's `profile.json` reaches both, and neither has a copy of the prompt that
  * somebody has to remember to update.
  *
- * The procedures are inlined here rather than loaded through Eve's own skill
- * mechanism. Eve would load one on demand, which costs a model call, and a turn
- * has few to spend.
+ * **The procedures are NOT inlined here.** Each one is a skill under
+ * `agent/skills/`, and Eve advertises only its description until a question
+ * matches it. Three procedures inlined would put all three in front of every
+ * question, and a rules question would carry the card procedure for nothing.
+ * The AI SDK runtime has no such mechanism, so it inlines them and pays for it.
  */
 
 const profile = parseProfile(JSON.parse(readFileSync(resolve(CORPUS_DIR, "profile.json"), "utf8")))
 
 export default defineInstructions({
-  markdown: buildInstructions(profile, { skills: builtinSkills() }),
+  markdown: buildInstructions(profile),
 })

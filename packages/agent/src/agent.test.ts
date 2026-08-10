@@ -12,7 +12,7 @@ import { minimalProfile, type Profile, parseProfile } from "./profile.ts"
 import * as proseModule from "./prose.ts"
 import { type AgentAnswer, resolveAnswer } from "./runtime.ts"
 import { builtinSkills, findSkill } from "./skills.ts"
-import { defineRulesTools, findTool, type RuleTool } from "./tools.ts"
+import { corpusContents, defineRulesTools, findTool, type RuleTool } from "./tools.ts"
 import {
   addStepUsage,
   buildMessage,
@@ -513,3 +513,68 @@ describe("the generated prose module", () => {
     assert.ok(SKILLS.some((s: { name: string }) => s.name === "card_lookup"))
   })
 })
+
+describe("tools describe the game they serve", () => {
+  const chessLike = (noun: string) =>
+    parseProfile({ game: { name: "Chess" }, cards: { enabled: true, noun } })
+
+  test("calls a piece what the game calls it", () => {
+    // "card" is a trading card game's word. A chess assistant offered a tool
+    // for "Chess cards" is being told its game has cards.
+    const store = SqliteStore.fromCorpus(EMPTY_CORPUS)
+    const search = findTool(defineRulesTools(store, chessLike("piece")), "search_cards")
+    assert.match(search?.description ?? "", /Chess pieces/)
+    assert.ok(!/Chess cards/.test(search?.description ?? ""))
+  })
+
+  test("keeps the word card for a game that uses it", () => {
+    const store = SqliteStore.fromCorpus(EMPTY_CORPUS)
+    const search = findTool(defineRulesTools(store, chessLike("card")), "search_cards")
+    assert.match(search?.description ?? "", /Chess cards/)
+  })
+
+  test("offers no tool for a collection the corpus does not hold", async () => {
+    // A tool that can only answer "nothing found" costs a step and teaches the
+    // model that these tools return nothing.
+    const store = SqliteStore.fromCorpus(EMPTY_CORPUS)
+    const contents = await corpusContents(store)
+    assert.deepEqual(contents, { errata: false, banlist: false, patchNotes: false })
+    const names = defineRulesTools(store, chessLike("piece"), contents).map((t) => t.name)
+    assert.ok(!names.includes("list_banlist"))
+    assert.ok(!names.includes("list_errata"))
+    assert.ok(!names.includes("list_patch_notes"))
+    assert.ok(names.includes("search_rules"), "the rule tools must stay")
+  })
+
+  test("offers them when the corpus does hold them", async () => {
+    const store = SqliteStore.fromCorpus({
+      ...EMPTY_CORPUS,
+      banlist: [
+        {
+          id: "b1",
+          card: null,
+          format: null,
+          entry_type: "banned",
+          effective_date: "2026-01-01",
+          reason: null,
+          patch_note_slug: null,
+          patch_note_title: null,
+        },
+      ],
+    })
+    const names = defineRulesTools(store, chessLike("card"), await corpusContents(store)).map((t) => t.name)
+    assert.ok(names.includes("list_banlist"))
+  })
+})
+
+const EMPTY_CORPUS = {
+  game: { slug: "g", name: "G" },
+  rulebooks: [],
+  sections: [],
+  rules: [],
+  terms: [],
+  cards: [],
+  errata: [],
+  banlist: [],
+  patchNotes: [],
+}

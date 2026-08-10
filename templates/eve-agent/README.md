@@ -44,6 +44,7 @@ pnpm dev
 | `agent/agent.ts` | Sets the model, its effort, and the session budget. |
 | `agent/instructions.ts` | Builds the prompt from the corpus profile. |
 | `agent/tools/<name>.ts` | One file for each tool. **Eve gives a tool the name of its file.** |
+| `agent/skills/<name>.ts` | One file for each procedure. **Eve gives a skill the name of its file.** |
 | `agent/channels/ask.ts` | Serves `POST /eve/v1/ask/stream`, and sends the shared events. |
 | `lib/rules-tools.ts` | Adapts the corpus tools. It sits outside `agent/` on purpose. |
 
@@ -65,6 +66,19 @@ understand. So:
    declares for the type system and does not create at run time.
    `lib/rules-tools.ts` converts the schema, so the Zod schema stays the one
    definition.
+
+## Why the procedures are skills here, and not in the prompt
+
+Eve shows the model only a skill's `description`, and it loads the body when a
+question matches. The AI SDK has no such mechanism, so that runtime puts every
+procedure in front of every question.
+
+Three procedures ship. A rules question that carries the card procedure and the
+timing procedure pays for two pages it does not use. So this template keeps each
+one in `agent/skills/`, and Eve loads the one that applies.
+
+Each file holds only the wiring. The procedure itself lives once, in
+`@rulekit/agent/skills`, and both runtimes read it from there.
 
 ## Why the built-in tools are off
 

@@ -79,6 +79,17 @@ export const profileSchema = z.object({
        * an empty string to have the model write plain names instead.
        */
       linkScheme: z.string().trim().default("card"),
+      /**
+       * What this game calls one of its named pieces.
+       *
+       * The tools are described to the model in words, and "card" is a trading
+       * card game's word. A chess assistant offered a tool for "Chess cards" is
+       * being told its game has cards, which is the first thing it should not
+       * believe. Chess sets "piece", and poker keeps "card".
+       */
+      noun: z.string().trim().min(1).default("card"),
+      /** The plural of `noun`, when adding an "s" gives the wrong word. */
+      nounPlural: z.string().trim().default(""),
       /** How many card images one answer may show inline. */
       maxInlineImages: z.number().int().min(0).default(3),
       /** Every text field a card can print, so no answer reads only the first. */
@@ -131,6 +142,18 @@ export type ProfileInput = z.input<typeof profileSchema>
  */
 export function parseProfile(input: unknown): Profile {
   return profileSchema.parse(input)
+}
+
+/**
+ * What to call one named piece of this game, and several of them.
+ *
+ * Every sentence the model reads about the card tools is built from these two
+ * words. A game that sets neither gets "card" and "cards", which is right for
+ * the games the word came from and wrong for chess.
+ */
+export function pieceNoun(profile: Profile): { one: string; many: string } {
+  const one = profile.cards.noun
+  return { one, many: profile.cards.nounPlural || `${one}s` }
 }
 
 /** A minimal profile, for a corpus with no card data and no symbols. */

@@ -30,6 +30,11 @@ pnpm rulekit validate my-game
 A file that must exist may hold an empty list. A missing file fails the load,
 because "empty" and "I forgot to write this" must not look the same.
 
+**An empty file costs nothing at run time.** The assistant is offered a tool for
+`errata.json`, `banlist.json`, and `patch-notes.json` only when that file holds
+something. A game with no banned list is never offered a tool for one, so it
+never spends a turn reading an empty answer.
+
 ## The shape of every file
 
 Each file is an object, not a bare list:

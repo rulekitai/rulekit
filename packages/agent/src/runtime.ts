@@ -3,7 +3,7 @@ import { type AgentEvent, deriveLabel, encodeEvent, type TraceStep } from "./eve
 import { buildInstructions } from "./instructions.ts"
 import type { Profile } from "./profile.ts"
 import { builtinSkills, type Skill } from "./skills.ts"
-import { defineRulesTools, type RuleTool } from "./tools.ts"
+import { corpusContents, defineRulesTools, type RuleTool } from "./tools.ts"
 import {
   addStepUsage,
   buildMessage,
@@ -150,7 +150,17 @@ const modelId = (model: string | LanguageModelLike): string =>
  * is.
  */
 export function createRulesAgent(options: RulesAgentOptions) {
-  const tools = [...defineRulesTools(options.store, options.profile), ...(options.extraTools ?? [])]
+  // Built on the first turn, not here, because knowing which collections hold
+  // anything needs a read and this function is not async. The answer cannot
+  // change while a process runs: a corpus is a file, opened read-only.
+  let toolsPromise: Promise<RuleTool[]> | null = null
+  const buildTools = (): Promise<RuleTool[]> => {
+    toolsPromise ??= corpusContents(options.store).then((contents) => [
+      ...defineRulesTools(options.store, options.profile, contents),
+      ...(options.extraTools ?? []),
+    ])
+    return toolsPromise
+  }
   // The card procedure is only useful where card tools exist. Including it for a
   // corpus with no cards would teach the model to call tools it does not have.
   const skills =
@@ -162,6 +172,7 @@ export function createRulesAgent(options: RulesAgentOptions) {
   async function* stream(input: AskInput): AsyncGenerator<AgentEvent> {
     const startedAt = Date.now()
     const { streamText, tool } = await loadAiSdk()
+    const tools = await buildTools()
 
     const toolMap = Object.fromEntries(
       tools.map((t) => [
@@ -317,7 +328,7 @@ export function createRulesAgent(options: RulesAgentOptions) {
     })
   }
 
-  return { stream, ask, toNdjsonStream, tools, instructions }
+  return { stream, ask, toNdjsonStream, tools: buildTools, instructions }
 }
 
 export type RulesAgent = ReturnType<typeof createRulesAgent>

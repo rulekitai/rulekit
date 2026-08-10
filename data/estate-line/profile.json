@@ -106,7 +106,8 @@
         "field": "rent_multiplier_one_works",
         "describes": "Multiply the dice roll by this number to get the rent, when the owner holds one works property."
       }
-    ]
+    ],
+    "noun": "card"
   },
   "tokens": {
     "syntax": "[House] or [Depot]",

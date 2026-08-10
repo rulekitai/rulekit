@@ -96,7 +96,8 @@
         "field": "starting_squares",
         "describes": "Where the piece stands at the start, given for White then Black."
       }
-    ]
+    ],
+    "noun": "piece"
   },
   "tokens": {
     "syntax": "A piece letter in brackets, such as [K], or a square and a move written in plain algebraic notation, such as e4 and Nf3",

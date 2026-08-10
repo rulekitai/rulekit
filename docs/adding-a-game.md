@@ -57,6 +57,7 @@ fast.
 ```json
 "cards": {
   "enabled": true,
+  "noun": "piece",
   "linkScheme": "card",
   "maxInlineImages": 3,
   "textFields": [
@@ -68,6 +69,12 @@ fast.
 
 **"Cards" means the pieces of your game a player can name.** Chess lists its six
 pieces. Poker lists the 52 cards of the pack. A property game lists its deeds.
+
+**Set `noun` to what your game calls one of them.** Every sentence the model
+reads about the card tools is built from it, so a chess assistant is offered a
+tool to "find Chess pieces" and never one for "Chess cards". It defaults to
+"card". Set `nounPlural` too when adding an "s" gives the wrong word.
+
 Set `enabled` to false only when your game has no nameable pieces at all, and
 the card tools are then not registered. Offering a tool that can only answer
 "nothing found" wastes a turn and teaches the model to distrust the result.
