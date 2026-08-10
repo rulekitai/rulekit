@@ -54,8 +54,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/ui
       ai:
-        specifier: ^6.0.0
-        version: 6.0.246(zod@3.25.76)
+        specifier: ^7.0.0
+        version: 7.0.58(zod@3.25.76)
       next:
         specifier: ^15.5.0
         version: 15.5.23(@opentelemetry/api@1.9.1)(@playwright/test@1.62.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -174,11 +174,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/corpus
       ai:
-        specifier: ^7.0.26
+        specifier: ^7.0.38
         version: 7.0.58(zod@3.25.76)
       eve:
-        specifier: ^0.24.0
-        version: 0.24.6(@opentelemetry/api@1.9.1)(ai@7.0.58(zod@3.25.76))
+        specifier: ^0.31.0
+        version: 0.31.3(@opentelemetry/api@1.9.1)(ai@7.0.58(zod@3.25.76))
       zod:
         specifier: ^3.25.0
         version: 3.25.76
@@ -773,13 +773,13 @@ packages:
   estree-util-is-identifier-name@3.0.0:
     resolution: {integrity: sha512-hFtqIDZTIUZ9BXLb8y4pYGyk6+wekIivNVTcmvk8NoOh+VeRn5y6cEHzbURrWbfp1fIqdVipilzj+lfaadNZmg==}
 
-  eve@0.24.6:
-    resolution: {integrity: sha512-/WuGD6gAzv7DviM0bN0y4813bJSbBTeiTHVUR1GAOIH7PUCOCFY7lXbrDOG7Wk/mTa2IBmT4Om3L+nudCc+02g==}
+  eve@0.31.3:
+    resolution: {integrity: sha512-/ae8kfsVLGoy68BU+7uNEkXeEQzOHWaXi0Q+Fj5oA2On5POcU0DGR9AnZlOaDQoFLoEtMxRnR1urTw4H0U2O7Q==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.0.0
-      ai: ^7.0.26
+      ai: ^7.0.38
       braintrust: ^3.0.0
       just-bash: ^3.0.0
       microsandbox: ^0.5.0
@@ -1193,6 +1193,10 @@ packages:
   undici@7.29.0:
     resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
     engines: {node: '>=20.18.1'}
+
+  undici@8.9.0:
+    resolution: {integrity: sha512-aWZpUj7XoGonMClx4gdDRfgBjqeA+F473aDmROQQbM9n6PRfK/u1q/a0X4wMTgcHfT8H6fpbt98PFuDUwFg2YA==}
+    engines: {node: '>=22.19.0'}
 
   unenv@2.0.0-rc.24:
     resolution: {integrity: sha512-i7qRCmY42zmCwnYlh9H2SvLEypEFGye5iRmEMKjcGi7zk9UquigRjFtTLz0TYqr0ZGLZhaMHl/foy1bZR+Cwlw==}
@@ -1683,10 +1687,11 @@ snapshots:
 
   estree-util-is-identifier-name@3.0.0: {}
 
-  eve@0.24.6(@opentelemetry/api@1.9.1)(ai@7.0.58(zod@3.25.76)):
+  eve@0.31.3(@opentelemetry/api@1.9.1)(ai@7.0.58(zod@3.25.76)):
     dependencies:
       ai: 7.0.58(zod@3.25.76)
       nitro: 3.0.260610-beta
+      undici: 8.9.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
     transitivePeerDependencies:
@@ -2414,6 +2419,8 @@ snapshots:
       '@fastify/busboy': 2.1.1
 
   undici@7.29.0: {}
+
+  undici@8.9.0: {}
 
   unenv@2.0.0-rc.24:
     dependencies:

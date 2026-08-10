@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { parseProfile } from "@rulekit/agent/profile"
-import { defineRulesTools } from "@rulekit/agent/tools"
-import { defineTool } from "eve/tools"
+import { corpusContents, defineRulesTools } from "@rulekit/agent/tools"
+import { defineTool, disableTool } from "eve/tools"
 import { zodToJsonSchema } from "zod-to-json-schema"
 import { CORPUS_DIR, corpusStore } from "./corpus.ts"
 
@@ -20,26 +20,28 @@ import { CORPUS_DIR, corpusStore } from "./corpus.ts"
 
 const profile = parseProfile(JSON.parse(readFileSync(resolve(CORPUS_DIR, "profile.json"), "utf8")))
 
-const byName = new Map(defineRulesTools(corpusStore(), profile).map((tool) => [tool.name, tool]))
+// Top-level await, because knowing which collections hold anything needs a read.
+// Eve builds this module once at discovery, so the cost is paid once.
+const contents = await corpusContents(corpusStore())
 
-/** Every tool this corpus offers. Each needs a file under `agent/tools/`. */
+const byName = new Map(defineRulesTools(corpusStore(), profile, contents).map((tool) => [tool.name, tool]))
+
+/** Every tool this corpus offers. A file exists for each name Eve can serve. */
 export const TOOL_NAMES = [...byName.keys()]
 
 /**
  * One tool, ready for Eve.
  *
- * Throws on a name the corpus does not offer, rather than registering an empty
- * tool. A tool that exists and does nothing is worse than one that is absent:
- * the model will call it, get nothing, and report that nothing exists.
+ * A file under `agent/tools/` exists for every tool this project can offer, and
+ * Eve reads the directory rather than a list. A corpus that holds no banned
+ * list therefore still has the file. Switching that tool off is the Eve way to
+ * say so, and it keeps the two runtimes offering the same set: a tool that
+ * exists and answers nothing is worse than one that is absent, because the
+ * model calls it, gets nothing, and reports that nothing exists.
  */
 export function eveTool(name: string) {
   const tool = byName.get(name)
-  if (!tool) {
-    throw new Error(
-      `No corpus tool is named "${name}". This file should be deleted, or the corpus profile ` +
-        `changed. Tools available: ${TOOL_NAMES.join(", ")}.`,
-    )
-  }
+  if (!tool) return disableTool()
   return defineTool({
     description: tool.description,
     // JSON Schema, NOT the Zod schema itself.

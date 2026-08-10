@@ -67,6 +67,16 @@ understand. So:
    `lib/rules-tools.ts` converts the schema, so the Zod schema stays the one
    definition.
 
+## The tools this corpus can serve, and no others
+
+A file under `agent/tools/` exists for every tool this project can offer, and
+Eve reads the directory rather than a list. So a corpus with no banned list
+still has the file. The adapter switches that tool off with `disableTool()`.
+
+Both runtimes then offer the same set. Measured: the Riftbound corpus gets 12
+tools, and the chess corpus gets 9, because chess holds no errata, no banned
+list, and no update notes.
+
 ## Why the procedures are skills here, and not in the prompt
 
 Eve shows the model only a skill's `description`, and it loads the body when a
