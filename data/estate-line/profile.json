@@ -7,32 +7,51 @@
   "vocabulary": [
     {
       "use": "Crown",
-      "insteadOf": ["dollar", "pound", "coin"],
+      "insteadOf": [
+        "dollar",
+        "pound",
+        "coin"
+      ],
       "means": "It names the money of Estate Line. The symbol is ₡."
     },
     {
       "use": "full district",
-      "insteadOf": ["colour group", "color set", "property set"],
+      "insteadOf": [
+        "colour group",
+        "color set",
+        "property set"
+      ],
       "means": "It names every property of one colour, owned by one player."
     },
     {
       "use": "Detour Yard",
-      "insteadOf": ["jail", "prison"],
+      "insteadOf": [
+        "jail",
+        "prison"
+      ],
       "means": "It names the corner space that holds a player out of play."
     },
     {
       "use": "works property",
-      "insteadOf": ["utility"],
+      "insteadOf": [
+        "utility"
+      ],
       "means": "It names the City Reservoir or the Power Exchange."
     },
     {
       "use": "depot",
-      "insteadOf": ["station", "railroad"],
+      "insteadOf": [
+        "station",
+        "railroad"
+      ],
       "means": "It names a transit property. The board holds four."
     },
     {
       "use": "The Gate",
-      "insteadOf": ["start", "go"],
+      "insteadOf": [
+        "start",
+        "go"
+      ],
       "means": "It names the start space. A player who passes it collects ₡200."
     }
   ],
@@ -61,13 +80,54 @@
         "field": "flavor_text",
         "describes": "a printed line of colour text that carries no rule"
       }
+    ],
+    "statFields": [
+      {
+        "field": "price",
+        "describes": "What the Bank charges for the property, in Crowns."
+      },
+      {
+        "field": "mortgage_value",
+        "describes": "What the Bank pays to mortgage the property, in Crowns. Redeeming it costs this amount plus one tenth."
+      },
+      {
+        "field": "rent_base",
+        "describes": "The rent for an unimproved property, in Crowns, when the owner does not hold the full district."
+      },
+      {
+        "field": "rent_full_district",
+        "describes": "The rent for an unimproved property, in Crowns, when one owner holds every property of the district."
+      },
+      {
+        "field": "board_position",
+        "describes": "Where the space sits on the loop of 44, counted from The Gate."
+      },
+      {
+        "field": "rent_multiplier_one_works",
+        "describes": "Multiply the dice roll by this number to get the rent, when the owner holds one works property."
+      }
     ]
   },
   "tokens": {
     "syntax": "[House] or [Depot]",
     "groups": [
-      { "label": "Buildings", "examples": ["[House]", "[Hotel]"] },
-      { "label": "Board spaces", "examples": ["[Gate]", "[Detour]", "[Commons]", "[Depot]", "[Works]"] },
+      {
+        "label": "Buildings",
+        "examples": [
+          "[House]",
+          "[Hotel]"
+        ]
+      },
+      {
+        "label": "Board spaces",
+        "examples": [
+          "[Gate]",
+          "[Detour]",
+          "[Commons]",
+          "[Depot]",
+          "[Works]"
+        ]
+      },
       {
         "label": "Districts",
         "examples": [

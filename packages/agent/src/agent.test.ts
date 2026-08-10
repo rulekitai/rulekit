@@ -254,6 +254,28 @@ describe("events", () => {
 describe("profile and instructions", () => {
   const demoProfile = parseProfile(JSON.parse(readFileSync(resolve(DEMO, "profile.json"), "utf8")))
 
+  test("describes a printed value the name does not explain", () => {
+    // A stat reaches the model as a bare name and a number. `price: 70` names
+    // no currency and `rank_value: 14` names no scale, so a profile can say
+    // what those mean rather than leave the model to guess.
+    const profile = parseProfile({
+      game: { name: "G" },
+      cards: {
+        enabled: true,
+        statFields: [{ field: "price", describes: "What the Bank charges, in Crowns." }],
+      },
+    })
+    const text = buildInstructions(profile)
+    assert.match(text, /`price` — What the Bank charges, in Crowns\./)
+  })
+
+  test("says nothing about values when a game describes none", () => {
+    // The section costs prompt on every card question, so an undescribed game
+    // must not pay for an empty heading.
+    const profile = parseProfile({ game: { name: "G" }, cards: { enabled: true } })
+    assert.ok(!buildInstructions(profile).includes("A card also prints values"))
+  })
+
   test("reads the demo profile", () => {
     assert.equal(demoProfile.game.name, "Paper Kingdoms")
     assert.equal(demoProfile.cards.enabled, true)

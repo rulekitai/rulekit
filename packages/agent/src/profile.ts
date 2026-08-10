@@ -29,6 +29,21 @@ export const cardTextFieldSchema = z.object({
   describes: nonEmpty,
 })
 
+/**
+ * A printed value on a card, and what it means.
+ *
+ * A stat reaches the model as a bare name and a number. That is enough while
+ * the name explains itself, and it stops being enough exactly where it matters:
+ * `price: 70` names no currency, and `rank_value: 14` names no scale. Describe
+ * the ones a reader could not work out, and leave the obvious ones alone.
+ */
+export const cardStatFieldSchema = z.object({
+  /** The stat name a card tool returns. */
+  field: nonEmpty,
+  /** What that value means, in one sentence. Name the unit and the scale. */
+  describes: nonEmpty,
+})
+
 export const tokenGroupSchema = z.object({
   label: nonEmpty,
   examples: z.array(nonEmpty).min(1),
@@ -68,6 +83,13 @@ export const profileSchema = z.object({
       maxInlineImages: z.number().int().min(0).default(3),
       /** Every text field a card can print, so no answer reads only the first. */
       textFields: z.array(cardTextFieldSchema).default([]),
+      /**
+       * The printed values a reader could not work out from the name alone.
+       *
+       * List only those. A described stat costs prompt on every card question,
+       * and `price` explained as "the price" teaches the model nothing.
+       */
+      statFields: z.array(cardStatFieldSchema).default([]),
     })
     .default({}),
 

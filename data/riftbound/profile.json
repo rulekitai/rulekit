@@ -7,7 +7,9 @@
   "vocabulary": [
     {
       "use": "card text",
-      "insteadOf": ["oracle text"],
+      "insteadOf": [
+        "oracle text"
+      ],
       "means": "It names the text printed in a card's own text box."
     }
   ],
@@ -16,29 +18,83 @@
     "linkScheme": "card",
     "maxInlineImages": 3,
     "textFields": [
-      { "field": "card_text", "describes": "the card's own text box" },
+      {
+        "field": "card_text",
+        "describes": "the card's own text box"
+      },
       {
         "field": "effect_text",
         "describes": "the effect box on a gear card, holding the text the equipped unit gains"
+      }
+    ],
+    "statFields": [
+      {
+        "field": "might_bonus",
+        "describes": "The Might a gear card grants to the unit that holds it. Only a gear card carries this value."
+      },
+      {
+        "field": "energy",
+        "describes": "The Energy cost to play the card."
+      },
+      {
+        "field": "power",
+        "describes": "The Power cost to play the card, which is paid alongside Energy."
       }
     ]
   },
   "tokens": {
     "syntax": "[Fury] or [Shield 2]",
     "groups": [
-      { "label": "Energy", "examples": ["[0]", "[1]", "[2]", "[3]", "[9]"] },
+      {
+        "label": "Energy",
+        "examples": [
+          "[0]",
+          "[1]",
+          "[2]",
+          "[3]",
+          "[9]"
+        ]
+      },
       {
         "label": "Runes and domains",
-        "examples": ["[Rune]", "[Body]", "[Calm]", "[Chaos]", "[Fury]", "[Mind]", "[Order]"]
+        "examples": [
+          "[Rune]",
+          "[Body]",
+          "[Calm]",
+          "[Chaos]",
+          "[Fury]",
+          "[Mind]",
+          "[Order]"
+        ]
       },
-      { "label": "Stats", "examples": ["[Might]", "[Power]"] },
+      {
+        "label": "Stats",
+        "examples": [
+          "[Might]",
+          "[Power]"
+        ]
+      },
       {
         "label": "Card types",
-        "examples": ["[Unit]", "[Spell]", "[Gear]", "[Battlefield]", "[Legend]", "[Tap]"]
+        "examples": [
+          "[Unit]",
+          "[Spell]",
+          "[Gear]",
+          "[Battlefield]",
+          "[Legend]",
+          "[Tap]"
+        ]
       },
       {
         "label": "Keyword abilities",
-        "examples": ["[Shield]", "[Shield 2]", "[Reaction]", "[Hidden]", "[Accelerate]", "[Deflect]"]
+        "examples": [
+          "[Shield]",
+          "[Shield 2]",
+          "[Reaction]",
+          "[Hidden]",
+          "[Accelerate]",
+          "[Deflect]"
+        ]
       }
     ]
   },

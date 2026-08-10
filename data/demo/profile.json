@@ -7,12 +7,16 @@
   "vocabulary": [
     {
       "use": "Resolve",
-      "insteadOf": ["toughness"],
+      "insteadOf": [
+        "toughness"
+      ],
       "means": "It names how much damage a unit survives."
     },
     {
       "use": "Strength",
-      "insteadOf": ["attack"],
+      "insteadOf": [
+        "attack"
+      ],
       "means": "It names how much damage a unit deals."
     }
   ],
@@ -21,9 +25,28 @@
     "linkScheme": "card",
     "maxInlineImages": 2,
     "textFields": [
-      { "field": "card_text", "describes": "the card's own text box" },
-      { "field": "effect_text", "describes": "the effect box on a gear card, holding the text the equipped unit gains" },
-      { "field": "attach_text", "describes": "the attach box, saying what a card may attach to" }
+      {
+        "field": "card_text",
+        "describes": "the card's own text box"
+      },
+      {
+        "field": "effect_text",
+        "describes": "the effect box on a gear card, holding the text the equipped unit gains"
+      },
+      {
+        "field": "attach_text",
+        "describes": "the attach box, saying what a card may attach to"
+      }
+    ],
+    "statFields": [
+      {
+        "field": "might_bonus",
+        "describes": "The Might this gear grants to the unit holding it."
+      },
+      {
+        "field": "energy",
+        "describes": "The Energy cost to play the card."
+      }
     ]
   },
   "scope": {

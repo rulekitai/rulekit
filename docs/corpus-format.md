@@ -208,6 +208,13 @@ card does not do something.
 A `stats` value can be a number, a string, or a list. The type survives the round
 trip through the database unchanged, so a `2` comes back as a number.
 
+**Describe a value whose name does not explain it.** A stat reaches the
+assistant as a bare name and a number, which is enough for `rarity` and not
+enough for `price: 70`, which names no currency, or `rank_value: 14`, which
+names no scale. `cards.statFields` in `profile.json` gives each one a sentence.
+List only the values a reader could not work out: a described stat costs prompt
+on every card question, and "price is the price" teaches nothing.
+
 `png_uri` is a relative path. Nothing renders it until a host app says where
 images live, via `cardImageUrl` on the provider.
 

@@ -77,8 +77,18 @@ in a profile. Without it, a model reads the first field, finds an equip line, an
 reports that the card does nothing.
 
 `field` names a key of a card's `text` map, so these are your game's own names.
-A card's `stats` need no entry here: the model reads them by the name you gave
-them.
+
+**Describe the printed values a name does not explain**, in `statFields`:
+
+```json
+"statFields": [
+  { "field": "price", "describes": "What the Bank charges, in Crowns." },
+  { "field": "rank_value", "describes": "From 2 for a Two to 14 for an Ace. Higher beats lower." }
+]
+```
+
+List only those. `rarity` explains itself, and a described stat costs prompt on
+every card question.
 
 ### Symbols
 

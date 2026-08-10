@@ -40,6 +40,16 @@
         "field": "notation_text",
         "describes": "how the card is written in hand notation"
       }
+    ],
+    "statFields": [
+      {
+        "field": "rank_value",
+        "describes": "The order of the rank, from 2 for a Two to 14 for an Ace. A higher number beats a lower one. An Ace also counts as 1 in the low straight."
+      },
+      {
+        "field": "suit_symbol",
+        "describes": "The one letter that stands for the suit in hand notation, such as s for Spades."
+      }
     ]
   },
   "tokens": {

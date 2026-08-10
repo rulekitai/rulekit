@@ -29,11 +29,14 @@ correct one of the other five.
 3. **`corpus.db` is not in version control.** The command `rulekit build <dir>`
    writes it from the JSON beside it. The CLI does not need the file, because it
    builds one in memory. A server does need it.
-4. **"Cards" means the pieces a player can name**, not only trading cards.
+4. **The profile drives what the model reads about a card.**
+   `cards.textFields` names each text box, and `cards.statFields` explains a
+   printed value whose name does not, such as a price with no currency.
+5. **"Cards" means the pieces a player can name**, not only trading cards.
    Chess lists its six pieces there. Poker lists the 52 cards of the pack. A
    card fixes only its identity, and its text and its printed values go in two
    maps that the game names.
-5. **A key with no value must be absent.** The loader drops `null` and `""`.
+6. **A key with no value must be absent.** The loader drops `null` and `""`.
 
 ## Commands
 
@@ -43,7 +46,7 @@ pnpm rulekit build <dir>       # writes corpus.db
 pnpm rulekit ask <dir> "..."   # answers with no model and no key
 pnpm rulekit eval <dir>        # checks that answers invent nothing. Needs a key.
 
-pnpm lint && pnpm check-types && pnpm test     # 273 tests, no model, no network
+pnpm lint && pnpm check-types && pnpm test     # 275 tests, no model, no network
 pnpm test:e2e                                  # the interface, in a browser
 ```
 

@@ -109,10 +109,14 @@ Then add these, in this order of value:
 1. **`cards.textFields`**: every text box a card uses. **This is the highest
    value line in the file.** Without it a model reads the first box, finds an
    equip line, and reports that the card does nothing.
-2. **`vocabulary`**: the game's own words. A model trained on other games
+2. **`cards.statFields`**: the printed values whose names do not explain them.
+   `price: 70` names no currency. `rank_value: 14` names no scale. List only
+   those: `rarity` explains itself, and each entry costs prompt on every card
+   question.
+3. **`vocabulary`**: the game's own words. A model trained on other games
    reaches for their words, and a player loses trust fast.
-3. **`tokens`**: how symbols are written, if the game has them.
-4. **`scope`**: what to answer, and what to refuse.
+4. **`tokens`**: how symbols are written, if the game has them.
+5. **`scope`**: what to answer, and what to refuse.
 
 Set `cards.enabled` to `false` **only when the game has no nameable pieces at
 all**. The card tools are then not registered, which is right for a corpus that
@@ -138,6 +142,8 @@ Watch for three failures:
 - **It invents.** Data is missing. Add it.
 - **It quotes the wrong rule.** `rule_type` or `is_deprecated` is unset.
 - **It reads a card wrong.** A text box is missing from `cards.textFields`.
+- **It states a number without its unit.** The stat is missing from
+  `cards.statFields`.
 
 ## Completion criterion
 

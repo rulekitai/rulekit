@@ -82,6 +82,20 @@
         "field": "usage_text",
         "describes": "how a player uses that item of equipment during a game"
       }
+    ],
+    "statFields": [
+      {
+        "field": "piece_value",
+        "describes": "The rough trading worth of the piece in pawns, by long custom. It is a guide for exchanges and carries no rule. The king has none, because a player never trades it."
+      },
+      {
+        "field": "notation_symbol",
+        "describes": "The letter that names the piece in written notation. The pawn has none, and a pawn move is written by its square alone."
+      },
+      {
+        "field": "starting_squares",
+        "describes": "Where the piece stands at the start, given for White then Black."
+      }
     ]
   },
   "tokens": {

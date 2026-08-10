@@ -61,6 +61,14 @@ function cardsSection(profile: Profile): string | null {
     parts.push(cards.textFields.map((f) => `- \`${f.field}\` — ${f.describes}`).join("\n"))
   }
 
+  // A stat arrives as a bare name and a number, which is enough while the name
+  // explains itself. `price: 70` names no currency and `rank_value: 14` names no
+  // scale, so a profile can say what those mean rather than let the model guess.
+  if (cards.statFields.length) {
+    parts.push("A card also prints values. These do not mean what their names alone suggest:")
+    parts.push(cards.statFields.map((f) => `- \`${f.field}\` — ${f.describes}`).join("\n"))
+  }
+
   if (cards.linkScheme) {
     parts.push(
       `## Name a card as a link\n\n` +
