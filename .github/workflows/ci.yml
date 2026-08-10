@@ -22,6 +22,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - run: pnpm lint
+
       - run: pnpm check-types
 
       - run: pnpm test
+
+      # A corpus that fails validation answers with wrong rules and reports no
+      # error, so the check belongs beside the tests.
+      - run: pnpm rulekit validate data/demo
