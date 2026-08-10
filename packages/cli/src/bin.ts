@@ -1,11 +1,14 @@
 #!/usr/bin/env node
+import { readFileSync } from "node:fs"
 import { cp, mkdir, readFile, stat } from "node:fs/promises"
 import { dirname, join, resolve } from "node:path"
 import { argv, exit, stderr, stdout } from "node:process"
 import { fileURLToPath, pathToFileURL } from "node:url"
+import { type Profile, parseProfile } from "@rulekit/agent/profile"
 import { buildDatabase } from "@rulekit/corpus/build"
 import { type CorpusProblem, checkIntegrity, loadCorpus } from "@rulekit/corpus/load"
 import { SqliteStore } from "@rulekit/corpus/sqlite-store"
+import type { Corpus } from "@rulekit/corpus/types"
 
 /**
  * The `rulekit` command.
@@ -14,6 +17,8 @@ import { SqliteStore } from "@rulekit/corpus/sqlite-store"
  * does no data collection, so a corpus arrives already written and the command
  * only ever reads, checks, and compiles one.
  */
+
+type Problem = CorpusProblem
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(HERE, "../../..")
@@ -61,6 +66,80 @@ function reportProblems(problems: CorpusProblem[], limit = 25): void {
   }
 }
 
+/**
+ * The closest key to a misspelled one, or null.
+ *
+ * A typo in a field name is the likely cause, so naming the key the writer
+ * probably meant turns a report into a fix. Two edits is the useful bound:
+ * further than that and the suggestion misleads more than it helps.
+ */
+function nearestKey(field: string, present: Set<string>): string | null {
+  let best: string | null = null
+  let bestDistance = 3
+  for (const candidate of present) {
+    const distance = editDistance(field, candidate)
+    if (distance < bestDistance) {
+      best = candidate
+      bestDistance = distance
+    }
+  }
+  return best
+}
+
+/** Levenshtein distance, one row at a time. The strings here are field names. */
+function editDistance(a: string, b: string): number {
+  let previous = Array.from({ length: b.length + 1 }, (_, i) => i)
+  for (let i = 1; i <= a.length; i++) {
+    const current = [i]
+    for (let j = 1; j <= b.length; j++) {
+      const substitute = (previous[j - 1] ?? 0) + (a[i - 1] === b[j - 1] ? 0 : 1)
+      current[j] = Math.min(substitute, (previous[j] ?? 0) + 1, (current[j - 1] ?? 0) + 1)
+    }
+    previous = current
+  }
+  return previous[b.length] ?? Math.max(a.length, b.length)
+}
+
+/**
+ * Every field a profile names must exist on a card.
+ *
+ * `cards.textFields` and `cards.statFields` are references into the data, and
+ * nothing else checks them. A misspelled name costs the whole benefit twice
+ * over: the assistant is told about a field no card carries, and it is never
+ * told about the field that exists. Both failures are silent, and a reader sees
+ * only a slightly worse answer.
+ *
+ * A profile is optional, and a corpus with none is valid.
+ */
+export function checkProfileFields(dir: string, corpus: Corpus): Problem[] {
+  let profile: Profile
+  try {
+    profile = parseProfile(JSON.parse(readFileSync(resolve(dir, "profile.json"), "utf8")))
+  } catch {
+    return []
+  }
+  if (!profile.cards.enabled) return []
+
+  const textKeys = new Set(corpus.cards.flatMap((c) => Object.keys(c.text)))
+  const statKeys = new Set(corpus.cards.flatMap((c) => Object.keys(c.stats)))
+  const problems: Problem[] = []
+
+  const check = (declared: { field: string }[], present: Set<string>, name: string) => {
+    declared.forEach(({ field }, index) => {
+      if (present.has(field)) return
+      const near = nearestKey(field, present)
+      problems.push({
+        file: "profile.json",
+        index,
+        message: `cards.${name} names "${field}", which no card carries${near ? `. Did you mean "${near}"?` : ""}`,
+      })
+    })
+  }
+  check(profile.cards.textFields, textKeys, "textFields")
+  check(profile.cards.statFields, statKeys, "statFields")
+  return problems
+}
+
 async function commandValidate(dir: string): Promise<number> {
   out(`Validating ${dir}`)
   const result = await loadCorpus(dir)
@@ -97,6 +176,13 @@ async function commandValidate(dir: string): Promise<number> {
     out("")
   }
 
+  const profileProblems = checkProfileFields(dir, corpus)
+  if (profileProblems.length) {
+    out(`${profileProblems.length} field${profileProblems.length === 1 ? "" : "s"} in profile.json:`)
+    reportProblems(profileProblems)
+    out("")
+  }
+
   // A corpus with no rules parses fine and answers nothing, which is the one
   // failure a reader will not notice until the assistant is already deployed.
   if (!corpus.rules.length) {
@@ -104,7 +190,7 @@ async function commandValidate(dir: string): Promise<number> {
     return 1
   }
 
-  if (problems.length || integrity.length) {
+  if (problems.length || integrity.length || profileProblems.length) {
     err("Validation failed.")
     return 1
   }

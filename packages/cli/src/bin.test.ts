@@ -5,7 +5,8 @@ import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { after, before, describe, test } from "node:test"
 import { fileURLToPath } from "node:url"
-import { commandAsk, commandBuild, commandInit, commandValidate } from "./bin.ts"
+import { loadCorpus } from "@rulekit/corpus/load"
+import { checkProfileFields, commandAsk, commandBuild, commandInit, commandValidate } from "./bin.ts"
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..")
 const DEMO = resolve(ROOT, "data/demo")
@@ -231,5 +232,38 @@ describe("init", () => {
     const { out } = await run(() => commandInit(dir))
     assert.match(out, /rulekit validate/)
     assert.match(out, /corpus-format\.md/)
+  })
+})
+
+describe("a profile that names a field no card carries", () => {
+  test("the shipped demo profile names only fields that exist", async () => {
+    const result = await loadCorpus(DEMO)
+    assert.ok(result.ok)
+    assert.deepEqual(checkProfileFields(DEMO, result.corpus), [])
+  })
+
+  test("names the field and suggests the near miss", async () => {
+    // textFields and statFields are references into the data, and nothing else
+    // checks them. A typo is silent twice: the assistant hears about a field
+    // that does not exist, and never hears about the one that does.
+    const dir = await mkdtemp(join(tmpdir(), "rulekit-profile-"))
+    await cp(DEMO, dir, { recursive: true })
+    const profile = JSON.parse(await readFile(join(dir, "profile.json"), "utf8"))
+    profile.cards.textFields.push({ field: "card_txt", describes: "a typo" })
+    await writeFile(join(dir, "profile.json"), JSON.stringify(profile))
+
+    const result = await loadCorpus(dir)
+    assert.ok(result.ok)
+    const problems = checkProfileFields(dir, result.corpus)
+    assert.equal(problems.length, 1)
+    assert.match(problems[0]?.message ?? "", /card_txt/)
+    assert.match(problems[0]?.message ?? "", /Did you mean "card_text"/)
+    await rm(dir, { recursive: true, force: true })
+  })
+
+  test("a corpus with no profile is still valid", async () => {
+    const result = await loadCorpus(DEMO)
+    assert.ok(result.ok)
+    assert.deepEqual(checkProfileFields("/no/such/directory", result.corpus), [])
   })
 })
