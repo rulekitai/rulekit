@@ -14,46 +14,89 @@ price and no account, except one model key.
 ## Install
 
 ```bash
-git clone https://github.com/rulekitai/rulekit.git
-cd rulekit
-pnpm install
+pnpm add @rulekitai/rulekit
 ```
 
-Use Node 22 or a later version. This repository includes an `.nvmrc` file.
+Use Node 22 or a later version.
 
 ## Ask your first question
 
-This command needs no model key. It answers in a few milliseconds.
+No clone, and no model key. `init` gives you a small example corpus to start
+from, and the answer arrives in a few milliseconds.
 
 ```bash
-pnpm rulekit ask data/riftbound "is Called Shot banned"
+npx rulekit init my-game
+npx rulekit ask my-game "what is Swift"
 ```
 
 ```
-[served by static in 4 ms]
+[served by glossary in 1 ms]
 
-[Called Shot](card:riftbound/SFD-122.webp) is on the banned list:
-- **banned** in **Constructed 2v2**, effective 2026-07-24 — source: Ban List Update — July 24, 2026
-- **banned** in **Constructed**, effective 2026-03-30 — source: Constructed Banlist Update — March 30, 2026
+**Swift**
 
-Effective 2026-07-24.
-```
-
-Two more questions that need no key:
-
-```bash
-pnpm rulekit ask data/chess "what does rule 200.6 say"
-pnpm rulekit ask data/chess "what is castling"
+> Swift is a keyword ability. A card with Swift may be played at any time a
+> player holds priority, including during the opponent's turn.
 ```
 
 The `ask` command runs the free stages only. It does not call the agent. For a
-question of a different type, it tells you that it cannot answer. It then shows
-you a question of each type that it does answer. To reach the agent, start the
-chat application.
+question of a different type, it tells you that it cannot answer, and it shows
+you a question of each type that it does answer.
 
-## Start the chat application
+## Put it in your application
+
+```ts
+import { SqliteStore } from "@rulekitai/rulekit/corpus/sqlite-store"
+import { parseProfile } from "@rulekitai/rulekit/agent/profile"
+import { createRulesAgent } from "@rulekitai/rulekit/agent/runtime"
+import { createPipeline } from "@rulekitai/rulekit/pipeline/pipeline"
+import { staticAnswersStage } from "@rulekitai/rulekit/pipeline/stages/static"
+import { glossaryStage } from "@rulekitai/rulekit/pipeline/stages/glossary"
+import { createAskHandler } from "@rulekitai/rulekit/server/handler"
+
+const store = SqliteStore.open("my-game/corpus.db")
+const profile = parseProfile(myProfileJson)
+
+export const POST = createAskHandler({
+  pipeline: createPipeline({
+    store,
+    profile,
+    stages: [staticAnswersStage(store), glossaryStage(store)],
+  }),
+  agent: createRulesAgent({ store, profile, model: "anthropic/claude-sonnet-5" }),
+})
+```
+
+Run `npx rulekit build my-game` first, because a server reads the compiled
+database. `createAskHandler` returns a plain function from `Request` to
+`Response`, so the same export works in Next.js, Hono, Bun, Deno, and a
+Cloudflare Worker.
+
+Add the interface with `pnpm add @rulekitai/ui react`:
+
+```tsx
+import { useAskStream } from "@rulekitai/ui/use-ask-stream"
+import { Chat } from "@rulekitai/ui/chat"
+import { RuleKitProvider } from "@rulekitai/ui/provider"
+import "@rulekitai/ui/styles.css"
+
+const { messages, loading, streaming, ask } = useAskStream({ endpoint: "/api/ask" })
+```
+
+[`docs/adding-a-game.md`](docs/adding-a-game.md) covers a corpus of your own,
+from the first JSON file to the finished profile.
+
+## Run this repository
+
+Clone it to read the five example corpora, to try the chat application, or to
+send a change.
 
 ```bash
+git clone https://github.com/rulekitai/rulekit.git
+cd rulekit
+pnpm install
+
+pnpm rulekit ask data/riftbound "is Called Shot banned"   # no model key
+
 pnpm rulekit build data/riftbound   # 65 ms for 3317 rules and 941 cards
 cd examples/next-app
 cp .env.example .env                # write one model key in this file
@@ -65,6 +108,7 @@ example application takes 17 of those seconds.
 
 To check the repository, run `pnpm lint && pnpm check-types && pnpm test`. The
 tests use no model and no network.
+[`CONTRIBUTING.md`](CONTRIBUTING.md) states the rest.
 
 ## The five corpora in this repository
 
@@ -102,29 +146,16 @@ agent searches the corpus with tools, then it writes an answer with its sources.
 Two packages. The split follows the only line that matters: whether you need
 React and a Markdown renderer.
 
-| Package | What it contains |
-|---|---|
-| `@rulekitai/rulekit` | The corpus, the agent, the answer pipeline, the HTTP handler, and the `rulekit` command |
-| `@rulekitai/ui` | React hooks and styled chat components |
-
-```bash
-pnpm add @rulekitai/rulekit        # a server, or the command line
-pnpm add @rulekitai/ui react       # a React interface, as well
-pnpm add ai                        # only if you use the agent
-```
+| Package | What it contains | Third-party dependencies |
+|---|---|---|
+| `@rulekitai/rulekit` | The corpus, the agent, the answer pipeline, the HTTP handler, and the `rulekit` command | `zod`, and `ai` as an optional peer |
+| `@rulekitai/ui` | React hooks and styled chat components | `react-markdown`, `remark-gfm`, and `react` as a peer |
 
 Each part keeps its own subpath, so an import states where it comes from:
+`@rulekitai/rulekit/corpus/*`, `/agent/*`, `/pipeline/*`, and `/server/*`.
 
-```ts
-import { SqliteStore } from "@rulekitai/rulekit/corpus/sqlite-store"
-import { createRulesAgent } from "@rulekitai/rulekit/agent/runtime"
-import { createPipeline } from "@rulekitai/rulekit/pipeline/pipeline"
-import { createAskHandler } from "@rulekitai/rulekit/server/handler"
-import { useAskStream } from "@rulekitai/ui/use-ask-stream"
-```
-
-The `ai` package is a peer dependency, and the code loads it only when you use
-the agent. `react` is a peer dependency of `@rulekitai/ui`.
+The code loads the `ai` package only when you use the agent, so a server that
+answers from the free stages alone never needs it.
 
 The directory `templates/eve-agent` contains the same agent on
 [Vercel Eve](https://eve.dev). The directory `examples/next-app` contains a chat
