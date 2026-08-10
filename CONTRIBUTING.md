@@ -102,6 +102,35 @@ problem in this project.
 For a security problem, read [`SECURITY.md`](SECURITY.md) instead. Do not open
 a public issue for it.
 
+## Releasing, for a maintainer
+
+The workflow `.github/workflows/release.yml` publishes every package when you
+push a version tag. It stores no npm token. npm trusts this repository and this
+workflow file through OpenID Connect, and it issues a short-lived credential for
+one publish.
+
+```bash
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+**The first version of a package cannot go out this way.** The npm settings page
+for a trusted publisher exists only after the package exists, so a package needs
+one publish before you can configure one. To add a package to this workspace:
+
+1. Publish that package once by hand: `npm publish --access public`. Your
+   two-factor code is the only credential involved.
+2. Open the package on npmjs.com, then **Settings → Trusted Publisher → GitHub
+   Actions**.
+3. Enter the organisation `rulekitai`, the repository `rulekit`, and the
+   workflow filename `release.yml`. Leave the environment empty.
+
+Every later release then runs from the tag, with no token.
+
+**Read the `packageManager` field before you change the pnpm version.** pnpm 10
+exchanges the OIDC token correctly. pnpm 11.0.8 did not, and the registry
+answered 404. That field pins the version the workflow installs.
+
 ## The licence of your contribution
 
 This project uses the Apache License 2.0. When you send a pull request, you
