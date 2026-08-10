@@ -1,4 +1,4 @@
-import type { RuleStore } from "@rulekit/corpus/store"
+import type { RuleStore } from "@rulekitai/corpus/store"
 import { type AgentEvent, deriveLabel, encodeEvent, type TraceStep } from "./events.ts"
 import { buildInstructions } from "./instructions.ts"
 import type { Profile } from "./profile.ts"
@@ -68,7 +68,7 @@ export type RulesAgentOptions = {
    *
    * **Unset by default, which means no ceiling.** A turn ends when the model
    * stops calling tools and writes its answer. See `NO_STEP_CAP` in
-   * `@rulekit/agent/turn` for why this project sets none: a cap is a cost
+   * `@rulekitai/agent/turn` for why this project sets none: a cap is a cost
    * control, and cost is the fork's decision, not this project's.
    *
    * Set it when you pay per token. A capped turn hands the reader whatever was
@@ -131,7 +131,7 @@ async function loadAiSdk(): Promise<{ streamText: StreamTextFn; tool: (spec: unk
     return mod
   } catch (err) {
     throw new Error(
-      "@rulekit/agent/runtime needs the `ai` package, which is a peer dependency. " +
+      "@rulekitai/agent/runtime needs the `ai` package, which is a peer dependency. " +
         `Install it with \`pnpm add ai\`, or use the Eve template instead. (${String(err)})`,
     )
   }

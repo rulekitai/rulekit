@@ -1,4 +1,4 @@
-import { normalizeQuestion } from "@rulekit/corpus/text"
+import { normalizeQuestion } from "@rulekitai/corpus/text"
 import type { Cache, CacheEntry } from "./types.ts"
 
 /** How long an answer stays cached, when nobody says otherwise. */

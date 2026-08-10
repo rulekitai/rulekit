@@ -1,8 +1,32 @@
 {
-  "name": "@rulekit/cli",
+  "name": "@rulekitai/cli",
   "version": "0.1.0",
   "description": "The rulekit command: validate, build, init, and ask.",
+  "keywords": [
+    "rules",
+    "rulebook",
+    "rules-assistant",
+    "citations",
+    "grounded",
+    "rag",
+    "cli",
+    "validate",
+    "eval"
+  ],
   "license": "Apache-2.0",
+  "homepage": "https://github.com/rulekitai/rulekit/tree/main/packages/cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rulekitai/rulekit.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/rulekitai/rulekit/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "type": "module",
   "engines": {
     "node": ">=22.5.0"
@@ -18,9 +42,9 @@
     "build": "tsc --build"
   },
   "dependencies": {
-    "@rulekit/corpus": "workspace:*",
-    "@rulekit/agent": "workspace:*",
-    "@rulekit/pipeline": "workspace:*",
+    "@rulekitai/corpus": "workspace:*",
+    "@rulekitai/agent": "workspace:*",
+    "@rulekitai/pipeline": "workspace:*",
     "zod": "^4.4.0"
   }
 }

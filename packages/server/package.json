@@ -1,8 +1,32 @@
 {
-  "name": "@rulekit/server",
+  "name": "@rulekitai/server",
   "version": "0.1.0",
   "description": "One web-standard HTTP handler that mounts anywhere.",
+  "keywords": [
+    "rules",
+    "rulebook",
+    "rules-assistant",
+    "citations",
+    "grounded",
+    "rag",
+    "http",
+    "web-standards",
+    "route-handler"
+  ],
   "license": "Apache-2.0",
+  "homepage": "https://github.com/rulekitai/rulekit/tree/main/packages/server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rulekitai/rulekit.git",
+    "directory": "packages/server"
+  },
+  "bugs": {
+    "url": "https://github.com/rulekitai/rulekit/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "type": "module",
   "engines": {
     "node": ">=22.5.0"
@@ -23,8 +47,8 @@
     "test": "node --test src/**/*.test.ts"
   },
   "dependencies": {
-    "@rulekit/corpus": "workspace:*",
-    "@rulekit/agent": "workspace:*",
-    "@rulekit/pipeline": "workspace:*"
+    "@rulekitai/corpus": "workspace:*",
+    "@rulekitai/agent": "workspace:*",
+    "@rulekitai/pipeline": "workspace:*"
   }
 }

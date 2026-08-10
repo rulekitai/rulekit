@@ -1,4 +1,4 @@
-import type { TraceStep } from "@rulekit/agent/events"
+import type { TraceStep } from "@rulekitai/agent/events"
 
 /** One message on screen. */
 export type ChatMessage = {

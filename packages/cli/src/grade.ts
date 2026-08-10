@@ -1,4 +1,4 @@
-import type { RuleStore } from "@rulekit/corpus/store"
+import type { RuleStore } from "@rulekitai/corpus/store"
 
 /**
  * Grading an answer, as pure functions.

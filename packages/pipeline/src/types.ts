@@ -1,6 +1,6 @@
-import type { Profile } from "@rulekit/agent/profile"
-import type { RetrievedRule, Turn } from "@rulekit/agent/turn"
-import type { RuleStore } from "@rulekit/corpus/store"
+import type { Profile } from "@rulekitai/agent/profile"
+import type { RetrievedRule, Turn } from "@rulekitai/agent/turn"
+import type { RuleStore } from "@rulekitai/corpus/store"
 
 /** One citation an answer rests on. Shape is per-stage; the interface shows it. */
 export type Citation = Record<string, unknown>

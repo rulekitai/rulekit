@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import "@rulekit/ui/styles.css"
+import "@rulekitai/ui/styles.css"
 import "./app.css"
 
 export const metadata = {

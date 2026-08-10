@@ -1,5 +1,5 @@
-import type { RuleStore } from "@rulekit/corpus/store"
-import type { Card, Rule } from "@rulekit/corpus/types"
+import type { RuleStore } from "@rulekitai/corpus/store"
+import type { Card, Rule } from "@rulekitai/corpus/types"
 import { z } from "zod"
 import { type Profile, pieceNoun } from "./profile.ts"
 

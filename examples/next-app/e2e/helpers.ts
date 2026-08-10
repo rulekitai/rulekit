@@ -3,7 +3,7 @@ import { expect, type Locator, type Page } from "@playwright/test"
 /**
  * What every spec needs, in one place.
  *
- * The selectors are the class names `@rulekit/ui` ships. That is deliberate: a
+ * The selectors are the class names `@rulekitai/ui` ships. That is deliberate: a
  * fork restyles by overriding CSS variables and keeps the classes, so a test
  * written against them keeps working. Adding test-only attributes to the
  * components would put test scaffolding in a package other people install.

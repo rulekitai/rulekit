@@ -1,5 +1,5 @@
 import { resolve } from "node:path"
-import { SqliteStore } from "@rulekit/corpus/sqlite-store"
+import { SqliteStore } from "@rulekitai/corpus/sqlite-store"
 
 /**
  * The corpus, opened once for the process.

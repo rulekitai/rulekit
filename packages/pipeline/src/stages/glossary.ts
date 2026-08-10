@@ -1,5 +1,5 @@
-import type { RuleStore } from "@rulekit/corpus/store"
-import { normalizeName } from "@rulekit/corpus/text"
+import type { RuleStore } from "@rulekitai/corpus/store"
+import { normalizeName } from "@rulekitai/corpus/text"
 import { answerKey, DEFAULT_TTL_SECONDS } from "../cache.ts"
 import type { Answer, AskContext, Stage } from "../types.ts"
 

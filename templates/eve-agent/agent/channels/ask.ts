@@ -1,4 +1,4 @@
-import { type AgentEvent, deriveLabel, encodeEvent, type TraceStep } from "@rulekit/agent/events"
+import { type AgentEvent, deriveLabel, encodeEvent, type TraceStep } from "@rulekitai/agent/events"
 import {
   addStepUsage,
   buildMessage,
@@ -10,7 +10,7 @@ import {
   type Turn,
   type UsageTotals,
   usageOrNull,
-} from "@rulekit/agent/turn"
+} from "@rulekitai/agent/turn"
 import { defineChannel, POST } from "eve/channels"
 
 /**
@@ -97,7 +97,7 @@ export default defineChannel({
             let answered = false
             let capped: { text: string; complete: boolean } | null = null
             // No ceiling unless this deployment sets one. A turn ends when the
-            // model stops calling tools. See NO_STEP_CAP in @rulekit/agent/turn
+            // model stops calling tools. See NO_STEP_CAP in @rulekitai/agent/turn
             // for why this project ships no cap of its own.
             const cap = process.env.RULEKIT_STEP_CAP ? Number(process.env.RULEKIT_STEP_CAP) : null
 

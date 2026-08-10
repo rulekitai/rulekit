@@ -1,6 +1,6 @@
 "use client"
 
-import type { ChatMessage } from "@rulekit/react/message"
+import type { ChatMessage } from "@rulekitai/react/message"
 import { type ReactNode, useCallback, useEffect, useRef } from "react"
 import { Composer } from "./composer.tsx"
 import { EmptyState } from "./empty-state.tsx"

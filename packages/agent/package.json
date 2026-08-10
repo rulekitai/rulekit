@@ -1,8 +1,33 @@
 {
-  "name": "@rulekit/agent",
+  "name": "@rulekitai/agent",
   "version": "0.1.0",
   "description": "Tools, instructions, skills, and a runtime for a grounded rules assistant.",
+  "keywords": [
+    "rules",
+    "rulebook",
+    "rules-assistant",
+    "citations",
+    "grounded",
+    "rag",
+    "ai-sdk",
+    "llm",
+    "tools",
+    "agent"
+  ],
   "license": "Apache-2.0",
+  "homepage": "https://github.com/rulekitai/rulekit/tree/main/packages/agent#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rulekitai/rulekit.git",
+    "directory": "packages/agent"
+  },
+  "bugs": {
+    "url": "https://github.com/rulekitai/rulekit/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "type": "module",
   "engines": {
     "node": ">=22.5.0"
@@ -53,7 +78,7 @@
     "test": "node --test src/**/*.test.ts"
   },
   "dependencies": {
-    "@rulekit/corpus": "workspace:*",
+    "@rulekitai/corpus": "workspace:*",
     "zod": "^4.4.0"
   },
   "peerDependencies": {

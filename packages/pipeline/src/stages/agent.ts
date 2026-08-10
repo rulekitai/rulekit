@@ -1,5 +1,5 @@
-import type { AgentEvent } from "@rulekit/agent/events"
-import type { AskInput } from "@rulekit/agent/runtime"
+import type { AgentEvent } from "@rulekitai/agent/events"
+import type { AskInput } from "@rulekitai/agent/runtime"
 import type { Answer, AskContext, Stage } from "../types.ts"
 
 /**

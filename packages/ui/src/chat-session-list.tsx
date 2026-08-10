@@ -1,6 +1,6 @@
 "use client"
 
-import type { ChatSummary } from "@rulekit/react/storage"
+import type { ChatSummary } from "@rulekitai/react/storage"
 import { useState } from "react"
 
 /**

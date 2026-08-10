@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
-import { parseProfile } from "@rulekit/agent/profile"
-import { corpusContents, defineRulesTools } from "@rulekit/agent/tools"
+import { parseProfile } from "@rulekitai/agent/profile"
+import { corpusContents, defineRulesTools } from "@rulekitai/agent/tools"
 import { defineTool, disableTool } from "eve/tools"
 import { z } from "zod"
 import { CORPUS_DIR, corpusStore } from "./corpus.ts"
@@ -14,7 +14,7 @@ import { CORPUS_DIR, corpusStore } from "./corpus.ts"
  * single tool. A helper module there fails the build, and a file exporting a
  * record of tools fails it too.
  *
- * The tools themselves are defined once in `@rulekit/agent/tools`, in a shape
+ * The tools themselves are defined once in `@rulekitai/agent/tools`, in a shape
  * both Eve and the AI SDK accept. That is why adapting them is three lines.
  */
 

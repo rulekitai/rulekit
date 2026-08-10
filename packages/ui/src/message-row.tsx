@@ -1,6 +1,6 @@
 "use client"
 
-import type { ChatMessage } from "@rulekit/react/message"
+import type { ChatMessage } from "@rulekitai/react/message"
 import { AnswerMarkdown } from "./answer-markdown.tsx"
 import { AnswerTrace } from "./answer-trace.tsx"
 import { useRuleKit } from "./provider.tsx"

@@ -1,6 +1,6 @@
 "use client"
 
-import { decodeEvents, type TraceStep } from "@rulekit/agent/events"
+import { decodeEvents, type TraceStep } from "@rulekitai/agent/events"
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from "react"
 import { type ChatMessage, classifyTurn, toHistory, toServedBy } from "./message.ts"
 

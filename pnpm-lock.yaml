@@ -11,19 +11,19 @@ importers:
       '@biomejs/biome':
         specifier: ^2.0.0
         version: 2.5.7
-      '@rulekit/agent':
+      '@rulekitai/agent':
         specifier: workspace:*
         version: link:packages/agent
-      '@rulekit/cli':
+      '@rulekitai/cli':
         specifier: workspace:*
         version: link:packages/cli
-      '@rulekit/corpus':
+      '@rulekitai/corpus':
         specifier: workspace:*
         version: link:packages/corpus
-      '@rulekit/pipeline':
+      '@rulekitai/pipeline':
         specifier: workspace:*
         version: link:packages/pipeline
-      '@rulekit/server':
+      '@rulekitai/server':
         specifier: workspace:*
         version: link:packages/server
       '@types/node':
@@ -35,22 +35,22 @@ importers:
 
   examples/next-app:
     dependencies:
-      '@rulekit/agent':
+      '@rulekitai/agent':
         specifier: workspace:*
         version: link:../../packages/agent
-      '@rulekit/corpus':
+      '@rulekitai/corpus':
         specifier: workspace:*
         version: link:../../packages/corpus
-      '@rulekit/pipeline':
+      '@rulekitai/pipeline':
         specifier: workspace:*
         version: link:../../packages/pipeline
-      '@rulekit/react':
+      '@rulekitai/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@rulekit/server':
+      '@rulekitai/server':
         specifier: workspace:*
         version: link:../../packages/server
-      '@rulekit/ui':
+      '@rulekitai/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       ai:
@@ -78,7 +78,7 @@ importers:
 
   packages/agent:
     dependencies:
-      '@rulekit/corpus':
+      '@rulekitai/corpus':
         specifier: workspace:*
         version: link:../corpus
       ai:
@@ -90,13 +90,13 @@ importers:
 
   packages/cli:
     dependencies:
-      '@rulekit/agent':
+      '@rulekitai/agent':
         specifier: workspace:*
         version: link:../agent
-      '@rulekit/corpus':
+      '@rulekitai/corpus':
         specifier: workspace:*
         version: link:../corpus
-      '@rulekit/pipeline':
+      '@rulekitai/pipeline':
         specifier: workspace:*
         version: link:../pipeline
       zod:
@@ -111,16 +111,16 @@ importers:
 
   packages/pipeline:
     dependencies:
-      '@rulekit/agent':
+      '@rulekitai/agent':
         specifier: workspace:*
         version: link:../agent
-      '@rulekit/corpus':
+      '@rulekitai/corpus':
         specifier: workspace:*
         version: link:../corpus
 
   packages/react:
     dependencies:
-      '@rulekit/agent':
+      '@rulekitai/agent':
         specifier: workspace:*
         version: link:../agent
       react:
@@ -133,22 +133,22 @@ importers:
 
   packages/server:
     dependencies:
-      '@rulekit/agent':
+      '@rulekitai/agent':
         specifier: workspace:*
         version: link:../agent
-      '@rulekit/corpus':
+      '@rulekitai/corpus':
         specifier: workspace:*
         version: link:../corpus
-      '@rulekit/pipeline':
+      '@rulekitai/pipeline':
         specifier: workspace:*
         version: link:../pipeline
 
   packages/ui:
     dependencies:
-      '@rulekit/agent':
+      '@rulekitai/agent':
         specifier: workspace:*
         version: link:../agent
-      '@rulekit/react':
+      '@rulekitai/react':
         specifier: workspace:*
         version: link:../react
       react:
@@ -167,10 +167,10 @@ importers:
 
   templates/eve-agent:
     dependencies:
-      '@rulekit/agent':
+      '@rulekitai/agent':
         specifier: workspace:*
         version: link:../../packages/agent
-      '@rulekit/corpus':
+      '@rulekitai/corpus':
         specifier: workspace:*
         version: link:../../packages/corpus
       ai:

@@ -5,11 +5,11 @@ the AI SDK.
 
 Use this template if you already run Eve, or if you want its durable sessions,
 its sandbox, or its deployment path. If you want none of those, use
-`@rulekit/agent/runtime` instead. That runtime needs one model key and no
+`@rulekitai/agent/runtime` instead. That runtime needs one model key and no
 separate process.
 
 **Both runtimes send the same events**, so one interface can drive either one.
-The shared contract in `@rulekit/agent/events` makes this possible.
+The shared contract in `@rulekitai/agent/events` makes this possible.
 
 A command tests this contract. The project does not assume it.
 
@@ -93,7 +93,7 @@ template therefore keeps each procedure in `agent/skills/`, and Eve loads the
 one that applies.
 
 Each file in that directory holds only the connection. The procedure itself
-exists one time, in `@rulekit/agent/skills`, and both runtimes read it from
+exists one time, in `@rulekitai/agent/skills`, and both runtimes read it from
 there.
 
 ## Why the built-in tools are off

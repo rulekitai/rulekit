@@ -1,10 +1,10 @@
-import { encodeEvent } from "@rulekit/agent/events"
-import type { Turn } from "@rulekit/agent/turn"
-import { openGate } from "@rulekit/pipeline/gate"
-import type { Pipeline } from "@rulekit/pipeline/pipeline"
-import { type AgentLike, streamAgent } from "@rulekit/pipeline/stages/agent"
-import { writeBack } from "@rulekit/pipeline/stages/cache"
-import type { Answer, AskContext, CallerIdentity, Gate } from "@rulekit/pipeline/types"
+import { encodeEvent } from "@rulekitai/agent/events"
+import type { Turn } from "@rulekitai/agent/turn"
+import { openGate } from "@rulekitai/pipeline/gate"
+import type { Pipeline } from "@rulekitai/pipeline/pipeline"
+import { type AgentLike, streamAgent } from "@rulekitai/pipeline/stages/agent"
+import { writeBack } from "@rulekitai/pipeline/stages/cache"
+import type { Answer, AskContext, CallerIdentity, Gate } from "@rulekitai/pipeline/types"
 
 /**
  * One HTTP handler for the whole thing.

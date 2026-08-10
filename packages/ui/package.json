@@ -1,8 +1,32 @@
 {
-  "name": "@rulekit/ui",
+  "name": "@rulekitai/ui",
   "version": "0.1.0",
   "description": "Styled chat components for a rules assistant. Themed with CSS variables.",
+  "keywords": [
+    "rules",
+    "rulebook",
+    "rules-assistant",
+    "citations",
+    "grounded",
+    "rag",
+    "react",
+    "components",
+    "chat"
+  ],
   "license": "Apache-2.0",
+  "homepage": "https://github.com/rulekitai/rulekit/tree/main/packages/ui#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rulekitai/rulekit.git",
+    "directory": "packages/ui"
+  },
+  "bugs": {
+    "url": "https://github.com/rulekitai/rulekit/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "type": "module",
   "files": [
     "dist",
@@ -65,8 +89,8 @@
     "build": "tsc --build"
   },
   "dependencies": {
-    "@rulekit/agent": "workspace:*",
-    "@rulekit/react": "workspace:*",
+    "@rulekitai/agent": "workspace:*",
+    "@rulekitai/react": "workspace:*",
     "react-markdown": "^10.0.0",
     "remark-gfm": "^4.0.0"
   },

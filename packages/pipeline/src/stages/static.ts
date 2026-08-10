@@ -1,4 +1,4 @@
-import type { RuleStore } from "@rulekit/corpus/store"
+import type { RuleStore } from "@rulekitai/corpus/store"
 import { answerKey, DEFAULT_TTL_SECONDS } from "../cache.ts"
 import type { Answer, AskContext, Stage } from "../types.ts"
 import { type ClassifyConfig, classify, DEFAULT_CLASSIFY_CONFIG } from "./static-classify.ts"

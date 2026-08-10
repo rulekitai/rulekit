@@ -1,5 +1,5 @@
-import { nameStem, normalizeName } from "@rulekit/corpus/text"
-import type { BanlistEntry, Erratum, Rule } from "@rulekit/corpus/types"
+import { nameStem, normalizeName } from "@rulekitai/corpus/text"
+import type { BanlistEntry, Erratum, Rule } from "@rulekitai/corpus/types"
 import { CLAUSE_BREAK, type Classification, cardKeyCandidates, ERRATA_CUE } from "./static-classify.ts"
 
 /** One printed card the gazetteer proves exists. */

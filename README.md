@@ -101,13 +101,13 @@ agent searches the corpus with tools, then it writes an answer with its sources.
 
 | Package | What it contains |
 |---|---|
-| `@rulekit/corpus` | The JSON schema, a SQLite builder, and one read interface |
-| `@rulekit/agent` | Tools, instructions, procedures, and an AI SDK runtime |
-| `@rulekit/pipeline` | The stages, the cache, the permission check, and credentials |
-| `@rulekit/server` | One HTTP handler that uses web standards |
-| `@rulekit/react` | Hooks with no styling |
-| `@rulekit/ui` | Chat components, with CSS variables for the theme |
-| `@rulekit/cli` | `rulekit validate`, `build`, `init`, `ask`, and `eval` |
+| `@rulekitai/corpus` | The JSON schema, a SQLite builder, and one read interface |
+| `@rulekitai/agent` | Tools, instructions, procedures, and an AI SDK runtime |
+| `@rulekitai/pipeline` | The stages, the cache, the permission check, and credentials |
+| `@rulekitai/server` | One HTTP handler that uses web standards |
+| `@rulekitai/react` | Hooks with no styling |
+| `@rulekitai/ui` | Chat components, with CSS variables for the theme |
+| `@rulekitai/cli` | `rulekit validate`, `build`, `init`, `ask`, and `eval` |
 
 This project publishes no package to npm. Make a fork of this repository, or
 copy `packages/` into a different one. The directory `templates/eve-agent`

@@ -1,8 +1,32 @@
 {
-  "name": "@rulekit/pipeline",
+  "name": "@rulekitai/pipeline",
   "version": "0.1.0",
   "description": "The answer pipeline: stages, cache, gate, and credentials.",
+  "keywords": [
+    "rules",
+    "rulebook",
+    "rules-assistant",
+    "citations",
+    "grounded",
+    "rag",
+    "cache",
+    "rate-limit",
+    "quota"
+  ],
   "license": "Apache-2.0",
+  "homepage": "https://github.com/rulekitai/rulekit/tree/main/packages/pipeline#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rulekitai/rulekit.git",
+    "directory": "packages/pipeline"
+  },
+  "bugs": {
+    "url": "https://github.com/rulekitai/rulekit/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "type": "module",
   "engines": {
     "node": ">=22.5.0"
@@ -73,7 +97,7 @@
     "test": "node --test src/**/*.test.ts"
   },
   "dependencies": {
-    "@rulekit/corpus": "workspace:*",
-    "@rulekit/agent": "workspace:*"
+    "@rulekitai/corpus": "workspace:*",
+    "@rulekitai/agent": "workspace:*"
   }
 }

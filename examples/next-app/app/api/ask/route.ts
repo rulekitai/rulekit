@@ -1,4 +1,4 @@
-import { createAskHandler } from "@rulekit/server/handler"
+import { createAskHandler } from "@rulekitai/server/handler"
 import { rulekit } from "../../lib/rulekit.ts"
 
 /**

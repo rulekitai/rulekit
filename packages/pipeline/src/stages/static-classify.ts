@@ -1,4 +1,4 @@
-import { normalizeName } from "@rulekit/corpus/text"
+import { normalizeName } from "@rulekitai/corpus/text"
 
 /**
  * Deciding what a question is asking, before any model runs.

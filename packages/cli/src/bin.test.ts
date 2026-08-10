@@ -5,7 +5,7 @@ import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { after, before, describe, test } from "node:test"
 import { fileURLToPath } from "node:url"
-import { loadCorpus } from "@rulekit/corpus/load"
+import { loadCorpus } from "@rulekitai/corpus/load"
 import { checkProfileFields, commandAsk, commandBuild, commandInit, commandValidate } from "./bin.ts"
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..")

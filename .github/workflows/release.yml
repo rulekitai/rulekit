@@ -1,0 +1,49 @@
+name: release
+
+# Publishes every package to npm when you push a version tag, for example
+# v0.1.0. The tag is the trigger, so a release is one command and it leaves a
+# record.
+on:
+  push:
+    tags: ["v*"]
+  # Lets you publish from the Actions tab when a tag push is not what you want.
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      # Reads the repository.
+      contents: read
+      # Signs the provenance statement. npm rejects --provenance without it.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          # Writes the .npmrc that reads NODE_AUTH_TOKEN below.
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      # The same four checks that every pull request runs. A release that skips
+      # them publishes a version that nobody tested.
+      - run: pnpm lint
+      - run: pnpm check-types
+      - run: pnpm test
+      - run: pnpm rulekit validate data/demo
+
+      # The exports map points at dist/, so a publish without this ships a
+      # package whose every import fails.
+      - run: pnpm build
+
+      # --no-git-checks: the tag is checked out as a detached HEAD, which pnpm
+      # otherwise refuses to publish from.
+      - run: pnpm publish --recursive --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

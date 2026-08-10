@@ -1,8 +1,32 @@
 {
-  "name": "@rulekit/corpus",
+  "name": "@rulekitai/corpus",
   "version": "0.1.0",
   "description": "The rules corpus: a JSON schema, a SQLite builder, and one read interface.",
+  "keywords": [
+    "rules",
+    "rulebook",
+    "rules-assistant",
+    "citations",
+    "grounded",
+    "rag",
+    "sqlite",
+    "full-text-search",
+    "json-schema"
+  ],
   "license": "Apache-2.0",
+  "homepage": "https://github.com/rulekitai/rulekit/tree/main/packages/corpus#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rulekitai/rulekit.git",
+    "directory": "packages/corpus"
+  },
+  "bugs": {
+    "url": "https://github.com/rulekitai/rulekit/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "type": "module",
   "engines": {
     "node": ">=22.5.0"

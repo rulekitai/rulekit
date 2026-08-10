@@ -4,11 +4,11 @@ import { cp, mkdir, readFile, stat } from "node:fs/promises"
 import { dirname, join, relative, resolve } from "node:path"
 import { argv, cwd, exit, stderr, stdout } from "node:process"
 import { fileURLToPath, pathToFileURL } from "node:url"
-import { type Profile, parseProfile } from "@rulekit/agent/profile"
-import { buildDatabase } from "@rulekit/corpus/build"
-import { type CorpusProblem, checkIntegrity, loadCorpus } from "@rulekit/corpus/load"
-import { SqliteStore } from "@rulekit/corpus/sqlite-store"
-import type { Corpus } from "@rulekit/corpus/types"
+import { type Profile, parseProfile } from "@rulekitai/agent/profile"
+import { buildDatabase } from "@rulekitai/corpus/build"
+import { type CorpusProblem, checkIntegrity, loadCorpus } from "@rulekitai/corpus/load"
+import { SqliteStore } from "@rulekitai/corpus/sqlite-store"
+import type { Corpus } from "@rulekitai/corpus/types"
 
 /**
  * The `rulekit` command.
@@ -250,10 +250,10 @@ async function commandAsk(dir: string, question: string): Promise<number> {
   }
   const store = SqliteStore.fromCorpus(result.corpus)
 
-  const { createPipeline } = await import("@rulekit/pipeline/pipeline")
-  const { staticAnswersStage } = await import("@rulekit/pipeline/stages/static")
-  const { glossaryStage } = await import("@rulekit/pipeline/stages/glossary")
-  const { minimalProfile, parseProfile } = await import("@rulekit/agent/profile")
+  const { createPipeline } = await import("@rulekitai/pipeline/pipeline")
+  const { staticAnswersStage } = await import("@rulekitai/pipeline/stages/static")
+  const { glossaryStage } = await import("@rulekitai/pipeline/stages/glossary")
+  const { minimalProfile, parseProfile } = await import("@rulekitai/agent/profile")
 
   // The profile is optional here: a corpus can be checked before anybody writes
   // one, and the free stages read almost nothing from it.
@@ -277,7 +277,7 @@ async function commandAsk(dir: string, question: string): Promise<number> {
     // was. A question the classifier never matched and a rule number the corpus
     // does not hold both leave every stage passed, and somebody who cannot tell
     // them apart retries the same wrong shape.
-    const { classify } = await import("@rulekit/pipeline/stages/static-classify")
+    const { classify } = await import("@rulekitai/pipeline/stages/static-classify")
     const asked = classify(question)
     const missingRule = asked.intent === "RULE_N" ? asked.ruleNumber : null
 

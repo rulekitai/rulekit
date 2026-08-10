@@ -3,9 +3,9 @@ import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { before, describe, test } from "node:test"
 import { fileURLToPath } from "node:url"
-import { loadCorpus } from "@rulekit/corpus/load"
-import { SqliteStore } from "@rulekit/corpus/sqlite-store"
-import type { RuleStore } from "@rulekit/corpus/store"
+import { loadCorpus } from "@rulekitai/corpus/load"
+import { SqliteStore } from "@rulekitai/corpus/sqlite-store"
+import type { RuleStore } from "@rulekitai/corpus/store"
 import {
   buildHaystack,
   DEFAULT_RULE_PATTERN,

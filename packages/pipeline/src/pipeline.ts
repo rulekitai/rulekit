@@ -1,6 +1,6 @@
-import type { Profile } from "@rulekit/agent/profile"
-import type { Turn } from "@rulekit/agent/turn"
-import type { RuleStore } from "@rulekit/corpus/store"
+import type { Profile } from "@rulekitai/agent/profile"
+import type { Turn } from "@rulekitai/agent/turn"
+import type { RuleStore } from "@rulekitai/corpus/store"
 import { MemoryCache } from "./cache.ts"
 import type { Answer, AskContext, Cache, Stage } from "./types.ts"
 

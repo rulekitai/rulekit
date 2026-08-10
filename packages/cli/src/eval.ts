@@ -1,10 +1,10 @@
 import { readFile, writeFile } from "node:fs/promises"
 import { join } from "node:path"
-import { minimalProfile, parseProfile } from "@rulekit/agent/profile"
-import { createRulesAgent } from "@rulekit/agent/runtime"
-import { loadCorpus } from "@rulekit/corpus/load"
-import { SqliteStore } from "@rulekit/corpus/sqlite-store"
-import type { RuleStore } from "@rulekit/corpus/store"
+import { minimalProfile, parseProfile } from "@rulekitai/agent/profile"
+import { createRulesAgent } from "@rulekitai/agent/runtime"
+import { loadCorpus } from "@rulekitai/corpus/load"
+import { SqliteStore } from "@rulekitai/corpus/sqlite-store"
+import type { RuleStore } from "@rulekitai/corpus/store"
 import { z } from "zod"
 import {
   buildHaystack,
