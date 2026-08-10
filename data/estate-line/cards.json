@@ -862,6 +862,96 @@
         "deck": "Ledger",
         "kept_until_used": true
       }
+    },
+    {
+      "id": "el-t01",
+      "name": "Lamplighter's Ladder",
+      "type_line": "Playing Token",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-T01.webp",
+      "tags": ["playing token", "brass"],
+      "text": {
+        "description_text": "A short cast ladder with a lit street lamp at the top rung. The token stands on a flat oval foot."
+      },
+      "stats": {
+        "material": "Cast brass",
+        "introduced_in_edition": "First Printing"
+      }
+    },
+    {
+      "id": "el-t02",
+      "name": "Brass Tram",
+      "type_line": "Playing Token",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-T02.webp",
+      "tags": ["playing token", "brass"],
+      "text": {
+        "description_text": "A small tram car with four wheels, an open roof rail, and a driver's window at each end."
+      },
+      "stats": {
+        "material": "Cast brass",
+        "introduced_in_edition": "First Printing"
+      }
+    },
+    {
+      "id": "el-t03",
+      "name": "Surveyor's Chain",
+      "type_line": "Playing Token",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-T03.webp",
+      "tags": ["playing token", "steel"],
+      "text": {
+        "description_text": "A measuring chain coiled on a round base. The end link stands upright and carries a small ring."
+      },
+      "stats": {
+        "material": "Polished steel",
+        "introduced_in_edition": "First Printing"
+      }
+    },
+    {
+      "id": "el-t04",
+      "name": "Mason's Trowel",
+      "type_line": "Playing Token",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-T04.webp",
+      "tags": ["playing token", "pewter"],
+      "text": {
+        "description_text": "A pointed trowel with a short handle. The blade lies flat, and it holds the token upright."
+      },
+      "stats": {
+        "material": "Pewter",
+        "introduced_in_edition": "First Printing"
+      }
+    },
+    {
+      "id": "el-t05",
+      "name": "Clerk's Ink Pot",
+      "type_line": "Playing Token",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-T05.webp",
+      "tags": ["playing token", "pewter"],
+      "text": {
+        "description_text": "A round ink pot with an open lid. A quill leans against the side of the pot."
+      },
+      "stats": {
+        "material": "Pewter",
+        "introduced_in_edition": "First Printing"
+      }
+    },
+    {
+      "id": "el-t06",
+      "name": "Gatekeeper's Keyring",
+      "type_line": "Playing Token",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-T06.webp",
+      "tags": ["playing token", "iron"],
+      "text": {
+        "description_text": "A heavy ring that holds three long keys. The ring stands on its edge on a small tab."
+      },
+      "stats": {
+        "material": "Blackened iron",
+        "introduced_in_edition": "First Printing"
+      }
     }
   ]
 }

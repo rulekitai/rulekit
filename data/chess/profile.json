@@ -73,6 +73,14 @@
       {
         "field": "special_text",
         "describes": "the rules that apply only to this piece, such as castling or promotion"
+      },
+      {
+        "field": "description_text",
+        "describes": "what an item of equipment is, and the parts of it a player names"
+      },
+      {
+        "field": "usage_text",
+        "describes": "how a player uses that item of equipment during a game"
       }
     ]
   },
@@ -142,7 +150,7 @@
     ]
   },
   "extraGuidance": [
-    "This corpus holds no cards. Chess has pieces, and a piece has no printed text. Do not offer a card lookup and do not describe a piece as a card.",
+    "The card list holds the six pieces and three items of equipment: the board, the clock, and the scoresheet. A piece and an item of equipment carry no printed text, so each text field holds a description written for this corpus. Call a piece a piece, and never a card.",
     "Rule numbers run from 100 to 800 in one book. A number that ends in a bare hundred, such as 100 or 500, is a section heading with no text of its own; quote the numbered rule under it instead.",
     "Name the exact rule number for every claim about legality. A reader who asks whether a move is legal needs the rule, not only the verdict.",
     "Keep stalemate and checkmate apart in every answer. Both need a player with no legal move; only checkmate needs the king to be under attack.",

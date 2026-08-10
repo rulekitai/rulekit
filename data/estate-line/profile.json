@@ -54,6 +54,10 @@
         "describes": "the text box on a Fortune card or a Ledger card, holding the instruction the player follows"
       },
       {
+        "field": "description_text",
+        "describes": "the description of a playing token, holding the shape and the parts a player sees"
+      },
+      {
         "field": "flavor_text",
         "describes": "a printed line of colour text that carries no rule"
       }
@@ -94,6 +98,7 @@
     "A property card prints its text in two boxes. `deed_text` holds the price, the district, and the mortgage value. `rent_text` holds every rent line and the building costs. Read both before you state what a property charges, and never conclude from `deed_text` alone that a card prints no rent.",
     "Property cards carry no rarity, because Estate Line prints one copy of each deed. Do not report a rarity for them.",
     "Property `stats` differ by property type. A street prints `rent_base` through `rent_with_hotel` plus `house_cost`. A depot prints `rent_one_depot` through `rent_four_depots` and no house cost. A works property prints `rent_multiplier_one_works` and `rent_multiplier_both_works`. Read the keys the card carries, and do not expect the keys of another type.",
+    "A playing token is the piece a player moves around the board. A token carries no rule and no rent. It prints only `description_text`, its material, and the edition that introduced it. Do not read a rule out of a token.",
     "Estate Line has one rulebook, the Official Rules. Section 950 follows section 900, and both are current."
   ]
 }

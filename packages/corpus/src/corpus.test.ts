@@ -316,3 +316,54 @@ describe("opening a database that is not there", () => {
     )
   })
 })
+
+describe("two terms that answer to one word", () => {
+  test("validation names the ambiguous spelling", async () => {
+    // The glossary looks a term up by an exact key, so a shared key resolves by
+    // whichever row comes back first. The reader then gets a definition that
+    // depends on insertion order.
+    const result = await loadCorpus(DEMO)
+    assert.ok(result.ok)
+    const clash = structuredClone(result.corpus)
+    clash.terms = [
+      { ...clash.terms[0], id: "t-a", term: "Alpha", aliases: ["shared word"] },
+      { ...clash.terms[0], id: "t-b", term: "Beta", aliases: ["shared word"] },
+    ]
+    const problems = checkIntegrity(clash)
+    assert.ok(
+      problems.some((p) => p.message.includes("shared word") && p.message.includes("ambiguous")),
+      `expected an ambiguity problem, got ${JSON.stringify(problems)}`,
+    )
+  })
+
+  test("one term may keep many spellings of its own", () => {
+    // Aliases are the point. Only a spelling claimed by a DIFFERENT term is a
+    // problem.
+    assert.deepEqual(
+      checkIntegrity({
+        game: { slug: "g", name: "G" },
+        rulebooks: [],
+        sections: [],
+        rules: [],
+        cards: [],
+        errata: [],
+        banlist: [],
+        patchNotes: [],
+        terms: [
+          {
+            id: "t",
+            term: "Guard",
+            slug: "guard",
+            definition: "d",
+            short_definition: null,
+            category: null,
+            aliases: ["guardian", "defender", "GUARD"],
+            defining_rule_id: null,
+            defining_rule_number: null,
+          },
+        ],
+      }),
+      [],
+    )
+  })
+})

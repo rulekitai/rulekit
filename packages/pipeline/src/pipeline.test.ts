@@ -131,6 +131,22 @@ describe("the glossary trigger", () => {
     assert.equal(definitionSubject("define a fork"), "fork")
   })
 
+  test("drops the article in every phrasing, not only the first", () => {
+    // The article was stripped in "what is a call" and not in "what does a
+    // call mean", so one phrasing answered and the other went to the model.
+    assert.equal(definitionSubject("what does a call mean"), "call")
+    assert.equal(definitionSubject("what does the button do"), "button")
+    assert.equal(definitionSubject("how does a raise work"), "raise")
+  })
+
+  test("reads a term of five words", () => {
+    // Real vocabulary reaches this length: "one player to a hand" is a poker
+    // rule. The cap guards against a whole question, and the store still
+    // matches exactly, so a subject that is not a term simply finds nothing.
+    assert.equal(definitionSubject("what is one player to a hand"), "one player to a hand")
+    assert.equal(definitionSubject("what is the best way to win this whole game"), null)
+  })
+
   test("keeps an article that is part of the term", () => {
     // "a" only goes when it is the leading word. A term that merely starts
     // with those letters must survive intact.

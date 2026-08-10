@@ -237,8 +237,8 @@
       "short_definition": "The player who holds the Bank's money, deeds, and buildings.",
       "category": "role",
       "aliases": [
-        "the bank",
-        "bank"
+        "the banker",
+        "bank keeper"
       ],
       "defining_rule_id": "r-100-3",
       "defining_rule_number": "100.3"
@@ -327,6 +327,227 @@
       ],
       "defining_rule_id": "r-200-6",
       "defining_rule_number": "200.6"
+    },
+    {
+      "id": "term-trade",
+      "term": "Trade",
+      "slug": "trade",
+      "definition": "A trade is a deal between two players. Both players must agree to it. A player may hand over a title deed, an amount of money, or a Release Token. A trade takes effect at once, and no player may take it back.",
+      "short_definition": "A deal between two players. Both players must agree to it.",
+      "category": "core_term",
+      "aliases": [
+        "deal",
+        "swap",
+        "trading"
+      ],
+      "defining_rule_id": "r-800-1",
+      "defining_rule_number": "800.1"
+    },
+    {
+      "id": "term-turn-order",
+      "term": "Turn Order",
+      "slug": "turn-order",
+      "definition": "Turn order is the order in which the players take their turns. Play passes to the left. Each turn has three steps. The player rolls and moves, then acts on the space, then trades and builds.",
+      "short_definition": "The order in which the players take their turns. Play passes to the left.",
+      "category": "core_term",
+      "aliases": [
+        "order of play",
+        "play order"
+      ],
+      "defining_rule_id": "r-200-1",
+      "defining_rule_number": "200.1"
+    },
+    {
+      "id": "term-improvement",
+      "term": "Improvement",
+      "slug": "improvement",
+      "definition": "An improvement is a house or a hotel on a property. Only a player who holds a full district may buy improvements for that district. A depot carries no improvement, and a works property carries no improvement.",
+      "short_definition": "A house or a hotel on a property.",
+      "category": "improvement",
+      "aliases": [
+        "improvements",
+        "building",
+        "buildings"
+      ],
+      "defining_rule_id": "r-500-1",
+      "defining_rule_number": "500.1"
+    },
+    {
+      "id": "term-unmortgage",
+      "term": "Unmortgage",
+      "slug": "unmortgage",
+      "definition": "To unmortgage a property is to end its mortgage. The owner pays the Bank the mortgage value plus ten per cent of that value. The owner then turns the deed face up, and the property charges rent again.",
+      "short_definition": "To end a mortgage by paying the mortgage value plus ten per cent.",
+      "category": "core_term",
+      "aliases": [
+        "redeem",
+        "lift a mortgage",
+        "unmortgaging"
+      ],
+      "defining_rule_id": "r-900-3",
+      "defining_rule_number": "900.3"
+    },
+    {
+      "id": "term-playing-token",
+      "term": "Playing Token",
+      "slug": "playing-token",
+      "definition": "A playing token is the piece a player moves around the board. Each player takes one token at setup and keeps it for the whole game. The token shows the space where that player stands. A token carries no rule of its own.",
+      "short_definition": "The piece a player moves around the board.",
+      "category": "component",
+      "aliases": [
+        "token",
+        "piece",
+        "playing piece"
+      ],
+      "defining_rule_id": "r-100-5",
+      "defining_rule_number": "100.5"
+    },
+    {
+      "id": "term-bank",
+      "term": "Bank",
+      "slug": "bank",
+      "definition": "The Bank holds the money, the unsold title deeds, the houses, and the hotels. The Banker runs the Bank for every player. The Bank sells a property at the printed price, and it buys a building back at half the printed price. The Bank never runs out of money.",
+      "short_definition": "The holder of the money, the unsold title deeds, and the buildings.",
+      "category": "role",
+      "aliases": [
+        "the bank",
+        "bank supply"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-roll",
+      "term": "Roll",
+      "slug": "roll",
+      "definition": "A roll is one throw of the two six-sided dice. The total of the two dice is the number of spaces the player moves. A works property charges its rent from the roll that moved the player onto it.",
+      "short_definition": "One throw of the two dice. The total is the number of spaces the player moves.",
+      "category": "core_term",
+      "aliases": [
+        "dice roll",
+        "throw",
+        "rolling"
+      ],
+      "defining_rule_id": "r-200-2",
+      "defining_rule_number": "200.2"
+    },
+    {
+      "id": "term-unimproved-property",
+      "term": "Unimproved Property",
+      "slug": "unimproved-property",
+      "definition": "An unimproved property is a property that carries no house and no hotel. It charges the base rent. It charges twice the base rent while one player owns the full district. A player may mortgage an unimproved property.",
+      "short_definition": "A property that carries no house and no hotel.",
+      "category": "core_term",
+      "aliases": [
+        "undeveloped property",
+        "unimproved",
+        "undeveloped"
+      ],
+      "defining_rule_id": "r-400-2",
+      "defining_rule_number": "400.2"
+    },
+    {
+      "id": "term-title-transfer",
+      "term": "Title Transfer",
+      "slug": "title-transfer",
+      "definition": "A title transfer moves a title deed from one holder to another holder. A purchase, an auction, a trade, and a bankruptcy each move a deed. A property must carry no house and no hotel before its deed moves in a trade. A player who receives a mortgaged deed pays the Bank ten per cent of the mortgage value at once.",
+      "short_definition": "The move of a title deed from one holder to another holder.",
+      "category": "core_term",
+      "aliases": [
+        "deed transfer",
+        "transfer of title",
+        "handing over a deed"
+      ],
+      "defining_rule_id": "r-800-2",
+      "defining_rule_number": "800.2"
+    },
+    {
+      "id": "term-withdrawal",
+      "term": "Withdrawal",
+      "slug": "withdrawal",
+      "definition": "A withdrawal is the exit of a player from the game before the end. A player who cannot pay a debt is bankrupt, and that player withdraws at once. The player hands over all their money and all their title deeds. The other players continue.",
+      "short_definition": "The exit of a player from the game before the end.",
+      "category": "core_term",
+      "aliases": [
+        "concession",
+        "conceding",
+        "leaving the game"
+      ],
+      "defining_rule_id": "r-900-5",
+      "defining_rule_number": "900.5"
+    },
+    {
+      "id": "term-district",
+      "term": "District",
+      "slug": "district",
+      "definition": "A district is a set of properties that print the same colour. Estate Line has eight districts, and each district holds two or three streets. A player who owns every property of one district holds a full district.",
+      "short_definition": "A set of properties that print the same colour.",
+      "category": "core_term",
+      "aliases": [
+        "colour district",
+        "color district",
+        "property colour"
+      ],
+      "defining_rule_id": "r-300-4",
+      "defining_rule_number": "300.4"
+    },
+    {
+      "id": "term-interest",
+      "term": "Interest",
+      "slug": "interest",
+      "definition": "Interest is the ten per cent the Bank charges on a mortgage value. A player pays the interest to lift a mortgage. A player who takes a mortgaged deed in a trade pays the interest at once.",
+      "short_definition": "The ten per cent the Bank charges on a mortgage value.",
+      "category": "core_term",
+      "aliases": [
+        "mortgage interest",
+        "ten per cent"
+      ],
+      "defining_rule_id": "r-900-3",
+      "defining_rule_number": "900.3"
+    },
+    {
+      "id": "term-visitor",
+      "term": "Visitor",
+      "slug": "visitor",
+      "definition": "A visitor is a player who lands on the Detour Yard without an order to stay there. A visitor pays nothing and leaves on their next turn.",
+      "short_definition": "A player who lands on the Detour Yard without an order to stay there.",
+      "category": "core_term",
+      "aliases": [
+        "just visiting",
+        "visiting player"
+      ],
+      "defining_rule_id": "r-700-6",
+      "defining_rule_number": "700.6"
+    },
+    {
+      "id": "term-building-rent",
+      "term": "Building Rent",
+      "slug": "building-rent",
+      "definition": "Building rent is the rent a property with houses or a hotel charges. The title deed prints one rent line for each number of houses, and one line for a hotel. A property charges the line that matches its buildings, and it does not charge the doubled base rent.",
+      "short_definition": "The rent a property with houses or a hotel charges.",
+      "category": "core_term",
+      "aliases": [
+        "improved rent",
+        "house rent",
+        "hotel rent"
+      ],
+      "defining_rule_id": "r-400-3",
+      "defining_rule_number": "400.3"
+    },
+    {
+      "id": "term-repair-card",
+      "term": "Repair Card",
+      "slug": "repair-card",
+      "definition": "A repair card is a Fortune card or a Ledger card that charges a player for their buildings. The card prints one amount for each house and a larger amount for each hotel. The player counts the buildings in every district they own, and then pays the total.",
+      "short_definition": "A card that charges a player for each house and each hotel they own.",
+      "category": "card_type",
+      "aliases": [
+        "repair",
+        "repairs",
+        "repair cards"
+      ],
+      "defining_rule_id": "r-600-4",
+      "defining_rule_number": "600.4"
     }
   ]
 }

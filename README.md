@@ -10,16 +10,20 @@ corpus holds no answer, the assistant says so. It does not invent one.
 **It works with any rulebook.** No game is built in. **Five example corpora
 ship**, and they are deliberately unalike:
 
-| Corpus | The game | Cards? |
-|---|---|---|
-| `data/chess/` | Chess | No cards at all |
-| `data/texas-holdem/` | Texas Hold'em poker | A card game with no card database |
-| `data/estate-line/` | An invented property trading game | Cards that are deeds and fortunes, not trading cards |
-| `data/demo/` | An invented trading card game | Yes |
-| `data/riftbound/` | Riftbound | Yes, 941 of them |
+| Corpus | The game | Rules | Terms | Its named pieces |
+|---|---|---|---|---|
+| `data/chess/` | Chess | 90 | 44 | 6 pieces and 3 items of equipment |
+| `data/texas-holdem/` | Texas Hold'em poker | 93 | 59 | The 52 cards of the pack |
+| `data/estate-line/` | An invented property trading game | 90 | 38 | 38 deeds and fortunes, 6 tokens |
+| `data/demo/` | An invented trading card game | 27 | 6 | 12 cards |
+| `data/riftbound/` | Riftbound | 3317 | 25 | 941 cards |
 
-Same format, same code, no change between them. Four of the five are public
-domain and were written for this project.
+Same format, same code, no change between them. **No two of them share a single
+attribute name**: chess pieces carry a piece value and a notation symbol, poker
+cards carry a rank and a suit, and a deed carries a price and five levels of
+rent.
+
+Four of the five are public domain and were written for this project.
 
 Apache 2.0 licence. No pricing model. No required model provider. No account,
 except one model key.
@@ -168,7 +172,7 @@ event. That is why this command exists.
 
 ```bash
 pnpm check-types      # every package
-pnpm test             # 269 tests, no model and no network
+pnpm test             # 273 tests, no model and no network
 pnpm rulekit validate data/demo
 pnpm test:e2e         # the interface, in a browser
 ```

@@ -30,11 +30,22 @@ const ARTICLE = String.raw`(?:the|an|a)\s+`
 /** Ways a reader asks for a definition. Each captures the term. */
 const DEFINITION_PATTERNS: RegExp[] = [
   new RegExp(`^what(?:'?s| is| are)\\s+(?:${ARTICLE})?(?:keyword\\s+|ability\\s+|term\\s+)?(.+?)\\??$`),
-  /^what\s+does\s+(.+?)\s+(?:do|mean)\??$/,
+  new RegExp(`^what\\s+does\\s+(?:${ARTICLE})?(.+?)\\s+(?:do|mean)\\??$`),
   new RegExp(`^(?:define|explain)\\s+(?:${ARTICLE})?(?:keyword\\s+|term\\s+)?(.+?)\\??$`),
-  /^(?:how\s+does\s+)(.+?)\s+work\??$/,
+  new RegExp(`^(?:how\\s+does\\s+)(?:${ARTICLE})?(.+?)\\s+work\\??$`),
   /^(.+?)\s+(?:keyword|definition)\??$/,
 ]
+
+/**
+ * The longest subject that can still be a term rather than a whole question.
+ *
+ * The cap stops "what is the best way to win the game" reaching the store as a
+ * term. It is a guard and not a correctness rule: the store matches a term or an
+ * alias exactly, so a subject that is not a term finds nothing and the stage
+ * declines. Five words, because real vocabulary reaches that length, as "one
+ * player to a hand" does in poker.
+ */
+const MAX_SUBJECT_WORDS = 5
 
 /**
  * A bare term, typed on its own.
@@ -53,7 +64,7 @@ export function definitionSubject(question: string): string | null {
   for (const pattern of DEFINITION_PATTERNS) {
     const match = q.match(pattern)
     const subject = match?.[1]?.trim()
-    if (subject && subject.split(/\s+/).length <= 4) return subject
+    if (subject && subject.split(/\s+/).length <= MAX_SUBJECT_WORDS) return subject
   }
   if (BARE_TERM.test(q) && q.split(/\s+/).length <= 3) return q
   return null

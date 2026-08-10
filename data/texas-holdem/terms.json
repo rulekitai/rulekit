@@ -367,6 +367,433 @@
       ],
       "defining_rule_id": "r-700-12",
       "defining_rule_number": "700.12"
+    },
+    {
+      "id": "term-bet",
+      "term": "Bet",
+      "slug": "bet",
+      "definition": "The action of putting chips in the pot when no player has bet in the round yet. In a no-limit game the smallest bet equals the big blind. The largest bet equals every chip the player holds on the table.",
+      "short_definition": "Chips put in the pot when no bet stands.",
+      "category": "betting_action",
+      "aliases": [
+        "open",
+        "opening bet"
+      ],
+      "defining_rule_id": "r-400-3",
+      "defining_rule_number": "400.3"
+    },
+    {
+      "id": "term-call",
+      "term": "Call",
+      "slug": "call",
+      "definition": "The action of putting in chips equal to the largest amount bet in the current round. The player stays in the hand. A player who already put chips in that round adds only the difference.",
+      "short_definition": "Match the largest bet of the round.",
+      "category": "betting_action",
+      "aliases": [
+        "calling",
+        "flat call"
+      ],
+      "defining_rule_id": "r-400-4",
+      "defining_rule_number": "400.4"
+    },
+    {
+      "id": "term-raise",
+      "term": "Raise",
+      "slug": "raise",
+      "definition": "The action of putting in more than the amount needed to call. A raise reopens the round. Every other player must then call the new amount, raise again, or fold.",
+      "short_definition": "Put in more than the amount needed to call.",
+      "category": "betting_action",
+      "aliases": [
+        "raising",
+        "re-raise"
+      ],
+      "defining_rule_id": "r-400-5",
+      "defining_rule_number": "400.5"
+    },
+    {
+      "id": "term-fold",
+      "term": "Fold",
+      "slug": "fold",
+      "definition": "The action of giving up the hand and every claim to the pot. The player slides the two hole cards face down toward the dealer. Chips already in the pot stay in the pot.",
+      "short_definition": "Give up the hand and the claim to the pot.",
+      "category": "betting_action",
+      "aliases": [
+        "folding",
+        "lay down"
+      ],
+      "defining_rule_id": "r-400-6",
+      "defining_rule_number": "400.6"
+    },
+    {
+      "id": "term-check",
+      "term": "Check",
+      "slug": "check",
+      "definition": "The action of passing the turn without a bet. A player may check only when no bet stands in the current round. A check costs nothing and keeps the hand alive.",
+      "short_definition": "Pass the turn without a bet.",
+      "category": "betting_action",
+      "aliases": [
+        "checking",
+        "tap the table"
+      ],
+      "defining_rule_id": "r-400-2",
+      "defining_rule_number": "400.2"
+    },
+    {
+      "id": "term-small-blind",
+      "term": "Small Blind",
+      "slug": "small-blind",
+      "definition": "The smaller of the two forced bets posted before the deal. The player on the immediate left of the button posts it.",
+      "short_definition": "The forced bet posted left of the button.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "sb",
+        "little blind"
+      ],
+      "defining_rule_id": "r-200-2-a",
+      "defining_rule_number": "200.2.a"
+    },
+    {
+      "id": "term-big-blind",
+      "term": "Big Blind",
+      "slug": "big-blind",
+      "definition": "The larger of the two forced bets posted before the deal. The next player clockwise from the small blind posts it, and it is normally twice the small blind. It counts as the first bet of the pre-flop round.",
+      "short_definition": "The larger forced bet, and the first bet of the hand.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "bb"
+      ],
+      "defining_rule_id": "r-200-2-b",
+      "defining_rule_number": "200.2.b"
+    },
+    {
+      "id": "term-under-the-gun",
+      "term": "Under the Gun",
+      "slug": "under-the-gun",
+      "definition": "The seat on the immediate left of the big blind. The player in that seat acts first before the flop.",
+      "short_definition": "The seat that acts first before the flop.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "utg"
+      ],
+      "defining_rule_id": "r-200-4-a",
+      "defining_rule_number": "200.4.a"
+    },
+    {
+      "id": "term-ante",
+      "term": "Ante",
+      "slug": "ante",
+      "definition": "A small forced bet every player puts in the pot before the deal. It does not count toward the first bet of the round. The house or the tournament structure sets the size.",
+      "short_definition": "A small forced bet from every player before the deal.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "antes",
+        "ante bet"
+      ],
+      "defining_rule_id": "r-200-5",
+      "defining_rule_number": "200.5"
+    },
+    {
+      "id": "term-minimum-raise",
+      "term": "Minimum Raise",
+      "slug": "minimum-raise",
+      "definition": "The smallest legal raise. A raise must increase the current bet by at least the size of the last bet or the last raise in that round. Before the flop the big blind counts as that last bet.",
+      "short_definition": "The smallest amount a legal raise may add.",
+      "category": "betting_action",
+      "aliases": [
+        "min raise"
+      ],
+      "defining_rule_id": "r-400-5-a",
+      "defining_rule_number": "400.5.a"
+    },
+    {
+      "id": "term-table-stakes",
+      "term": "Table Stakes",
+      "slug": "table-stakes",
+      "definition": "The rule that limits a player to the chips on the table when the hand starts. A player adds chips between hands and never during one. A player never takes chips off the table while a hand runs.",
+      "short_definition": "A player bets only the chips on the table.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "table stake"
+      ],
+      "defining_rule_id": "r-100-6",
+      "defining_rule_number": "100.6"
+    },
+    {
+      "id": "term-misdeal",
+      "term": "Misdeal",
+      "slug": "misdeal",
+      "definition": "A deal that goes wrong before real betting action starts. The dealer takes the cards back, shuffles the whole pack, and deals again with the button in the same seat.",
+      "short_definition": "A faulty deal the dealer takes back.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "mis-deal",
+        "misdeals"
+      ],
+      "defining_rule_id": "r-800-2",
+      "defining_rule_number": "800.2"
+    },
+    {
+      "id": "term-dead-hand",
+      "term": "Dead Hand",
+      "slug": "dead-hand",
+      "definition": "A hand that can win nothing. A hand dies when the player folds it or when it reaches the muck. It also dies when the player shows it to another player during the hand, or when it holds the wrong number of cards.",
+      "short_definition": "A hand that can no longer win the pot.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "fouled hand",
+        "foul hand"
+      ],
+      "defining_rule_id": "r-800-1",
+      "defining_rule_number": "800.1"
+    },
+    {
+      "id": "term-rake",
+      "term": "Rake",
+      "slug": "rake",
+      "definition": "The fee the house takes out of the pot in a game played for cash. The dealer takes it before the winner receives the chips. The house sets the amount.",
+      "short_definition": "The fee the house takes from the pot.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "house fee",
+        "drop"
+      ],
+      "defining_rule_id": "r-100-7",
+      "defining_rule_number": "100.7"
+    },
+    {
+      "id": "term-main-pot",
+      "term": "Main Pot",
+      "slug": "main-pot",
+      "definition": "The pot that holds the chips every player still in the hand matched, counted up to the size of the smallest all-in wager. Every player still in the hand may win it.",
+      "short_definition": "The pot every remaining player may win.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "center pot"
+      ],
+      "defining_rule_id": "r-500-2",
+      "defining_rule_number": "500.2"
+    },
+    {
+      "id": "term-split-pot",
+      "term": "Split Pot",
+      "slug": "split-pot",
+      "definition": "A pot that two or more hands of equal strength share in equal parts. If the pot does not divide evenly, the extra chip goes to the first tied player clockwise from the button.",
+      "short_definition": "A pot that tied hands share.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "chop",
+        "chopped pot"
+      ],
+      "defining_rule_id": "r-600-4",
+      "defining_rule_number": "600.4"
+    },
+    {
+      "id": "term-pre-flop",
+      "term": "Pre-Flop",
+      "slug": "pre-flop",
+      "definition": "The first betting round. It starts as soon as every player holds two hole cards, and no board card is face up yet.",
+      "short_definition": "The betting round before the flop.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "preflop",
+        "first round"
+      ],
+      "defining_rule_id": "r-300-2",
+      "defining_rule_number": "300.2"
+    },
+    {
+      "id": "term-betting-round",
+      "term": "Betting Round",
+      "slug": "betting-round",
+      "definition": "One of the four rounds in which the players bet. The four rounds run in this order: pre-flop, the flop, the turn, and the river.",
+      "short_definition": "One of the four rounds of betting in a hand.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "street",
+        "round of betting"
+      ],
+      "defining_rule_id": "r-300-1",
+      "defining_rule_number": "300.1"
+    },
+    {
+      "id": "term-cards-speak",
+      "term": "Cards Speak",
+      "slug": "cards-speak",
+      "definition": "The rule that the cards decide the winner at the showdown. The dealer reads every hand. A player who names the hand wrongly still wins when the cards hold the best hand.",
+      "short_definition": "The cards decide the winner, not the words.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "cards speak for themselves"
+      ],
+      "defining_rule_id": "r-600-5",
+      "defining_rule_number": "600.5"
+    },
+    {
+      "id": "term-playing-the-board",
+      "term": "Playing the Board",
+      "slug": "playing-the-board",
+      "definition": "The case in which a player's best five cards are the five board cards. That player uses no hole card. Every player who reaches the showdown holds at least the strength of the board.",
+      "short_definition": "The five board cards are a player's best hand.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "play the board",
+        "board plays"
+      ],
+      "defining_rule_id": "r-100-4-a",
+      "defining_rule_number": "100.4.a"
+    },
+    {
+      "id": "term-exposed-card",
+      "term": "Exposed Card",
+      "slug": "exposed-card",
+      "definition": "A card the dealer turns face up by mistake. If one hole card goes face up during the deal, the dealer finishes the deal and gives that player the next card. The exposed card then becomes the burn card for the flop.",
+      "short_definition": "A card the dealer turns face up by mistake.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "flashed card",
+        "exposed hole card"
+      ],
+      "defining_rule_id": "r-800-3",
+      "defining_rule_number": "800.3"
+    },
+    {
+      "id": "term-floor",
+      "term": "Floor",
+      "slug": "floor",
+      "definition": "The supervisor who settles a dispute the players cannot settle. The floor puts a fair game and the best interest of the whole table first, and the ruling stands for that hand.",
+      "short_definition": "The supervisor who settles a dispute.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "floorman",
+        "floor supervisor"
+      ],
+      "defining_rule_id": "r-800-6",
+      "defining_rule_number": "800.6"
+    },
+    {
+      "id": "term-buy-in",
+      "term": "Buy-In",
+      "slug": "buy-in",
+      "definition": "The price a player pays to enter a tournament. Every player pays the same price and starts with the same number of chips.",
+      "short_definition": "The price of entry to a tournament.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "buyin",
+        "tournament buy-in"
+      ],
+      "defining_rule_id": "r-900-1",
+      "defining_rule_number": "900.1"
+    },
+    {
+      "id": "term-blind-level",
+      "term": "Blind Level",
+      "slug": "blind-level",
+      "definition": "A period of a tournament in which the blinds hold one size. The blinds rise at set times, and each new level raises the cost of a hand.",
+      "short_definition": "A period of a tournament with one blind size.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "level"
+      ],
+      "defining_rule_id": "r-900-2",
+      "defining_rule_number": "900.2"
+    },
+    {
+      "id": "term-heads-up",
+      "term": "Heads-Up",
+      "slug": "heads-up",
+      "definition": "A hand with only two players in it. The player on the button posts the small blind and acts first before the flop. The other player acts first on every later round.",
+      "short_definition": "A hand with only two players.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "two handed",
+        "one on one"
+      ],
+      "defining_rule_id": "r-200-3",
+      "defining_rule_number": "200.3"
+    },
+    {
+      "id": "term-out-of-turn",
+      "term": "Out of Turn",
+      "slug": "out-of-turn",
+      "definition": "An action a player takes before their own turn. The action does not bind the player if the action in front of that player changes. If nothing changes, the dealer holds the player to it.",
+      "short_definition": "An action taken before a player's turn.",
+      "category": "betting_action",
+      "aliases": [
+        "acting out of turn",
+        "premature action"
+      ],
+      "defining_rule_id": "r-400-9",
+      "defining_rule_number": "400.9"
+    },
+    {
+      "id": "term-oversized-chip",
+      "term": "Oversized Chip",
+      "slug": "oversized-chip",
+      "definition": "One chip worth more than the amount needed to call. A player who puts it in with no spoken raise has called, and the dealer returns the difference.",
+      "short_definition": "One chip worth more than the call.",
+      "category": "betting_action",
+      "aliases": [
+        "one chip rule",
+        "oversize chip"
+      ],
+      "defining_rule_id": "r-400-10",
+      "defining_rule_number": "400.10"
+    },
+    {
+      "id": "term-spoken-action",
+      "term": "Spoken Action",
+      "slug": "spoken-action",
+      "definition": "A clear statement a player makes at their own turn. The statement binds that player. A player who says a raise to 500 must put 500 in the pot.",
+      "short_definition": "A statement at a player's turn binds that player.",
+      "category": "betting_action",
+      "aliases": [
+        "verbal declaration",
+        "verbal action"
+      ],
+      "defining_rule_id": "r-400-8",
+      "defining_rule_number": "400.8"
+    },
+    {
+      "id": "term-wheel",
+      "term": "Wheel",
+      "slug": "wheel",
+      "definition": "The straight five, four, three, two, ace. The ace runs low in this sequence, so the five is the highest card of it.",
+      "short_definition": "The straight from five down to the ace.",
+      "category": "hand_ranking",
+      "aliases": [
+        "bicycle",
+        "ace low straight"
+      ],
+      "defining_rule_id": "r-700-7-a",
+      "defining_rule_number": "700.7.a"
+    },
+    {
+      "id": "term-option",
+      "term": "Option",
+      "slug": "option",
+      "definition": "The choice the big blind holds when no player raises before the action returns to that seat. The big blind may then check or raise.",
+      "short_definition": "The big blind's choice to check or raise.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "the option",
+        "big blind option"
+      ],
+      "defining_rule_id": "r-300-2-a",
+      "defining_rule_number": "300.2.a"
+    },
+    {
+      "id": "term-one-player-to-a-hand",
+      "term": "One Player to a Hand",
+      "slug": "one-player-to-a-hand",
+      "definition": "The rule that a player plays the hand alone. A player takes no advice about a live hand, and shows the hole cards to nobody while the hand runs.",
+      "short_definition": "A player plays the hand without help.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "one to a hand",
+        "one player per hand"
+      ],
+      "defining_rule_id": "r-800-5",
+      "defining_rule_number": "800.5"
     }
   ]
 }

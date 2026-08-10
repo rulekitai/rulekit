@@ -41,7 +41,7 @@
       "aliases": [
         "promote",
         "queening",
-        "underpromotion"
+        "pawn promotion"
       ],
       "defining_rule_id": "r-300-3",
       "defining_rule_number": "300.3"
@@ -353,7 +353,7 @@
       "short_definition": "Moves any distance along a rank or a file.",
       "category": "piece",
       "aliases": [
-        "castle"
+        "rooks"
       ],
       "defining_rule_id": "r-100-3",
       "defining_rule_number": "100.3"
@@ -397,6 +397,235 @@
       ],
       "defining_rule_id": "r-100-3",
       "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-minor-piece",
+      "term": "Minor Piece",
+      "slug": "minor-piece",
+      "definition": "A minor piece is a bishop or a knight. Each player starts with two bishops and two knights, so each player starts with four minor pieces. The name is a group name, and it gives a piece no extra rule. The rook and the queen form the other group, the major pieces. The king and the pawn belong to neither group.",
+      "short_definition": "A bishop or a knight. Each player starts with four of them.",
+      "category": "piece",
+      "aliases": [
+        "minor pieces",
+        "minors"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-major-piece",
+      "term": "Major Piece",
+      "slug": "major-piece",
+      "definition": "A major piece is a rook or a queen. Each player starts with two rooks and one queen, so each player starts with three major pieces. A rook and a queen each move along a rank and a file. Each one can force a checkmate with the help of its own king alone. The bishop and the knight form the other group, the minor pieces.",
+      "short_definition": "A rook or a queen. Each player starts with three of them.",
+      "category": "piece",
+      "aliases": [
+        "major pieces",
+        "heavy piece",
+        "heavy pieces"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-capture",
+      "term": "Capture",
+      "slug": "capture",
+      "definition": "A capture removes an enemy piece from the board. The capturing piece moves to the square the enemy piece stands on, and the enemy piece leaves the board. A square holds one piece at most, and a player never captures one of their own pieces. A player chooses whether to capture, except when the capture is the only legal move. A pawn captures one square forward on a diagonal, and no player ever captures a king.",
+      "short_definition": "A piece moves onto an enemy piece, and the enemy piece leaves the board.",
+      "category": "move",
+      "aliases": [
+        "take",
+        "takes",
+        "capturing"
+      ],
+      "defining_rule_id": "r-100-5",
+      "defining_rule_number": "100.5"
+    },
+    {
+      "id": "term-legal-move",
+      "term": "Legal Move",
+      "slug": "legal-move",
+      "definition": "A legal move is a move the rules allow. Three tests decide it. The piece travels as its own rule allows, and only the knight passes over another piece. The end square is empty, or it holds an enemy piece, which the move captures. The move leaves the player's own king on a square that no enemy piece attacks. A player makes one legal move on every turn, and a player with no legal move is checkmated or stalemated.",
+      "short_definition": "A move the rules allow, which also leaves the player's own king free from attack.",
+      "category": "move",
+      "aliases": [
+        "legal moves",
+        "permitted move"
+      ],
+      "defining_rule_id": "r-200-1",
+      "defining_rule_number": "200.1"
+    },
+    {
+      "id": "term-illegal-move",
+      "term": "Illegal Move",
+      "slug": "illegal-move",
+      "definition": "An illegal move is a move the rules refuse. A move that leaves the player's own king under attack is illegal, and so is a move that no rule allows for that piece. The players correct the illegal move as soon as either of them notices it. They restore the position from before the move, and the player then makes a legal move with the piece they touched. In a game with a clock, the clock of the player who made the illegal move keeps running, because that player still has the move. That player loses time until they complete a legal move and press the clock. A player who wants a ruling stops the clock and calls the arbiter. A player who makes more than one illegal move in the same game can lose the game, at the arbiter's decision.",
+      "short_definition": "A move the rules refuse. The players restore the position from before the move.",
+      "category": "conduct",
+      "aliases": [
+        "illegal moves",
+        "impossible move",
+        "irregularity"
+      ],
+      "defining_rule_id": "r-800-2",
+      "defining_rule_number": "800.2"
+    },
+    {
+      "id": "term-resignation",
+      "term": "Resignation",
+      "slug": "resignation",
+      "definition": "A resignation ends the game as a loss for the player who resigns. A player can resign at any point, and the game ends at that moment. A player resigns by saying so plainly, by stopping the clock and stating it, or by writing the result on the scoresheet. A resignation cannot be withdrawn. The opponent scores one point, and the player who resigned scores no point.",
+      "short_definition": "A player gives up the game, and the opponent wins at that moment.",
+      "category": "conduct",
+      "aliases": [
+        "resign",
+        "resigns",
+        "concede"
+      ],
+      "defining_rule_id": "r-800-5",
+      "defining_rule_number": "800.5"
+    },
+    {
+      "id": "term-draw-by-agreement",
+      "term": "Draw by Agreement",
+      "slug": "draw-by-agreement",
+      "definition": "A draw by agreement ends the game with no winner, because both players accept a draw. The correct order is this: the player makes a move, offers the draw, and then presses the clock. The offer stands until the opponent accepts it, declines it in words, or makes a move. A move by the opponent declines the offer. Each player scores half a point. A player who repeats an offer after a refusal disturbs the opponent, which the rules forbid.",
+      "short_definition": "Both players accept a draw, and each player scores half a point.",
+      "category": "draw",
+      "aliases": [
+        "draw offer",
+        "agreed draw",
+        "mutual agreement"
+      ],
+      "defining_rule_id": "r-500-2",
+      "defining_rule_number": "500.2"
+    },
+    {
+      "id": "term-castling-rights",
+      "term": "Castling Rights",
+      "slug": "castling-rights",
+      "definition": "Castling rights are the permission a player still holds to castle with each rook. A player starts the game with the right on both sides. Once the king moves, the player loses the right on both sides for the rest of the game. Once one rook moves, the player loses the right with that rook, and keeps it with the other rook. A king move that answers a check ends the right in the same way. Castling rights form part of a position, so two positions match for a repetition claim only when the rights match.",
+      "short_definition": "The permission a player still holds to castle with each rook, which a king move or a rook move ends.",
+      "category": "special_move",
+      "aliases": [
+        "castling right",
+        "right to castle"
+      ],
+      "defining_rule_id": "r-300-1-f",
+      "defining_rule_number": "300.1.f"
+    },
+    {
+      "id": "term-underpromotion",
+      "term": "Underpromotion",
+      "slug": "underpromotion",
+      "definition": "An underpromotion is a promotion to a rook, a bishop, or a knight, and not to a queen. The rules give a free choice among the four pieces, so an underpromotion is always legal. The rules name two reasons for it. A knight can give an immediate check that a queen cannot give. A new queen can leave the opponent with no legal move, and the game then ends in a stalemate. The new piece acts the moment it stands on the board.",
+      "short_definition": "A promotion to a rook, a bishop, or a knight, and not to a queen.",
+      "category": "special_move",
+      "aliases": [
+        "underpromote",
+        "under-promotion"
+      ],
+      "defining_rule_id": "r-300-3-a",
+      "defining_rule_number": "300.3.a"
+    },
+    {
+      "id": "term-attacked-square",
+      "term": "Attacked Square",
+      "slug": "attacked-square",
+      "definition": "A piece attacks every square it could capture on, whether or not a piece stands on that square. A king cannot move to an attacked square, and a king that stands on an attacked square is in check. A pawn attacks only the two squares diagonally in front of it, and not the square it moves to. A piece that cannot legally move still attacks, because the attack does not depend on a legal move.",
+      "short_definition": "A square a piece could capture on, whether or not a piece stands there.",
+      "category": "position",
+      "aliases": [
+        "attacked",
+        "controlled square",
+        "square under attack"
+      ],
+      "defining_rule_id": "r-200-8",
+      "defining_rule_number": "200.8"
+    },
+    {
+      "id": "term-double-check",
+      "term": "Double Check",
+      "slug": "double-check",
+      "definition": "A double check is a check from two enemy pieces at the same time. It follows a move that opens the line of a piece behind, while the piece that moved also attacks the king. Only a king move answers a double check, because no single capture and no single block stops both attacks together. A double check that the king cannot answer is a checkmate.",
+      "short_definition": "Two enemy pieces check the king at the same time, and only a king move answers it.",
+      "category": "game_state",
+      "aliases": [
+        "discovered double check"
+      ],
+      "defining_rule_id": "r-400-2-a",
+      "defining_rule_number": "400.2.a"
+    },
+    {
+      "id": "term-draw",
+      "term": "Draw",
+      "slug": "draw",
+      "definition": "A draw is a game that no player wins. Each player scores half a point, and the result is written 1/2-1/2. Five grounds end a game in a draw. They are stalemate, agreement, a dead position, the repetition of a position, and a count of moves with no capture and no pawn move. A flag fall also ends the game in a draw when the opponent cannot reach a checkmate. A draw by threefold repetition and a draw by the fifty-move count need a claim from a player. The fivefold and seventy-five-move forms need no claim.",
+      "short_definition": "A game that no player wins. Each player scores half a point.",
+      "category": "draw",
+      "aliases": [
+        "tie",
+        "drawn game"
+      ],
+      "defining_rule_id": "r-100-7",
+      "defining_rule_number": "100.7"
+    },
+    {
+      "id": "term-arbiter",
+      "term": "Arbiter",
+      "slug": "arbiter",
+      "definition": "The arbiter is the official who watches the games and applies these rules. The arbiter settles any dispute, and the decision holds for that game. A player who wants a ruling stops the clock and calls the arbiter. The arbiter corrects an illegal move and reads a scoresheet to check a draw claim. The arbiter can also declare a draw by fivefold repetition or by the seventy-five-move count.",
+      "short_definition": "The official who watches the games, applies the rules, and settles a dispute.",
+      "category": "conduct",
+      "aliases": [
+        "referee",
+        "tournament director"
+      ],
+      "defining_rule_id": "r-800-4",
+      "defining_rule_number": "800.4"
+    },
+    {
+      "id": "term-time-control",
+      "term": "Time Control",
+      "slug": "time-control",
+      "definition": "A time control states how much time each player receives. It can give a fixed amount for the whole game, or an amount for a set number of moves. The chess clock holds the two times, and only the time of the player with the move runs. A time control can add an increment after every move, or hold the clock still for a delay, or use neither.",
+      "short_definition": "The statement of how much time each player receives for the game or for a set number of moves.",
+      "category": "clock",
+      "aliases": [
+        "time limit",
+        "rate of play"
+      ],
+      "defining_rule_id": "r-600-1",
+      "defining_rule_number": "600.1"
+    },
+    {
+      "id": "term-increment",
+      "term": "Increment",
+      "slug": "increment",
+      "definition": "An increment adds a fixed amount of time to a player's clock after every move that player makes. The increment applies to every move of the game. A player who uses less than the increment on a move ends that move with more time than before. An increment and a delay differ: a delay adds no time to the clock.",
+      "short_definition": "A fixed amount of time added to a player's clock after every move that player makes.",
+      "category": "clock",
+      "aliases": [
+        "bonus time",
+        "fischer increment"
+      ],
+      "defining_rule_id": "r-600-4",
+      "defining_rule_number": "600.4"
+    },
+    {
+      "id": "term-delay",
+      "term": "Delay",
+      "slug": "delay",
+      "definition": "A delay holds the clock still for a fixed amount of time before the player's own time starts to fall. A player who completes the move inside the delay loses no time on that move. A delay adds nothing to the clock, so the time a player holds never grows. A time control can use an increment, or a delay, or neither.",
+      "short_definition": "A fixed wait before a player's own time starts to fall, which adds no time to the clock.",
+      "category": "clock",
+      "aliases": [
+        "time delay",
+        "simple delay"
+      ],
+      "defining_rule_id": "r-600-4",
+      "defining_rule_number": "600.4"
     }
   ]
 }

@@ -136,6 +136,69 @@
           "a7 to h7"
         ]
       }
+    },
+    {
+      "id": "equipment-board",
+      "name": "The Board",
+      "type_line": "Equipment",
+      "set_name": "Standard Equipment",
+      "tags": [
+        "equipment",
+        "board"
+      ],
+      "text": {
+        "description_text": "The board is a square of sixty-four squares in an eight-by-eight grid. The squares alternate between a light colour and a dark colour. The eight rows across the board are the ranks, and they carry the numbers 1 to 8. The eight columns up the board are the files, and they carry the letters a to h. A square takes the letter of its file and the number of its rank, such as e4.",
+        "usage_text": "Each player sets the board so that the square in the near right corner is a light square. White places the pieces on rank 1 and the pawns on rank 2. Black places the pieces on rank 8 and the pawns on rank 7. A board turned the wrong way puts the king and the queen on the wrong squares and every diagonal on the wrong colour."
+      },
+      "stats": {
+        "square_count": 64,
+        "grid": "8x8",
+        "light_square_count": 32,
+        "dark_square_count": 32,
+        "rank_count": 8,
+        "file_count": 8
+      }
+    },
+    {
+      "id": "equipment-clock",
+      "name": "The Clock",
+      "type_line": "Equipment",
+      "set_name": "Standard Equipment",
+      "tags": [
+        "equipment",
+        "clock"
+      ],
+      "text": {
+        "description_text": "The chess clock holds two faces in one housing, one face for each player. Only one face runs at a time, and it belongs to the player who has the move. Each face shows how much time that player still holds. The time control states how much time each player receives.",
+        "usage_text": "A player completes a move and then presses the clock, which stops their own time and starts the opponent's time. The player moves the piece and presses the clock with the same hand. The flag fall is the moment a player's time reaches zero. That player loses the game, as long as the opponent or the arbiter points it out. A player whose time reaches zero does not lose when the opponent cannot reach a checkmate by any legal series of moves; the game is a draw instead. A time control can add an increment after every move, or hold the clock still for a delay."
+      },
+      "stats": {
+        "face_count": 2,
+        "running_face_count": 1,
+        "housing_count": 1
+      }
+    },
+    {
+      "id": "equipment-scoresheet",
+      "name": "The Scoresheet",
+      "type_line": "Equipment",
+      "set_name": "Standard Equipment",
+      "tags": [
+        "equipment",
+        "notation"
+      ],
+      "text": {
+        "description_text": "The scoresheet is the written record of one game. It holds one numbered line for each turn, and White's move comes before Black's move on that line.",
+        "usage_text": "Each player writes both moves of every turn as the game goes on, in a clear and readable form. A move record uses algebraic notation: K, Q, R, B, or N for the piece, then the end square. The sign x marks a capture, a plus sign marks a check, and a hash sign marks a checkmate. Castling is written O-O or O-O-O, and a promotion writes the pawn move, an equals sign, and the letter of the new piece. A claim for a draw by repetition or by the fifty-move count rests on the scoresheet, and the arbiter reads it to settle a dispute. A player can also resign by writing the result on the scoresheet."
+      },
+      "stats": {
+        "column_count": 3,
+        "columns": [
+          "move number",
+          "White's move",
+          "Black's move"
+        ]
+      }
     }
   ]
 }

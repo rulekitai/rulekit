@@ -9,6 +9,7 @@ import {
   gameFileSchema,
   SCHEMA_VERSION,
 } from "./schema.ts"
+import { normalizeName } from "./text.ts"
 import type { Corpus } from "./types.ts"
 
 /** One thing wrong with a corpus, named precisely enough to fix. */
@@ -179,9 +180,29 @@ export function checkIntegrity(corpus: Corpus): CorpusProblem[] {
     if (rule.parent_id === rule.id) report("rules.json", index, "is its own parent")
   })
 
+  // Two terms that answer to one word. The glossary looks a term up by an exact
+  // key, so a shared key resolves by whichever row the database returns first.
+  // The reader then gets a definition that depends on insertion order, which is
+  // a wrong answer that looks right and changes without warning.
+  const claimedBy = new Map<string, string>()
   corpus.terms.forEach((term, index) => {
     if (term.defining_rule_id && !ruleIds.has(term.defining_rule_id))
       report("terms.json", index, `defining_rule_id "${term.defining_rule_id}" names no rule`)
+
+    for (const spelling of [term.term, ...term.aliases]) {
+      const key = normalizeName(spelling)
+      if (!key) continue
+      const owner = claimedBy.get(key)
+      if (owner && owner !== term.term) {
+        report(
+          "terms.json",
+          index,
+          `"${spelling}" is already a name or alias of "${owner}", so a lookup for it is ambiguous`,
+        )
+      } else {
+        claimedBy.set(key, term.term)
+      }
+    }
   })
 
   corpus.patchNotes.forEach((note, index) => {

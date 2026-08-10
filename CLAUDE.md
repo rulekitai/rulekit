@@ -43,7 +43,7 @@ pnpm rulekit build <dir>       # writes corpus.db
 pnpm rulekit ask <dir> "..."   # answers with no model and no key
 pnpm rulekit eval <dir>        # checks that answers invent nothing. Needs a key.
 
-pnpm lint && pnpm check-types && pnpm test     # 269 tests, no model, no network
+pnpm lint && pnpm check-types && pnpm test     # 273 tests, no model, no network
 pnpm test:e2e                                  # the interface, in a browser
 ```
 
