@@ -1,4 +1,1201 @@
 {
   "schemaVersion": 2,
-  "items": []
+  "items": [
+    {
+      "id": "card-2s",
+      "name": "Two of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [2s] in hand notation."
+      },
+      "stats": {
+        "rank": "Two",
+        "rank_symbol": "2",
+        "rank_value": 2,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-2h",
+      "name": "Two of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [2h] in hand notation."
+      },
+      "stats": {
+        "rank": "Two",
+        "rank_symbol": "2",
+        "rank_value": 2,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-2d",
+      "name": "Two of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [2d] in hand notation."
+      },
+      "stats": {
+        "rank": "Two",
+        "rank_symbol": "2",
+        "rank_value": 2,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-2c",
+      "name": "Two of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [2c] in hand notation."
+      },
+      "stats": {
+        "rank": "Two",
+        "rank_symbol": "2",
+        "rank_value": 2,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-3s",
+      "name": "Three of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [3s] in hand notation."
+      },
+      "stats": {
+        "rank": "Three",
+        "rank_symbol": "3",
+        "rank_value": 3,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-3h",
+      "name": "Three of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [3h] in hand notation."
+      },
+      "stats": {
+        "rank": "Three",
+        "rank_symbol": "3",
+        "rank_value": 3,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-3d",
+      "name": "Three of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [3d] in hand notation."
+      },
+      "stats": {
+        "rank": "Three",
+        "rank_symbol": "3",
+        "rank_value": 3,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-3c",
+      "name": "Three of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [3c] in hand notation."
+      },
+      "stats": {
+        "rank": "Three",
+        "rank_symbol": "3",
+        "rank_value": 3,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-4s",
+      "name": "Four of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [4s] in hand notation."
+      },
+      "stats": {
+        "rank": "Four",
+        "rank_symbol": "4",
+        "rank_value": 4,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-4h",
+      "name": "Four of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [4h] in hand notation."
+      },
+      "stats": {
+        "rank": "Four",
+        "rank_symbol": "4",
+        "rank_value": 4,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-4d",
+      "name": "Four of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [4d] in hand notation."
+      },
+      "stats": {
+        "rank": "Four",
+        "rank_symbol": "4",
+        "rank_value": 4,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-4c",
+      "name": "Four of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [4c] in hand notation."
+      },
+      "stats": {
+        "rank": "Four",
+        "rank_symbol": "4",
+        "rank_value": 4,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-5s",
+      "name": "Five of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [5s] in hand notation."
+      },
+      "stats": {
+        "rank": "Five",
+        "rank_symbol": "5",
+        "rank_value": 5,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-5h",
+      "name": "Five of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [5h] in hand notation."
+      },
+      "stats": {
+        "rank": "Five",
+        "rank_symbol": "5",
+        "rank_value": 5,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-5d",
+      "name": "Five of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [5d] in hand notation."
+      },
+      "stats": {
+        "rank": "Five",
+        "rank_symbol": "5",
+        "rank_value": 5,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-5c",
+      "name": "Five of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [5c] in hand notation."
+      },
+      "stats": {
+        "rank": "Five",
+        "rank_symbol": "5",
+        "rank_value": 5,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-6s",
+      "name": "Six of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [6s] in hand notation."
+      },
+      "stats": {
+        "rank": "Six",
+        "rank_symbol": "6",
+        "rank_value": 6,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-6h",
+      "name": "Six of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [6h] in hand notation."
+      },
+      "stats": {
+        "rank": "Six",
+        "rank_symbol": "6",
+        "rank_value": 6,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-6d",
+      "name": "Six of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [6d] in hand notation."
+      },
+      "stats": {
+        "rank": "Six",
+        "rank_symbol": "6",
+        "rank_value": 6,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-6c",
+      "name": "Six of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [6c] in hand notation."
+      },
+      "stats": {
+        "rank": "Six",
+        "rank_symbol": "6",
+        "rank_value": 6,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-7s",
+      "name": "Seven of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [7s] in hand notation."
+      },
+      "stats": {
+        "rank": "Seven",
+        "rank_symbol": "7",
+        "rank_value": 7,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-7h",
+      "name": "Seven of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [7h] in hand notation."
+      },
+      "stats": {
+        "rank": "Seven",
+        "rank_symbol": "7",
+        "rank_value": 7,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-7d",
+      "name": "Seven of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [7d] in hand notation."
+      },
+      "stats": {
+        "rank": "Seven",
+        "rank_symbol": "7",
+        "rank_value": 7,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-7c",
+      "name": "Seven of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [7c] in hand notation."
+      },
+      "stats": {
+        "rank": "Seven",
+        "rank_symbol": "7",
+        "rank_value": 7,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-8s",
+      "name": "Eight of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [8s] in hand notation."
+      },
+      "stats": {
+        "rank": "Eight",
+        "rank_symbol": "8",
+        "rank_value": 8,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-8h",
+      "name": "Eight of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [8h] in hand notation."
+      },
+      "stats": {
+        "rank": "Eight",
+        "rank_symbol": "8",
+        "rank_value": 8,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-8d",
+      "name": "Eight of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [8d] in hand notation."
+      },
+      "stats": {
+        "rank": "Eight",
+        "rank_symbol": "8",
+        "rank_value": 8,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-8c",
+      "name": "Eight of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [8c] in hand notation."
+      },
+      "stats": {
+        "rank": "Eight",
+        "rank_symbol": "8",
+        "rank_value": 8,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-9s",
+      "name": "Nine of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [9s] in hand notation."
+      },
+      "stats": {
+        "rank": "Nine",
+        "rank_symbol": "9",
+        "rank_value": 9,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-9h",
+      "name": "Nine of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [9h] in hand notation."
+      },
+      "stats": {
+        "rank": "Nine",
+        "rank_symbol": "9",
+        "rank_value": 9,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-9d",
+      "name": "Nine of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [9d] in hand notation."
+      },
+      "stats": {
+        "rank": "Nine",
+        "rank_symbol": "9",
+        "rank_value": 9,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-9c",
+      "name": "Nine of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [9c] in hand notation."
+      },
+      "stats": {
+        "rank": "Nine",
+        "rank_symbol": "9",
+        "rank_value": 9,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-10s",
+      "name": "Ten of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [10s] in hand notation."
+      },
+      "stats": {
+        "rank": "Ten",
+        "rank_symbol": "10",
+        "rank_value": 10,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-10h",
+      "name": "Ten of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [10h] in hand notation."
+      },
+      "stats": {
+        "rank": "Ten",
+        "rank_symbol": "10",
+        "rank_value": 10,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-10d",
+      "name": "Ten of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [10d] in hand notation."
+      },
+      "stats": {
+        "rank": "Ten",
+        "rank_symbol": "10",
+        "rank_value": 10,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-10c",
+      "name": "Ten of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [10c] in hand notation."
+      },
+      "stats": {
+        "rank": "Ten",
+        "rank_symbol": "10",
+        "rank_value": 10,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-js",
+      "name": "Jack of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [Js] in hand notation."
+      },
+      "stats": {
+        "rank": "Jack",
+        "rank_symbol": "J",
+        "rank_value": 11,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-jh",
+      "name": "Jack of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [Jh] in hand notation."
+      },
+      "stats": {
+        "rank": "Jack",
+        "rank_symbol": "J",
+        "rank_value": 11,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-jd",
+      "name": "Jack of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [Jd] in hand notation."
+      },
+      "stats": {
+        "rank": "Jack",
+        "rank_symbol": "J",
+        "rank_value": 11,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-jc",
+      "name": "Jack of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [Jc] in hand notation."
+      },
+      "stats": {
+        "rank": "Jack",
+        "rank_symbol": "J",
+        "rank_value": 11,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-qs",
+      "name": "Queen of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [Qs] in hand notation."
+      },
+      "stats": {
+        "rank": "Queen",
+        "rank_symbol": "Q",
+        "rank_value": 12,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-qh",
+      "name": "Queen of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [Qh] in hand notation."
+      },
+      "stats": {
+        "rank": "Queen",
+        "rank_symbol": "Q",
+        "rank_value": 12,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-qd",
+      "name": "Queen of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [Qd] in hand notation."
+      },
+      "stats": {
+        "rank": "Queen",
+        "rank_symbol": "Q",
+        "rank_value": 12,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-qc",
+      "name": "Queen of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [Qc] in hand notation."
+      },
+      "stats": {
+        "rank": "Queen",
+        "rank_symbol": "Q",
+        "rank_value": 12,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-ks",
+      "name": "King of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [Ks] in hand notation."
+      },
+      "stats": {
+        "rank": "King",
+        "rank_symbol": "K",
+        "rank_value": 13,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-kh",
+      "name": "King of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [Kh] in hand notation."
+      },
+      "stats": {
+        "rank": "King",
+        "rank_symbol": "K",
+        "rank_value": 13,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-kd",
+      "name": "King of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [Kd] in hand notation."
+      },
+      "stats": {
+        "rank": "King",
+        "rank_symbol": "K",
+        "rank_value": 13,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-kc",
+      "name": "King of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [Kc] in hand notation."
+      },
+      "stats": {
+        "rank": "King",
+        "rank_symbol": "K",
+        "rank_value": 13,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": true,
+        "is_ace": false
+      }
+    },
+    {
+      "id": "card-as",
+      "name": "Ace of Spades",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "spades",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [As] in hand notation."
+      },
+      "stats": {
+        "rank": "Ace",
+        "rank_symbol": "A",
+        "rank_value": 14,
+        "suit": "Spades",
+        "suit_symbol": "s",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": true
+      }
+    },
+    {
+      "id": "card-ah",
+      "name": "Ace of Hearts",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "hearts",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [Ah] in hand notation."
+      },
+      "stats": {
+        "rank": "Ace",
+        "rank_symbol": "A",
+        "rank_value": 14,
+        "suit": "Hearts",
+        "suit_symbol": "h",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": true
+      }
+    },
+    {
+      "id": "card-ad",
+      "name": "Ace of Diamonds",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "diamonds",
+        "red"
+      ],
+      "text": {
+        "notation_text": "Written as [Ad] in hand notation."
+      },
+      "stats": {
+        "rank": "Ace",
+        "rank_symbol": "A",
+        "rank_value": 14,
+        "suit": "Diamonds",
+        "suit_symbol": "d",
+        "colour": "red",
+        "is_face_card": false,
+        "is_ace": true
+      }
+    },
+    {
+      "id": "card-ac",
+      "name": "Ace of Clubs",
+      "type_line": "Playing Card",
+      "set_name": "Standard 52-Card Pack",
+      "tags": [
+        "clubs",
+        "black"
+      ],
+      "text": {
+        "notation_text": "Written as [Ac] in hand notation."
+      },
+      "stats": {
+        "rank": "Ace",
+        "rank_symbol": "A",
+        "rank_value": 14,
+        "suit": "Clubs",
+        "suit_symbol": "c",
+        "colour": "black",
+        "is_face_card": false,
+        "is_ace": true
+      }
+    }
+  ]
 }

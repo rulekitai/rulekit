@@ -57,7 +57,21 @@ empty. It answers fewer kinds of question for free.
 - **`is_deprecated`** keeps superseded text out of search. The rule stays
   reachable by number. Quoting superseded text as current is a wrong answer.
 
-## Step 4: cards name their own fields
+## Step 4: "cards" means the pieces a player can name
+
+**Do not skip `cards.json` because the game has no cards.** The name comes from
+trading card games, and the file is for any nameable game object.
+
+| The game | What goes in `cards.json` |
+|---|---|
+| A trading card game | The cards |
+| Chess | The six pieces |
+| Poker | The 52 cards of the pack |
+| A property board game | The deeds and the fortune cards |
+| A sport | The positions, or the equipment |
+
+A reader who asks "what is a knight" gets a real answer when the knight is in
+this file, and gets nothing when it is not.
 
 A card fixes only its identity. Everything else goes in two maps the game names
 itself:
@@ -68,10 +82,19 @@ itself:
   "stats": { "attack": 7, "defence": 4 } }
 ```
 
-A game with Attack and Defence writes those keys. No game carries another
-game's empty columns.
+```json
+{ "id": "piece-knight", "name": "Knight", "type_line": "Piece",
+  "text":  { "movement_text": "Two squares along a rank or a file, then one at a right angle." },
+  "stats": { "notation_symbol": "N", "piece_value": 3, "count_per_player": 2 } }
+```
+
+Both are cards. No game carries another game's empty columns.
 
 **A key with no value must be absent.** `null` and `""` are both dropped.
+
+**Put a piece in `terms.json` as well.** The two do different work: a term
+answers "what is a knight" with no model call, and a card gives the assistant
+the numbers to reason with. `data/chess/` lists each piece in both.
 
 ## Step 5: write the profile
 
@@ -91,9 +114,11 @@ Then add these, in this order of value:
 3. **`tokens`**: how symbols are written, if the game has them.
 4. **`scope`**: what to answer, and what to refuse.
 
-Set `cards.enabled` to `false` when the corpus holds no cards. The card tools
-are then not registered. A tool that can only answer "nothing found" wastes a
-turn and teaches the model to distrust the result.
+Set `cards.enabled` to `false` **only when the game has no nameable pieces at
+all**. The card tools are then not registered, which is right for a corpus that
+holds none: a tool that can only answer "nothing found" wastes a turn and
+teaches the model to distrust the result. A game with pieces should list them
+and set this to `true`, even when nobody would call them cards.
 
 **The grounding rules are built in.** Cite everything, quote rather than
 restate, never invent. A profile adds to them and cannot remove them.

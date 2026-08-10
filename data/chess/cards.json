@@ -1,4 +1,141 @@
 {
   "schemaVersion": 2,
-  "items": []
+  "items": [
+    {
+      "id": "piece-king",
+      "name": "King",
+      "type_line": "Piece",
+      "set_name": "Standard Set",
+      "tags": [
+        "piece"
+      ],
+      "text": {
+        "movement_text": "The king moves one square in any direction, along a rank, a file, or a diagonal. The king never moves onto a square that an enemy piece attacks.",
+        "special_text": "The king takes part in castling, which is the only move that shifts two pieces at once. A player who cannot make a legal move and is not in check reaches stalemate."
+      },
+      "stats": {
+        "notation_symbol": "K",
+        "count_per_player": 1,
+        "starting_squares": [
+          "e1",
+          "e8"
+        ]
+      }
+    },
+    {
+      "id": "piece-queen",
+      "name": "Queen",
+      "type_line": "Piece",
+      "set_name": "Standard Set",
+      "tags": [
+        "piece"
+      ],
+      "text": {
+        "movement_text": "The queen moves any number of empty squares along a rank, a file, or a diagonal. The queen stops on the first occupied square, and captures there if an enemy piece stands on it.",
+        "special_text": "A pawn that reaches the far rank usually becomes a queen, so a game can hold more than one queen for a player."
+      },
+      "stats": {
+        "notation_symbol": "Q",
+        "piece_value": 9,
+        "count_per_player": 1,
+        "starting_squares": [
+          "d1",
+          "d8"
+        ]
+      }
+    },
+    {
+      "id": "piece-rook",
+      "name": "Rook",
+      "type_line": "Piece",
+      "set_name": "Standard Set",
+      "tags": [
+        "piece"
+      ],
+      "text": {
+        "movement_text": "The rook moves any number of empty squares along a rank or a file. The rook stops on the first occupied square, and captures there if an enemy piece stands on it.",
+        "special_text": "The rook takes part in castling with its own king, and only if neither piece has moved."
+      },
+      "stats": {
+        "notation_symbol": "R",
+        "piece_value": 5,
+        "count_per_player": 2,
+        "starting_squares": [
+          "a1",
+          "h1",
+          "a8",
+          "h8"
+        ]
+      }
+    },
+    {
+      "id": "piece-bishop",
+      "name": "Bishop",
+      "type_line": "Piece",
+      "set_name": "Standard Set",
+      "tags": [
+        "piece"
+      ],
+      "text": {
+        "movement_text": "The bishop moves any number of empty squares along a diagonal. The bishop stops on the first occupied square, and captures there if an enemy piece stands on it.",
+        "special_text": "A bishop keeps the colour of its starting square for the whole game, so one bishop never reaches half of the board."
+      },
+      "stats": {
+        "notation_symbol": "B",
+        "piece_value": 3,
+        "count_per_player": 2,
+        "starting_squares": [
+          "c1",
+          "f1",
+          "c8",
+          "f8"
+        ]
+      }
+    },
+    {
+      "id": "piece-knight",
+      "name": "Knight",
+      "type_line": "Piece",
+      "set_name": "Standard Set",
+      "tags": [
+        "piece"
+      ],
+      "text": {
+        "movement_text": "The knight moves two squares along a rank or a file, then one square at a right angle to that line. The knight lands on the far square and ignores every piece between.",
+        "special_text": "The knight is the only piece that passes over an occupied square. A knight always lands on a square of the other colour."
+      },
+      "stats": {
+        "notation_symbol": "N",
+        "piece_value": 3,
+        "count_per_player": 2,
+        "starting_squares": [
+          "b1",
+          "g1",
+          "b8",
+          "g8"
+        ]
+      }
+    },
+    {
+      "id": "piece-pawn",
+      "name": "Pawn",
+      "type_line": "Piece",
+      "set_name": "Standard Set",
+      "tags": [
+        "piece"
+      ],
+      "text": {
+        "movement_text": "The pawn moves one square forward to an empty square, and never backward. A pawn on its starting square may move two squares forward instead. The pawn captures one square forward on a diagonal.",
+        "special_text": "A pawn that reaches the far rank promotes. A pawn can capture en passant. The pawn is the only piece that captures on a different line from the one it moves along."
+      },
+      "stats": {
+        "piece_value": 1,
+        "count_per_player": 8,
+        "starting_squares": [
+          "a2 to h2",
+          "a7 to h7"
+        ]
+      }
+    }
+  ]
 }

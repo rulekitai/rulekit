@@ -318,6 +318,85 @@
       ],
       "defining_rule_id": "r-700-8",
       "defining_rule_number": "700.8"
+    },
+    {
+      "id": "term-king",
+      "term": "King",
+      "slug": "king",
+      "definition": "The king is the piece the game turns on. It moves one square in any direction. A player must answer every check, and a king that cannot escape check is checkmated, which ends the game.",
+      "short_definition": "The piece the game turns on. Moves one square in any direction.",
+      "category": "piece",
+      "aliases": [
+        "the king"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-queen",
+      "term": "Queen",
+      "slug": "queen",
+      "definition": "The queen moves any number of empty squares along a rank, a file, or a diagonal. It is the piece with the widest reach, and it combines the movement of a rook and a bishop.",
+      "short_definition": "Moves any distance along a rank, a file, or a diagonal.",
+      "category": "piece",
+      "aliases": [
+        "the queen"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-rook",
+      "term": "Rook",
+      "slug": "rook",
+      "definition": "The rook moves any number of empty squares along a rank or a file. Each player starts with two rooks, in the corners. A rook takes part in castling with its own king.",
+      "short_definition": "Moves any distance along a rank or a file.",
+      "category": "piece",
+      "aliases": [
+        "castle"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-bishop",
+      "term": "Bishop",
+      "slug": "bishop",
+      "definition": "The bishop moves any number of empty squares along a diagonal. A bishop keeps the colour of its starting square for the whole game, so one bishop reaches only half of the squares.",
+      "short_definition": "Moves any distance along a diagonal.",
+      "category": "piece",
+      "aliases": [
+        "the bishop"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-knight",
+      "term": "Knight",
+      "slug": "knight",
+      "definition": "The knight moves two squares along a rank or a file, then one square at a right angle. It is the only piece that passes over an occupied square, so a wall of pawns does not block it.",
+      "short_definition": "Moves in an L shape, and jumps over other pieces.",
+      "category": "piece",
+      "aliases": [
+        "horse",
+        "the knight"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-pawn",
+      "term": "Pawn",
+      "slug": "pawn",
+      "definition": "The pawn moves one square forward and captures one square forward on a diagonal. It never moves backward. A pawn that reaches the far rank promotes to another piece.",
+      "short_definition": "Moves forward one square, captures on a diagonal, never moves back.",
+      "category": "piece",
+      "aliases": [
+        "the pawn"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
     }
   ]
 }

@@ -21,10 +21,10 @@ pnpm rulekit validate my-game
 | `rulebooks.json` | The books the rules belong to | Yes |
 | `sections.json` | The chapters inside a book | Yes |
 | `terms.json` | Defined terms and keywords | Yes, may be empty |
-| `errata.json` | Published changes to card text | Yes, may be empty |
+| `errata.json` | Published changes to a piece's text | Yes, may be empty |
 | `banlist.json` | Banned and restricted cards | Yes, may be empty |
 | `patch-notes.json` | Update notes | Yes, may be empty |
-| `cards.json` | Cards | Yes, may be empty |
+| `cards.json` | The pieces of the game a player can name | Yes, may be empty |
 | `profile.json` | How the assistant talks about this game | No, but write one |
 
 A file that must exist may hold an empty list. A missing file fails the load,
@@ -149,6 +149,27 @@ look: a reader who types a synonym reaches the definition or reaches nothing.
 | `text` | a map of your own text-box names to their text |
 | `stats` | a map of your own attribute names to their values |
 
+**"Cards" means the pieces of your game that a player can name.** The word comes
+from trading card games, and it fits them, but the file is for any nameable
+game object. Fill it with whatever a player points at and asks about:
+
+| Your game | What goes in `cards.json` |
+|---|---|
+| A trading card game | The cards |
+| Chess | The six pieces. `data/chess/` does this. |
+| Poker | The 52 cards of the pack. `data/texas-holdem/` does this. |
+| A property board game | The deeds and the fortune cards. `data/estate-line/` does this. |
+| A sport | The positions, or the equipment |
+
+**Leave it empty only when your game has no nameable pieces at all.** A reader
+who asks "what is a knight" gets a real answer when the knight is in this file,
+and gets nothing when it is not.
+
+A piece often belongs in `terms.json` as well. The two do different work: a term
+gives a short definition with no model call, and a card gives the numbers and
+the printed text the assistant reasons with. `data/chess/` lists each piece in
+both.
+
 Only identity is fixed, because only identity is the same in every game. Your
 game's text boxes and printed attributes go in the two maps, under whatever
 names your game prints:
@@ -158,6 +179,16 @@ names your game prints:
   "id": "pk-006", "name": "Ironbrand Blade", "type_line": "Gear — Weapon",
   "text": { "card_text": "Equip 2.", "effect_text": "The equipped unit has Guard." },
   "stats": { "energy": 2, "might_bonus": 2, "colors": ["stone"] }
+}
+```
+
+The same file, for a game with no cards in it at all:
+
+```json
+{
+  "id": "piece-knight", "name": "Knight", "type_line": "Piece",
+  "text": { "movement_text": "The knight moves two squares along a rank or a file, then one square at a right angle." },
+  "stats": { "notation_symbol": "N", "piece_value": 3, "count_per_player": 2 }
 }
 ```
 

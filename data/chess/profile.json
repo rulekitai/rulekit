@@ -7,59 +7,121 @@
   "vocabulary": [
     {
       "use": "piece",
-      "insteadOf": ["creature", "unit", "minion", "figure"],
+      "insteadOf": [
+        "creature",
+        "unit",
+        "minion",
+        "figure"
+      ],
       "means": "It names one of the sixteen men a player controls. A pawn is a piece too, unless a sentence sets pawns apart from the other pieces on purpose."
     },
     {
       "use": "square",
-      "insteadOf": ["tile", "cell", "space", "slot"],
+      "insteadOf": [
+        "tile",
+        "cell",
+        "space",
+        "slot"
+      ],
       "means": "It names one of the sixty-four places on the board."
     },
     {
       "use": "move",
-      "insteadOf": ["action", "play", "go"],
+      "insteadOf": [
+        "action",
+        "play",
+        "go"
+      ],
       "means": "It names one player's single act of taking a piece from one square to another."
     },
     {
       "use": "capture",
-      "insteadOf": ["kill", "destroy", "take out", "damage"],
+      "insteadOf": [
+        "kill",
+        "destroy",
+        "take out",
+        "damage"
+      ],
       "means": "It names the removal of an enemy piece by a piece that lands on its square."
     },
     {
       "use": "draw",
-      "insteadOf": ["tie", "stalemate"],
+      "insteadOf": [
+        "tie",
+        "stalemate"
+      ],
       "means": "It names a game that ends with no winner. Stalemate is one kind of draw, and not a word for every draw."
     },
     {
       "use": "White",
-      "insteadOf": ["player one", "the first player"],
+      "insteadOf": [
+        "player one",
+        "the first player"
+      ],
       "means": "It names the player who controls the light pieces and moves first."
     }
   ],
   "cards": {
-    "enabled": false,
-    "linkScheme": "",
+    "enabled": true,
+    "linkScheme": "piece",
     "maxInlineImages": 0,
-    "textFields": []
+    "textFields": [
+      {
+        "field": "movement_text",
+        "describes": "how the piece moves and captures"
+      },
+      {
+        "field": "special_text",
+        "describes": "the rules that apply only to this piece, such as castling or promotion"
+      }
+    ]
   },
   "tokens": {
     "syntax": "A piece letter in brackets, such as [K], or a square and a move written in plain algebraic notation, such as e4 and Nf3",
     "groups": [
       {
         "label": "Piece letters",
-        "examples": ["[K]", "[Q]", "[R]", "[B]", "[N]"]
+        "examples": [
+          "[K]",
+          "[Q]",
+          "[R]",
+          "[B]",
+          "[N]"
+        ]
       },
       {
         "label": "Square names",
-        "examples": ["a1", "d4", "e4", "f7", "h8"]
+        "examples": [
+          "a1",
+          "d4",
+          "e4",
+          "f7",
+          "h8"
+        ]
       },
       {
         "label": "Moves in algebraic notation",
-        "examples": ["e4", "Nf3", "Bxc6", "exd5", "e8=Q", "Nbd2"]
+        "examples": [
+          "e4",
+          "Nf3",
+          "Bxc6",
+          "exd5",
+          "e8=Q",
+          "Nbd2"
+        ]
       },
       {
         "label": "Signs and results",
-        "examples": ["+", "#", "x", "O-O", "O-O-O", "1-0", "0-1", "1/2-1/2"]
+        "examples": [
+          "+",
+          "#",
+          "x",
+          "O-O",
+          "O-O-O",
+          "1-0",
+          "0-1",
+          "1/2-1/2"
+        ]
       }
     ]
   },

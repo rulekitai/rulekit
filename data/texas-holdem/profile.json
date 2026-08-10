@@ -7,44 +7,80 @@
   "vocabulary": [
     {
       "use": "hole cards",
-      "insteadOf": ["hand", "pocket", "cards in hand"],
+      "insteadOf": [
+        "hand",
+        "pocket",
+        "cards in hand"
+      ],
       "means": "It names the two private cards a player holds. The word hand names the five cards a player makes at the showdown, so the two words must stay apart."
     },
     {
       "use": "board",
-      "insteadOf": ["community cards", "shared cards", "table cards"],
+      "insteadOf": [
+        "community cards",
+        "shared cards",
+        "table cards"
+      ],
       "means": "It names the five cards face up in the middle of the table. The table is the furniture and the group of players, so the two words must stay apart."
     },
     {
       "use": "button",
-      "insteadOf": ["dealer"],
+      "insteadOf": [
+        "dealer"
+      ],
       "means": "It names the disc that marks the seat counted as the dealer. The dealer is the person who gives out the cards, and that person is often not a player."
     }
   ],
   "cards": {
-    "enabled": false,
-    "linkScheme": "",
+    "enabled": true,
+    "linkScheme": "card",
     "maxInlineImages": 0,
-    "textFields": []
+    "textFields": [
+      {
+        "field": "notation_text",
+        "describes": "how the card is written in hand notation"
+      }
+    ]
   },
   "tokens": {
     "syntax": "[As] for the ace of spades, or [Kh] for the king of hearts. The first letter is the rank, the second letter is the suit.",
     "groups": [
       {
         "label": "Ranks",
-        "examples": ["[2]", "[9]", "[T]", "[J]", "[Q]", "[K]", "[A]"]
+        "examples": [
+          "[2]",
+          "[9]",
+          "[T]",
+          "[J]",
+          "[Q]",
+          "[K]",
+          "[A]"
+        ]
       },
       {
         "label": "Suits",
-        "examples": ["[s] spades", "[h] hearts", "[d] diamonds", "[c] clubs"]
+        "examples": [
+          "[s] spades",
+          "[h] hearts",
+          "[d] diamonds",
+          "[c] clubs"
+        ]
       },
       {
         "label": "Single cards",
-        "examples": ["[As]", "[Kh]", "[Td]", "[7c]"]
+        "examples": [
+          "[As]",
+          "[Kh]",
+          "[Td]",
+          "[7c]"
+        ]
       },
       {
         "label": "Hole cards and boards",
-        "examples": ["[Ah][Kh]", "[Qs][Js][Ts] [9d] [2c]"]
+        "examples": [
+          "[Ah][Kh]",
+          "[Qs][Js][Ts] [9d] [2c]"
+        ]
       }
     ]
   },

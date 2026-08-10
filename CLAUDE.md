@@ -29,8 +29,10 @@ correct one of the other five.
 3. **`corpus.db` is not in version control.** The command `rulekit build <dir>`
    writes it from the JSON beside it. The CLI does not need the file, because it
    builds one in memory. A server does need it.
-4. **A card names its own fields.** A card fixes only its identity. Its text
-   boxes and its printed values go in two maps that the game names.
+4. **"Cards" means the pieces a player can name**, not only trading cards.
+   Chess lists its six pieces there. Poker lists the 52 cards of the pack. A
+   card fixes only its identity, and its text and its printed values go in two
+   maps that the game names.
 5. **A key with no value must be absent.** The loader drops `null` and `""`.
 
 ## Commands

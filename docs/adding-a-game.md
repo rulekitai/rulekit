@@ -19,8 +19,12 @@ before you connect anything.
 of all of them.
 
 Start with `rules.json` alone if you like. Terms, cards, errata, and the banned
-list may all be empty lists, and the assistant works without them — it simply
-answers fewer kinds of question for free.
+list may all be empty lists, and the assistant works without them. It simply
+answers fewer kinds of question.
+
+**Fill `cards.json` with the pieces of your game a player can name.** The name
+comes from trading card games and the file is not limited to them: chess lists
+its six pieces there, and poker lists the 52 cards of the pack.
 
 ## 2. The profile
 
@@ -62,9 +66,11 @@ fast.
 }
 ```
 
-Set `enabled` to false when your corpus has no cards, and the card tools are not
-registered at all. Offering a tool that can only answer "nothing found" wastes a
-turn and teaches the model to distrust the result.
+**"Cards" means the pieces of your game a player can name.** Chess lists its six
+pieces. Poker lists the 52 cards of the pack. A property game lists its deeds.
+Set `enabled` to false only when your game has no nameable pieces at all, and
+the card tools are then not registered. Offering a tool that can only answer
+"nothing found" wastes a turn and teaches the model to distrust the result.
 
 **List every text field your cards use.** This is the single highest-value line
 in a profile. Without it, a model reads the first field, finds an equip line, and
