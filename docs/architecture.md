@@ -6,9 +6,11 @@ Four diagrams, one for each concern. Only the fourth one costs a model call.
 
 ```mermaid
 flowchart LR
-    JSON["data/my-game/ <br/>eight JSON files"] --> VALIDATE["rulekit validate"]
-    VALIDATE --> BUILD["rulekit build"]
-    BUILD --> DB[("corpus.db <br/>SQLite, full-text search")]
+    JSON["`**data/my-game/**
+        eight JSON files`"] --> VALIDATE["`**rulekit validate**`"]
+    VALIDATE --> BUILD["`**rulekit build**`"]
+    BUILD --> DB[("`**corpus.db**
+        SQLite, full-text search`")]
 ```
 
 No model runs in this step, and the command fetches nothing. The file
@@ -21,17 +23,23 @@ The file `docs/corpus-format.md` states every field of those eight files.
 
 ```mermaid
 flowchart TB
-    DB[("corpus.db")] --> STORE["SqliteStore.open <br/>one read interface"]
-    PROFILE["profile.json"] --> PARSED["parseProfile <br/>the game's own words"]
-    SKILLS["builtinSkills <br/>three procedures"] --> PROMPT
+    DB[("`**corpus.db**`")] --> STORE["`**SqliteStore.open**
+        one read interface`"]
+    PROFILE["`**profile.json**`"] --> PARSED["`**parseProfile**
+        the game's own words`"]
+    SKILLS["`**builtinSkills**
+        three procedures`"] --> PROMPT
 
-    STORE --> CONTENTS["corpusContents <br/>which collections hold rows?"]
-    CONTENTS --> TOOLS["defineRulesTools"]
+    STORE --> CONTENTS["`**corpusContents**
+        which collections hold rows?`"]
+    CONTENTS --> TOOLS["`**defineRulesTools**`"]
     PARSED --> TOOLS
-    PARSED --> PROMPT["buildInstructions <br/>the system prompt"]
-    TOOLS --> AGENT["createRulesAgent"]
+    PARSED --> PROMPT["`**buildInstructions**
+        the system prompt`"]
+    TOOLS --> AGENT["`**createRulesAgent**`"]
     PROMPT --> AGENT
-    STORE --> PIPELINE["createPipeline <br/>the free stages, in order of cost"]
+    STORE --> PIPELINE["`**createPipeline**
+        the free stages, in order of cost`"]
 ```
 
 The corpus is a file. This step takes milliseconds, and it needs no database
@@ -44,11 +52,11 @@ lines.
 
 ```mermaid
 flowchart TB
-    Q(["A reader asks a question"]) --> GATE{"gate.allow"}
+    Q(["A reader asks a question"]) --> GATE{"`**gate.allow**`"}
     GATE -->|"no"| STOP(["Refused. Nothing was read."])
-    GATE -->|"yes"| S1{"exact cache"}
-    S1 -->|"miss"| S2{"static"}
-    S2 -->|"miss"| S3{"glossary"}
+    GATE -->|"yes"| S1{"`**exact cache**`"}
+    S1 -->|"miss"| S2{"`**static**`"}
+    S2 -->|"miss"| S3{"`**glossary**`"}
     S3 -->|"miss"| TURN["the agent turn"]
 
     S1 -->|"hit"| ANSWER(["The answer, and the source of every claim"])
@@ -73,8 +81,9 @@ step that uses a cheap model.
 
 ```mermaid
 flowchart TB
-    MODEL["The model, holding <br/>the system prompt"] -->|"calls a tool"| TOOL["one tool"]
-    TOOL -->|"reads"| DB[("corpus.db")]
+    MODEL["`**The model**
+        holding the system prompt`"] -->|"calls a tool"| TOOL["one tool"]
+    TOOL -->|"reads"| DB[("`**corpus.db**`")]
     DB -->|"returns rows"| MODEL
     MODEL -->|"stops calling tools"| ANSWER(["The answer, quoting those rows"])
 ```
