@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@rulekit/corpus": "workspace:*",
-    "zod": "^3.25.0"
+    "zod": "^4.4.0"
   },
   "peerDependencies": {
     "ai": "^5.0.0 || ^6.0.0 || ^7.0.0"

@@ -3,7 +3,7 @@ import { resolve } from "node:path"
 import { parseProfile } from "@rulekit/agent/profile"
 import { corpusContents, defineRulesTools } from "@rulekit/agent/tools"
 import { defineTool, disableTool } from "eve/tools"
-import { zodToJsonSchema } from "zod-to-json-schema"
+import { z } from "zod"
 import { CORPUS_DIR, corpusStore } from "./corpus.ts"
 
 /**
@@ -48,13 +48,16 @@ export function eveTool(name: string) {
     //
     // Eve accepts either, but handing it a Zod object here fails the build with
     // "Cannot read properties of undefined (reading 'input')". Eve reads the
-    // Standard Schema `~standard.types.input` field, which Zod 3 declares for
-    // the type system and does not create at run time. JSON Schema is plain
-    // data, so it cannot disagree with whichever Zod version anything resolves.
+    // Standard Schema `~standard.types.input` field, which Zod declares for the
+    // type system and does not create at run time. JSON Schema is plain data,
+    // so it cannot disagree with whichever Zod version anything resolves.
+    //
+    // The conversion is Zod's own, from version 4. It replaced a separate
+    // package that did the same job for version 3.
     //
     // The tool's own Zod schema is still the single definition; this converts
     // it, so the two descriptions of one input cannot drift.
-    inputSchema: zodToJsonSchema(tool.inputSchema, { target: "jsonSchema7" }),
+    inputSchema: z.toJSONSchema(tool.inputSchema, { target: "draft-7" }),
     execute: (input: unknown) => tool.execute(input as never),
   })
 }

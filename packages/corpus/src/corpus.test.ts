@@ -4,6 +4,7 @@ import { before, describe, test } from "node:test"
 import { fileURLToPath } from "node:url"
 import { JsonStore } from "./json-store.ts"
 import { checkIntegrity, loadCorpus } from "./load.ts"
+import { COLLECTION_SCHEMAS } from "./schema.ts"
 import { SqliteStore } from "./sqlite-store.ts"
 import type { RuleStore } from "./store.ts"
 import { ftsQuery, nameStem, normalizeName, normalizeQuestion, normalizeRuleNumber } from "./text.ts"
@@ -365,5 +366,43 @@ describe("two terms that answer to one word", () => {
       }),
       [],
     )
+  })
+})
+
+describe("a row that omits a field entirely", () => {
+  test("loads, rather than being dropped", () => {
+    // A union that includes `z.undefined()` accepts the VALUE undefined. It
+    // does NOT accept a missing key: only `.optional()` does. A corpus writer
+    // omits a field far more often than they write null into it, and without
+    // this every chess piece was dropped for having no `rarity`.
+    const parsed = COLLECTION_SCHEMAS.cards.safeParse({
+      id: "c1",
+      name: "Knight",
+      text: { movement_text: "An L shape." },
+      stats: { piece_value: 3 },
+    })
+    assert.ok(parsed.success, `a card with only its required fields must load: ${parsed.error?.message}`)
+    assert.equal(parsed.data.rarity, null)
+    assert.equal(parsed.data.png_uri, null)
+    assert.deepEqual(parsed.data.tags, [])
+    assert.equal(parsed.data.stats.piece_value, 3)
+  })
+
+  test("every collection accepts a row with only its required fields", () => {
+    const minimal: Record<string, Record<string, unknown>> = {
+      rulebooks: { id: "b" },
+      sections: { id: "s", rule_book_id: "b" },
+      rules: { id: "r", rule_book_id: "b" },
+      terms: { id: "t", term: "Guard" },
+      errata: { id: "e" },
+      banlist: { id: "x" },
+      "patch-notes": { id: "n" },
+      cards: { id: "c", name: "Knight" },
+    }
+    for (const [name, row] of Object.entries(minimal)) {
+      const schema = COLLECTION_SCHEMAS[name as keyof typeof COLLECTION_SCHEMAS]
+      const parsed = schema.safeParse(row)
+      assert.ok(parsed.success, `${name} rejected a minimal row: ${parsed.error?.message}`)
+    }
   })
 })

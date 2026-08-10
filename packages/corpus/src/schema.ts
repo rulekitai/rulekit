@@ -13,26 +13,46 @@ import { z } from "zod"
  */
 export const SCHEMA_VERSION = 2
 
+/**
+ * Every helper below ends in `.optional()`, and that is load-bearing.
+ *
+ * A union that includes `z.undefined()` accepts the VALUE undefined. It does not
+ * accept a MISSING KEY: only `.optional()` does that, and a corpus writer omits
+ * a field far more often than they write `null` into it. Without it, one absent
+ * `rarity` drops the whole row, and a corpus of nine cards loads as zero.
+ */
+
 /** Trim to a string, or null. An empty or whitespace-only value counts as absent. */
-const nullableText = z.union([z.string(), z.null(), z.undefined()]).transform((v) => {
-  const text = typeof v === "string" ? v.trim() : ""
-  return text ? text : null
-})
+const nullableText = z
+  .union([z.string(), z.null(), z.undefined()])
+  .optional()
+  .transform((v) => {
+    const text = typeof v === "string" ? v.trim() : ""
+    return text ? text : null
+  })
 
 /** Text that must exist, but may legitimately be empty (a section header has no body). */
-const text = z.union([z.string(), z.null(), z.undefined()]).transform((v) => (typeof v === "string" ? v : ""))
+const text = z
+  .union([z.string(), z.null(), z.undefined()])
+  .optional()
+  .transform((v) => (typeof v === "string" ? v : ""))
 
 const stringList = z
   .union([z.array(z.string()), z.null(), z.undefined()])
+  .optional()
   .transform((v) => (Array.isArray(v) ? v : []))
 
 const int = (fallback: number) =>
   z
     .union([z.number(), z.null(), z.undefined()])
+    .optional()
     .transform((v) => (typeof v === "number" && Number.isFinite(v) ? Math.trunc(v) : fallback))
 
 const bool = (fallback: boolean) =>
-  z.union([z.boolean(), z.null(), z.undefined()]).transform((v) => (typeof v === "boolean" ? v : fallback))
+  z
+    .union([z.boolean(), z.null(), z.undefined()])
+    .optional()
+    .transform((v) => (typeof v === "boolean" ? v : fallback))
 
 /** The corpus names itself and nothing else. Presentation belongs in the profile. */
 export const gameSchema = z.object({
@@ -85,6 +105,7 @@ export const ruleSchema = z.object({
   display_order: int(0),
   rule_type: z
     .union([z.string(), z.null(), z.undefined()])
+    .optional()
     .transform((v) => (typeof v === "string" && v.trim() ? v.trim() : "rule")),
   keywords: stringList,
   /** Rule numbers this rule points at. `getRelated` resolves them to rules. */
@@ -114,7 +135,7 @@ export const cardRefSchema = z.object({
 
 export const erratumSchema = z.object({
   id: z.string().min(1),
-  card: z.union([cardRefSchema, z.null()]).default(null),
+  card: z.union([cardRefSchema, z.null()]).optional().default(null),
   effective_date: nullableText,
   original_text: nullableText,
   errata_text: nullableText,
@@ -125,12 +146,14 @@ export const erratumSchema = z.object({
 
 export const banlistEntrySchema = z.object({
   id: z.string().min(1),
-  card: z.union([cardRefSchema, z.null()]).default(null),
+  card: z.union([cardRefSchema, z.null()]).optional().default(null),
   format: z
     .union([z.object({ id: nullableText, name: nullableText, slug: nullableText }), z.null(), z.undefined()])
+    .optional()
     .transform((v) => v ?? null),
   entry_type: z
     .union([z.string(), z.null(), z.undefined()])
+    .optional()
     .transform((v) => (typeof v === "string" && v.trim() ? v.trim() : "banned")),
   effective_date: nullableText,
   reason: nullableText,
@@ -155,6 +178,7 @@ export const patchNoteSchema = z.object({
 const namedValues = <T extends z.ZodType>(value: T) =>
   z
     .union([z.record(z.string(), value), z.null(), z.undefined()])
+    .optional()
     .transform((v) => Object.fromEntries(Object.entries(v ?? {}).filter(([, x]) => !isEmpty(x))))
 
 const isEmpty = (v: unknown) =>

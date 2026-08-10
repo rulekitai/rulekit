@@ -172,7 +172,7 @@ event. That is why this command exists.
 
 ```bash
 pnpm check-types      # every package
-pnpm test             # 282 tests, no model and no network
+pnpm test             # 284 tests, no model and no network
 pnpm rulekit validate data/demo
 pnpm test:e2e         # the interface, in a browser
 ```

@@ -21,6 +21,6 @@
     "@rulekit/corpus": "workspace:*",
     "@rulekit/agent": "workspace:*",
     "@rulekit/pipeline": "workspace:*",
-    "zod": "^3.25.0"
+    "zod": "^4.4.0"
   }
 }

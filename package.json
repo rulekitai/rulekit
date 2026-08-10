@@ -23,12 +23,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
-    "@types/node": "^22.10.0",
-    "typescript": "^5.7.0",
     "@rulekit/agent": "workspace:*",
     "@rulekit/cli": "workspace:*",
     "@rulekit/corpus": "workspace:*",
     "@rulekit/pipeline": "workspace:*",
-    "@rulekit/server": "workspace:*"
+    "@rulekit/server": "workspace:*",
+    "@types/node": "22",
+    "typescript": "^7.0.2"
   }
 }

@@ -102,7 +102,11 @@ export const profileSchema = z.object({
        */
       statFields: z.array(cardStatFieldSchema).default([]),
     })
-    .default({}),
+    // `prefault`, not `default`. Zod 4 requires a `default` to be the finished
+    // output, and this object's fields fill themselves in. `prefault` supplies
+    // the INPUT and lets each field's own default run, which is what an omitted
+    // block should mean.
+    .prefault({}),
 
   /**
    * Bracket tokens the interface renders as symbols or badges.
@@ -125,7 +129,7 @@ export const profileSchema = z.object({
       /** Topics to decline, beyond the universal ones in the base instructions. */
       refuse: z.array(nonEmpty).default([]),
     })
-    .default({}),
+    .prefault({}),
 
   /** Anything else, one paragraph per entry. Appended last. */
   extraGuidance: z.array(nonEmpty).default([]),
