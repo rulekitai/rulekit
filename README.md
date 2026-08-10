@@ -90,6 +90,114 @@ the corpus with tools, then writes an answer with sources.
 Two more stages ship switched off, because each needs an account you may not
 want: a semantic cache, and a pass with a cheap model.
 
+## The whole picture
+
+Four things happen, and only the last one costs a model call. JSON becomes a
+database, the database and the profile build an agent, a question walks the free
+stages, and a miss reaches the agent.
+
+```mermaid
+flowchart TB
+    subgraph BUILD["1. Build the corpus. Once, with no model and no network."]
+        direction LR
+        JSON["data/my-game/<br>rules, terms, cards,<br>errata, banlist, patch notes"]
+        VALIDATE["rulekit validate<br>names every problem"]
+        COMPILE["rulekit build"]
+        DB[("corpus.db<br>SQLite, full-text search")]
+        PROFILE["profile.json<br>what this game calls things"]
+        JSON --> VALIDATE --> COMPILE --> DB
+    end
+
+    subgraph BORN["2. The agent is born. Once per server process."]
+        direction TB
+        STORE["SqliteStore.open<br>one read interface"]
+        PARSED["parseProfile<br>the game's own words"]
+        CONTENTS["corpusContents<br>which collections hold rows?"]
+        SKILLS["builtinSkills<br>card_lookup, interaction, sequence"]
+        TOOLS["defineRulesTools<br>a tool is offered ONLY when<br>the corpus can answer with it"]
+        PROMPT["buildInstructions<br>identity, grounding rules, vocabulary,<br>card fields, and the skills inlined"]
+        PIPELINE["createPipeline<br>the free stages, in order of cost"]
+        AGENT["createRulesAgent"]
+
+        STORE --> CONTENTS --> TOOLS
+        STORE --> PIPELINE
+        PARSED --> TOOLS
+        PARSED --> PROMPT
+        SKILLS --> PROMPT
+        TOOLS --> AGENT
+        PROMPT --> AGENT
+    end
+
+    DB ==> STORE
+    PROFILE ==> PARSED
+
+    subgraph ASK["3. One question. The first stage that can answer wins."]
+        direction TB
+        Q(["A reader asks a question"])
+        GATE{"gate.allow<br>quota or billing.<br>Ships as always yes."}
+        STOP(["Refused. Nothing was read."])
+        S1{"exact cache"}
+        S2{"static<br>a rule number,<br>a legality question"}
+        S3{"glossary<br>what is X"}
+
+        Q --> GATE
+        GATE -->|"no"| STOP
+        GATE -->|"yes"| S1
+        S1 -->|"miss"| S2 -->|"miss"| S3
+    end
+
+    subgraph LOOP["4. The agent turn. Reached only by a miss. One model call per step."]
+        direction TB
+        MODEL["The model reads the system prompt,<br>then chooses a tool"]
+        CORE["Always offered:<br>search_all, search_rules, get_rule,<br>get_rule_context, search_terms,<br>list_rulebooks, list_sections"]
+        EXTRA["Offered only when the corpus holds them:<br>list_errata, list_banlist, list_patch_notes,<br>search_cards, get_cards"]
+        READ["The tool reads corpus.db<br>and returns rows"]
+        WRITE["The model writes the answer<br>and quotes what the rows say"]
+
+        MODEL --> CORE --> READ
+        MODEL --> EXTRA --> READ
+        READ --> MODEL
+        MODEL --> WRITE
+    end
+
+    ANSWER(["The answer, and the source of every claim"])
+
+    PIPELINE ==>|"runs the stages"| S1
+    AGENT ==>|"system prompt and tools"| MODEL
+    S1 -->|"hit"| ANSWER
+    S2 -->|"hit"| ANSWER
+    S3 -->|"hit"| ANSWER
+    S3 -.->|"miss"| MODEL
+    WRITE ==> ANSWER
+
+    classDef data fill:#e8f0fe,stroke:#1a56b8,color:#0b2a5b
+    classDef free fill:#e6f4ea,stroke:#137333,color:#0b3d1c
+    classDef model fill:#fef3e0,stroke:#b06000,color:#5c3200
+    classDef stop fill:#fce8e6,stroke:#c5221f,color:#5c1512
+
+    class JSON,PROFILE,DB,STORE,PARSED,CONTENTS,READ data
+    class VALIDATE,COMPILE,S1,S2,S3,GATE,PIPELINE,Q,ANSWER free
+    class TOOLS,SKILLS,PROMPT,AGENT,MODEL,CORE,EXTRA,WRITE model
+    class STOP stop
+
+    style BUILD fill:#ffffff,stroke:#c7ccd1,color:#333333
+    style BORN fill:#ffffff,stroke:#c7ccd1,color:#333333
+    style ASK fill:#ffffff,stroke:#c7ccd1,color:#333333
+    style LOOP fill:#ffffff,stroke:#c7ccd1,color:#333333
+```
+
+Read the diagram for three decisions:
+
+1. **The profile reaches both the tools and the prompt.** It decides what a tool
+   is called and what the model is told a printed value means, so a chess tool
+   says "piece" and never "card".
+2. **A tool exists only when the corpus can answer with it.** `corpusContents`
+   counts the rows first. A game with an empty banned list is never given a
+   banned-list tool.
+3. **A skill is a page the model reads for one shape of question.** The three
+   that ship cover reading a card, two things at once, and order and timing.
+   `card_lookup` is left out when a corpus holds no cards.
+
 ## The packages
 
 | Package | What it holds |
