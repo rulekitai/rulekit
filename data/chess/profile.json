@@ -1,0 +1,89 @@
+{
+  "game": {
+    "name": "Chess",
+    "slug": "chess",
+    "description": "Chess is a game for two players on a board of sixty-four squares. Each player starts with sixteen pieces and tries to checkmate the enemy king."
+  },
+  "vocabulary": [
+    {
+      "use": "piece",
+      "insteadOf": ["creature", "unit", "minion", "figure"],
+      "means": "It names one of the sixteen men a player controls. A pawn is a piece too, unless a sentence sets pawns apart from the other pieces on purpose."
+    },
+    {
+      "use": "square",
+      "insteadOf": ["tile", "cell", "space", "slot"],
+      "means": "It names one of the sixty-four places on the board."
+    },
+    {
+      "use": "move",
+      "insteadOf": ["action", "play", "go"],
+      "means": "It names one player's single act of taking a piece from one square to another."
+    },
+    {
+      "use": "capture",
+      "insteadOf": ["kill", "destroy", "take out", "damage"],
+      "means": "It names the removal of an enemy piece by a piece that lands on its square."
+    },
+    {
+      "use": "draw",
+      "insteadOf": ["tie", "stalemate"],
+      "means": "It names a game that ends with no winner. Stalemate is one kind of draw, and not a word for every draw."
+    },
+    {
+      "use": "White",
+      "insteadOf": ["player one", "the first player"],
+      "means": "It names the player who controls the light pieces and moves first."
+    }
+  ],
+  "cards": {
+    "enabled": false,
+    "linkScheme": "",
+    "maxInlineImages": 0,
+    "textFields": []
+  },
+  "tokens": {
+    "syntax": "A piece letter in brackets, such as [K], or a square and a move written in plain algebraic notation, such as e4 and Nf3",
+    "groups": [
+      {
+        "label": "Piece letters",
+        "examples": ["[K]", "[Q]", "[R]", "[B]", "[N]"]
+      },
+      {
+        "label": "Square names",
+        "examples": ["a1", "d4", "e4", "f7", "h8"]
+      },
+      {
+        "label": "Moves in algebraic notation",
+        "examples": ["e4", "Nf3", "Bxc6", "exd5", "e8=Q", "Nbd2"]
+      },
+      {
+        "label": "Signs and results",
+        "examples": ["+", "#", "x", "O-O", "O-O-O", "1-0", "0-1", "1/2-1/2"]
+      }
+    ]
+  },
+  "scope": {
+    "answer": [
+      "Rule text and rule numbers from the Laws of Chess.",
+      "Defined terms, such as castling, en passant, stalemate, and zugzwang.",
+      "Whether a stated move is legal, and why the rules allow it or refuse it.",
+      "How a game ends: checkmate, resignation, time, and every kind of draw.",
+      "How to write a move and how to keep a scoresheet.",
+      "Rule structure: parent rules, sub-rules, related rules, and the sections of the book.",
+      "Clock rules, time controls, touch-move, and the role of the arbiter."
+    ],
+    "refuse": [
+      "Opening theory, engine evaluation, and advice on which move is stronger.",
+      "Ratings, titles, tournament results, and the history of matches between real players.",
+      "The rules of chess variants, such as three-check or Chess960, which this book does not cover."
+    ]
+  },
+  "extraGuidance": [
+    "This corpus holds no cards. Chess has pieces, and a piece has no printed text. Do not offer a card lookup and do not describe a piece as a card.",
+    "Rule numbers run from 100 to 800 in one book. A number that ends in a bare hundred, such as 100 or 500, is a section heading with no text of its own; quote the numbered rule under it instead.",
+    "Name the exact rule number for every claim about legality. A reader who asks whether a move is legal needs the rule, not only the verdict.",
+    "Keep stalemate and checkmate apart in every answer. Both need a player with no legal move; only checkmate needs the king to be under attack.",
+    "A draw by repetition and a draw by the fifty-move count need a claim from a player. The fivefold and seventy-five-move forms need no claim. State which form applies."
+  ]
+}

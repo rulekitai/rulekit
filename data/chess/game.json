@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 2,
+  "game": {
+    "slug": "chess",
+    "name": "Chess"
+  }
+}

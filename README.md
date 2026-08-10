@@ -7,10 +7,19 @@ It reads a corpus of JSON files that you supply. Every answer comes from that
 corpus. Each claim carries its rule number, its card name, or its date. When the
 corpus holds no answer, the assistant says so. It does not invent one.
 
-**It works with any rulebook.** No game is built in. A card game, a board game,
-a sport, or a set of house rules all read the same way, and the project holds no
-knowledge of any of them. Two example corpora ship: an invented game that this
-project owns, and one real game. Both are examples, and neither is the point.
+**It works with any rulebook.** No game is built in. **Five example corpora
+ship**, and they are deliberately unalike:
+
+| Corpus | The game | Cards? |
+|---|---|---|
+| `data/chess/` | Chess | No cards at all |
+| `data/texas-holdem/` | Texas Hold'em poker | A card game with no card database |
+| `data/estate-line/` | An invented property trading game | Cards that are deeds and fortunes, not trading cards |
+| `data/demo/` | An invented trading card game | Yes |
+| `data/riftbound/` | Riftbound | Yes, 941 of them |
+
+Same format, same code, no change between them. Four of the five are public
+domain and were written for this project.
 
 Apache 2.0 licence. No pricing model. No required model provider. No account,
 except one model key.
@@ -159,7 +168,7 @@ event. That is why this command exists.
 
 ```bash
 pnpm check-types      # every package
-pnpm test             # 267 tests, no model and no network
+pnpm test             # 269 tests, no model and no network
 pnpm rulekit validate data/demo
 pnpm test:e2e         # the interface, in a browser
 ```
@@ -174,15 +183,17 @@ different. The Apache licence does not cover `data/`.
 
 | Corpus | Terms |
 |---|---|
-| `data/demo/` | **CC0 1.0.** Public domain. Written for this project. Copy it freely. |
+| `data/chess/`, `data/texas-holdem/`, `data/estate-line/`, `data/demo/` | **CC0 1.0.** Public domain. Written for this project. Copy them freely. |
 | `data/riftbound/` | **Riot Games' property.** No rights granted. Non-commercial use only. |
 
 `data/README.md` states this in full, and `NOTICE` travels with every copy of
 the code.
 
-**To use rulekit in a commercial product, supply your own corpus.** `data/demo/`
-is public domain and works as a starting point. `docs/corpus-format.md` states
-the format field by field.
+**To use rulekit in a commercial product, use one of the four public-domain
+corpora, or supply your own.** Every word in those four is original to this
+project: no rulebook, PDF, or web page was copied to produce them. The rules of
+a game are a system, and a system is not owned. A particular author's wording is
+owned, so none is reused.
 
 rulekit was created under Riot Games' "Legal Jibber Jabber" policy using assets
 owned by Riot Games. Riot Games does not endorse or sponsor this project.

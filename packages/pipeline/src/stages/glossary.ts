@@ -16,11 +16,22 @@ import type { Answer, AskContext, Stage } from "../types.ts"
  * reasoning question that the definition alone answers wrongly.
  */
 
+/**
+ * The article a reader puts in front of a term.
+ *
+ * "What is a kicker" and "what is the button" ask the same kind of question as
+ * "what is Guard", and the article belongs to the sentence rather than to the
+ * term. Stripping only "the" answered one and refused the other, so a term a
+ * reader naturally says with "a" reached the store as "a kicker" and matched
+ * nothing.
+ */
+const ARTICLE = String.raw`(?:the|an|a)\s+`
+
 /** Ways a reader asks for a definition. Each captures the term. */
 const DEFINITION_PATTERNS: RegExp[] = [
-  /^what(?:'?s| is| are)\s+(?:the\s+)?(?:keyword\s+|ability\s+|term\s+)?(.+?)\??$/,
+  new RegExp(`^what(?:'?s| is| are)\\s+(?:${ARTICLE})?(?:keyword\\s+|ability\\s+|term\\s+)?(.+?)\\??$`),
   /^what\s+does\s+(.+?)\s+(?:do|mean)\??$/,
-  /^(?:define|explain)\s+(?:the\s+)?(?:keyword\s+|term\s+)?(.+?)\??$/,
+  new RegExp(`^(?:define|explain)\\s+(?:${ARTICLE})?(?:keyword\\s+|term\\s+)?(.+?)\\??$`),
   /^(?:how\s+does\s+)(.+?)\s+work\??$/,
   /^(.+?)\s+(?:keyword|definition)\??$/,
 ]

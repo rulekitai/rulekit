@@ -5,8 +5,20 @@ description: Write a corpus and a profile for a game that does not ship with rul
 
 # Write a corpus
 
-**Check first.** `data/riftbound/` already holds a full Riftbound corpus and
-profile. If the game is Riftbound, this skill does not apply.
+**Check first.** Five corpora already ship. If the game is one of these, this
+skill does not apply: point the app at the directory instead.
+
+| Directory | The game |
+|---|---|
+| `data/riftbound/` | Riftbound |
+| `data/chess/` | Chess |
+| `data/texas-holdem/` | Texas Hold'em poker |
+| `data/estate-line/` | An invented property trading game |
+| `data/demo/` | An invented trading card game |
+
+**Copy the one whose shape matches the new game.** A game with no cards should
+start from `chess/`. A game whose cards carry prices rather than combat values
+should start from `estate-line/`. All four of those are public domain.
 
 ## Step 1: copy the worked example
 

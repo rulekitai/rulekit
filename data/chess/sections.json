@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "sec-100",
+      "rule_book_id": "book-laws",
+      "section_number": "100",
+      "title": "The Board and the Pieces",
+      "slug": "the-board-and-the-pieces",
+      "description": "The board, the two sides, the sixteen pieces each side owns, and the position they start from.",
+      "display_order": 0
+    },
+    {
+      "id": "sec-200",
+      "rule_book_id": "book-laws",
+      "section_number": "200",
+      "title": "How the Pieces Move",
+      "slug": "how-the-pieces-move",
+      "description": "The move of each piece, and what an attacked square is.",
+      "display_order": 1
+    },
+    {
+      "id": "sec-300",
+      "rule_book_id": "book-laws",
+      "section_number": "300",
+      "title": "Special Moves",
+      "slug": "special-moves",
+      "description": "Castling, the capture en passant, and the promotion of a pawn.",
+      "display_order": 2
+    },
+    {
+      "id": "sec-400",
+      "rule_book_id": "book-laws",
+      "section_number": "400",
+      "title": "Check and Checkmate",
+      "slug": "check-and-checkmate",
+      "description": "An attack on the king, the ways to answer it, and the end of the game.",
+      "display_order": 3
+    },
+    {
+      "id": "sec-500",
+      "rule_book_id": "book-laws",
+      "section_number": "500",
+      "title": "Drawn Games",
+      "slug": "drawn-games",
+      "description": "Every way a game ends with no winner.",
+      "display_order": 4
+    },
+    {
+      "id": "sec-600",
+      "rule_book_id": "book-laws",
+      "section_number": "600",
+      "title": "The Clock and Time Control",
+      "slug": "the-clock-and-time-control",
+      "description": "The chess clock, the fall of the flag, and the ways time is added.",
+      "display_order": 5
+    },
+    {
+      "id": "sec-700",
+      "rule_book_id": "book-laws",
+      "section_number": "700",
+      "title": "Notation and Records",
+      "slug": "notation-and-records",
+      "description": "How a player names a square, writes a move, and keeps the record of a game.",
+      "display_order": 6
+    },
+    {
+      "id": "sec-800",
+      "rule_book_id": "book-laws",
+      "section_number": "800",
+      "title": "Conduct and Tournament Play",
+      "slug": "conduct-and-tournament-play",
+      "description": "Touch-move, illegal moves, the arbiter, resignation, and the score of a game.",
+      "display_order": 7
+    }
+  ]
+}

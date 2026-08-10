@@ -1,0 +1,867 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "el-p01",
+      "name": "Tanner's Row",
+      "type_line": "Property — Residential",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P01.webp",
+      "tags": ["street", "umber"],
+      "text": {
+        "deed_text": "Title deed for Tanner's Row. [Umber] district. Price ₡70. Mortgage value ₡35.",
+        "rent_text": "Rent ₡3. Full district ₡6. 1 [House] ₡15. 2 [House] ₡45. 3 [House] ₡120. 4 [House] ₡200. [Hotel] ₡275. Each house costs ₡60. A hotel costs ₡60 and four houses.",
+        "flavor_text": "The oldest working street on the line, and the loudest at dawn."
+      },
+      "stats": {
+        "price": 70,
+        "rent_base": 3,
+        "rent_full_district": 6,
+        "rent_with_house": 15,
+        "rent_with_2_houses": 45,
+        "rent_with_3_houses": 120,
+        "rent_with_4_houses": 200,
+        "rent_with_hotel": 275,
+        "house_cost": 60,
+        "hotel_cost": 60,
+        "district": "Umber",
+        "mortgage_value": 35,
+        "board_position": 1
+      }
+    },
+    {
+      "id": "el-p02",
+      "name": "Coalgate Lane",
+      "type_line": "Property — Residential",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P02.webp",
+      "tags": ["street", "umber"],
+      "text": {
+        "deed_text": "Title deed for Coalgate Lane. [Umber] district. Price ₡80. Mortgage value ₡40.",
+        "rent_text": "Rent ₡5. Full district ₡10. 1 [House] ₡25. 2 [House] ₡70. 3 [House] ₡190. 4 [House] ₡330. [Hotel] ₡460. Each house costs ₡60. A hotel costs ₡60 and four houses."
+      },
+      "stats": {
+        "price": 80,
+        "rent_base": 5,
+        "rent_full_district": 10,
+        "rent_with_house": 25,
+        "rent_with_2_houses": 70,
+        "rent_with_3_houses": 190,
+        "rent_with_4_houses": 330,
+        "rent_with_hotel": 460,
+        "house_cost": 60,
+        "hotel_cost": 60,
+        "district": "Umber",
+        "mortgage_value": 40,
+        "board_position": 3
+      }
+    },
+    {
+      "id": "el-p03",
+      "name": "Willow Crescent",
+      "type_line": "Property — Residential",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P03.webp",
+      "tags": ["street", "sky"],
+      "text": {
+        "deed_text": "Title deed for Willow Crescent. [Sky] district. Price ₡120. Mortgage value ₡60.",
+        "rent_text": "Rent ₡8. Full district ₡16. 1 [House] ₡40. 2 [House] ₡110. 3 [House] ₡300. 4 [House] ₡420. [Hotel] ₡560. Each house costs ₡90. A hotel costs ₡90 and four houses."
+      },
+      "stats": {
+        "price": 120,
+        "rent_base": 8,
+        "rent_full_district": 16,
+        "rent_with_house": 40,
+        "rent_with_2_houses": 110,
+        "rent_with_3_houses": 300,
+        "rent_with_4_houses": 420,
+        "rent_with_hotel": 560,
+        "house_cost": 90,
+        "hotel_cost": 90,
+        "district": "Sky",
+        "mortgage_value": 60,
+        "board_position": 6
+      }
+    },
+    {
+      "id": "el-p04",
+      "name": "Fennel Street",
+      "type_line": "Property — Residential",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P04.webp",
+      "tags": ["street", "sky"],
+      "text": {
+        "deed_text": "Title deed for Fennel Street. [Sky] district. Price ₡120. Mortgage value ₡60.",
+        "rent_text": "Rent ₡8. Full district ₡16. 1 [House] ₡40. 2 [House] ₡110. 3 [House] ₡300. 4 [House] ₡420. [Hotel] ₡560. Each house costs ₡90. A hotel costs ₡90 and four houses.",
+        "flavor_text": "Two greengrocers, one clock, and a queue that never shortens."
+      },
+      "stats": {
+        "price": 120,
+        "rent_base": 8,
+        "rent_full_district": 16,
+        "rent_with_house": 40,
+        "rent_with_2_houses": 110,
+        "rent_with_3_houses": 300,
+        "rent_with_4_houses": 420,
+        "rent_with_hotel": 560,
+        "house_cost": 90,
+        "hotel_cost": 90,
+        "district": "Sky",
+        "mortgage_value": 60,
+        "board_position": 8
+      }
+    },
+    {
+      "id": "el-p05",
+      "name": "Marlow Way",
+      "type_line": "Property — Residential",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P05.webp",
+      "tags": ["street", "sky"],
+      "text": {
+        "deed_text": "Title deed for Marlow Way. [Sky] district. Price ₡140. Mortgage value ₡70.",
+        "rent_text": "Rent ₡10. Full district ₡20. 1 [House] ₡50. 2 [House] ₡130. 3 [House] ₡340. 4 [House] ₡470. [Hotel] ₡620. Each house costs ₡90. A hotel costs ₡90 and four houses."
+      },
+      "stats": {
+        "price": 140,
+        "rent_base": 10,
+        "rent_full_district": 20,
+        "rent_with_house": 50,
+        "rent_with_2_houses": 130,
+        "rent_with_3_houses": 340,
+        "rent_with_4_houses": 470,
+        "rent_with_hotel": 620,
+        "house_cost": 90,
+        "hotel_cost": 90,
+        "district": "Sky",
+        "mortgage_value": 70,
+        "board_position": 9
+      }
+    },
+    {
+      "id": "el-p06",
+      "name": "Cobbler's Bend",
+      "type_line": "Property — Residential",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P06.webp",
+      "tags": ["street", "rose"],
+      "text": {
+        "deed_text": "Title deed for Cobbler's Bend. [Rose] district. Price ₡170. Mortgage value ₡85.",
+        "rent_text": "Rent ₡13. Full district ₡26. 1 [House] ₡65. 2 [House] ₡180. 3 [House] ₡470. 4 [House] ₡650. [Hotel] ₡840. Each house costs ₡120. A hotel costs ₡120 and four houses."
+      },
+      "stats": {
+        "price": 170,
+        "rent_base": 13,
+        "rent_full_district": 26,
+        "rent_with_house": 65,
+        "rent_with_2_houses": 180,
+        "rent_with_3_houses": 470,
+        "rent_with_4_houses": 650,
+        "rent_with_hotel": 840,
+        "house_cost": 120,
+        "hotel_cost": 120,
+        "district": "Rose",
+        "mortgage_value": 85,
+        "board_position": 12
+      }
+    },
+    {
+      "id": "el-p07",
+      "name": "Vintner Street",
+      "type_line": "Property — Commercial",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P07.webp",
+      "tags": ["street", "rose"],
+      "text": {
+        "deed_text": "Title deed for Vintner Street. [Rose] district. Price ₡170. Mortgage value ₡85.",
+        "rent_text": "Rent ₡13. Full district ₡26. 1 [House] ₡65. 2 [House] ₡180. 3 [House] ₡470. 4 [House] ₡650. [Hotel] ₡840. Each house costs ₡120. A hotel costs ₡120 and four houses."
+      },
+      "stats": {
+        "price": 170,
+        "rent_base": 13,
+        "rent_full_district": 26,
+        "rent_with_house": 65,
+        "rent_with_2_houses": 180,
+        "rent_with_3_houses": 470,
+        "rent_with_4_houses": 650,
+        "rent_with_hotel": 840,
+        "house_cost": 120,
+        "hotel_cost": 120,
+        "district": "Rose",
+        "mortgage_value": 85,
+        "board_position": 14
+      }
+    },
+    {
+      "id": "el-p08",
+      "name": "Hollow Mews",
+      "type_line": "Property — Residential",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P08.webp",
+      "tags": ["street", "rose"],
+      "text": {
+        "deed_text": "Title deed for Hollow Mews. [Rose] district. Price ₡190. Mortgage value ₡95.",
+        "rent_text": "Rent ₡15. Full district ₡30. 1 [House] ₡75. 2 [House] ₡200. 3 [House] ₡520. 4 [House] ₡700. [Hotel] ₡910. Each house costs ₡120. A hotel costs ₡120 and four houses.",
+        "flavor_text": "A short street that hides from the main road on purpose."
+      },
+      "stats": {
+        "price": 190,
+        "rent_base": 15,
+        "rent_full_district": 30,
+        "rent_with_house": 75,
+        "rent_with_2_houses": 200,
+        "rent_with_3_houses": 520,
+        "rent_with_4_houses": 700,
+        "rent_with_hotel": 910,
+        "house_cost": 120,
+        "hotel_cost": 120,
+        "district": "Rose",
+        "mortgage_value": 95,
+        "board_position": 15
+      }
+    },
+    {
+      "id": "el-p09",
+      "name": "Foundry Road",
+      "type_line": "Property — Commercial",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P09.webp",
+      "tags": ["street", "amber"],
+      "text": {
+        "deed_text": "Title deed for Foundry Road. [Amber] district. Price ₡220. Mortgage value ₡110.",
+        "rent_text": "Rent ₡18. Full district ₡36. 1 [House] ₡90. 2 [House] ₡250. 3 [House] ₡640. 4 [House] ₡850. [Hotel] ₡1050. Each house costs ₡160. A hotel costs ₡160 and four houses."
+      },
+      "stats": {
+        "price": 220,
+        "rent_base": 18,
+        "rent_full_district": 36,
+        "rent_with_house": 90,
+        "rent_with_2_houses": 250,
+        "rent_with_3_houses": 640,
+        "rent_with_4_houses": 850,
+        "rent_with_hotel": 1050,
+        "house_cost": 160,
+        "hotel_cost": 160,
+        "district": "Amber",
+        "mortgage_value": 110,
+        "board_position": 17
+      }
+    },
+    {
+      "id": "el-p10",
+      "name": "Kiln Street",
+      "type_line": "Property — Commercial",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P10.webp",
+      "tags": ["street", "amber"],
+      "text": {
+        "deed_text": "Title deed for Kiln Street. [Amber] district. Price ₡220. Mortgage value ₡110.",
+        "rent_text": "Rent ₡18. Full district ₡36. 1 [House] ₡90. 2 [House] ₡250. 3 [House] ₡640. 4 [House] ₡850. [Hotel] ₡1050. Each house costs ₡160. A hotel costs ₡160 and four houses."
+      },
+      "stats": {
+        "price": 220,
+        "rent_base": 18,
+        "rent_full_district": 36,
+        "rent_with_house": 90,
+        "rent_with_2_houses": 250,
+        "rent_with_3_houses": 640,
+        "rent_with_4_houses": 850,
+        "rent_with_hotel": 1050,
+        "house_cost": 160,
+        "hotel_cost": 160,
+        "district": "Amber",
+        "mortgage_value": 110,
+        "board_position": 19
+      }
+    },
+    {
+      "id": "el-p11",
+      "name": "Anvil Court",
+      "type_line": "Property — Commercial",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P11.webp",
+      "tags": ["street", "amber"],
+      "text": {
+        "deed_text": "Title deed for Anvil Court. [Amber] district. Price ₡240. Mortgage value ₡120.",
+        "rent_text": "Rent ₡20. Full district ₡40. 1 [House] ₡100. 2 [House] ₡280. 3 [House] ₡700. 4 [House] ₡920. [Hotel] ₡1120. Each house costs ₡160. A hotel costs ₡160 and four houses."
+      },
+      "stats": {
+        "price": 240,
+        "rent_base": 20,
+        "rent_full_district": 40,
+        "rent_with_house": 100,
+        "rent_with_2_houses": 280,
+        "rent_with_3_houses": 700,
+        "rent_with_4_houses": 920,
+        "rent_with_hotel": 1120,
+        "house_cost": 160,
+        "hotel_cost": 160,
+        "district": "Amber",
+        "mortgage_value": 120,
+        "board_position": 20
+      }
+    },
+    {
+      "id": "el-p12",
+      "name": "Sable Avenue",
+      "type_line": "Property — Commercial",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P12.webp",
+      "tags": ["street", "crimson"],
+      "text": {
+        "deed_text": "Title deed for Sable Avenue. [Crimson] district. Price ₡270. Mortgage value ₡135.",
+        "rent_text": "Rent ₡23. Full district ₡46. 1 [House] ₡115. 2 [House] ₡320. 3 [House] ₡800. 4 [House] ₡1050. [Hotel] ₡1260. Each house costs ₡200. A hotel costs ₡200 and four houses."
+      },
+      "stats": {
+        "price": 270,
+        "rent_base": 23,
+        "rent_full_district": 46,
+        "rent_with_house": 115,
+        "rent_with_2_houses": 320,
+        "rent_with_3_houses": 800,
+        "rent_with_4_houses": 1050,
+        "rent_with_hotel": 1260,
+        "house_cost": 200,
+        "hotel_cost": 200,
+        "district": "Crimson",
+        "mortgage_value": 135,
+        "board_position": 23
+      }
+    },
+    {
+      "id": "el-p13",
+      "name": "Garnet Street",
+      "type_line": "Property — Commercial",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P13.webp",
+      "tags": ["street", "crimson"],
+      "text": {
+        "deed_text": "Title deed for Garnet Street. [Crimson] district. Price ₡270. Mortgage value ₡135.",
+        "rent_text": "Rent ₡23. Full district ₡46. 1 [House] ₡115. 2 [House] ₡320. 3 [House] ₡800. 4 [House] ₡1050. [Hotel] ₡1260. Each house costs ₡200. A hotel costs ₡200 and four houses.",
+        "flavor_text": "Every window on the north side is a shop window."
+      },
+      "stats": {
+        "price": 270,
+        "rent_base": 23,
+        "rent_full_district": 46,
+        "rent_with_house": 115,
+        "rent_with_2_houses": 320,
+        "rent_with_3_houses": 800,
+        "rent_with_4_houses": 1050,
+        "rent_with_hotel": 1260,
+        "house_cost": 200,
+        "hotel_cost": 200,
+        "district": "Crimson",
+        "mortgage_value": 135,
+        "board_position": 25
+      }
+    },
+    {
+      "id": "el-p14",
+      "name": "Ember Parade",
+      "type_line": "Property — Commercial",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P14.webp",
+      "tags": ["street", "crimson"],
+      "text": {
+        "deed_text": "Title deed for Ember Parade. [Crimson] district. Price ₡290. Mortgage value ₡145.",
+        "rent_text": "Rent ₡25. Full district ₡50. 1 [House] ₡125. 2 [House] ₡350. 3 [House] ₡860. 4 [House] ₡1120. [Hotel] ₡1330. Each house costs ₡200. A hotel costs ₡200 and four houses."
+      },
+      "stats": {
+        "price": 290,
+        "rent_base": 25,
+        "rent_full_district": 50,
+        "rent_with_house": 125,
+        "rent_with_2_houses": 350,
+        "rent_with_3_houses": 860,
+        "rent_with_4_houses": 1120,
+        "rent_with_hotel": 1330,
+        "house_cost": 200,
+        "hotel_cost": 200,
+        "district": "Crimson",
+        "mortgage_value": 145,
+        "board_position": 26
+      }
+    },
+    {
+      "id": "el-p15",
+      "name": "Beacon Hill Road",
+      "type_line": "Property — Estate",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P15.webp",
+      "tags": ["street", "saffron"],
+      "text": {
+        "deed_text": "Title deed for Beacon Hill Road. [Saffron] district. Price ₡320. Mortgage value ₡160.",
+        "rent_text": "Rent ₡28. Full district ₡56. 1 [House] ₡140. 2 [House] ₡390. 3 [House] ₡950. 4 [House] ₡1220. [Hotel] ₡1450. Each house costs ₡240. A hotel costs ₡240 and four houses."
+      },
+      "stats": {
+        "price": 320,
+        "rent_base": 28,
+        "rent_full_district": 56,
+        "rent_with_house": 140,
+        "rent_with_2_houses": 390,
+        "rent_with_3_houses": 950,
+        "rent_with_4_houses": 1220,
+        "rent_with_hotel": 1450,
+        "house_cost": 240,
+        "hotel_cost": 240,
+        "district": "Saffron",
+        "mortgage_value": 160,
+        "board_position": 29
+      }
+    },
+    {
+      "id": "el-p16",
+      "name": "Lantern Street",
+      "type_line": "Property — Estate",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P16.webp",
+      "tags": ["street", "saffron"],
+      "text": {
+        "deed_text": "Title deed for Lantern Street. [Saffron] district. Price ₡340. Mortgage value ₡170.",
+        "rent_text": "Rent ₡30. Full district ₡60. 1 [House] ₡150. 2 [House] ₡420. 3 [House] ₡1000. 4 [House] ₡1280. [Hotel] ₡1520. Each house costs ₡240. A hotel costs ₡240 and four houses."
+      },
+      "stats": {
+        "price": 340,
+        "rent_base": 30,
+        "rent_full_district": 60,
+        "rent_with_house": 150,
+        "rent_with_2_houses": 420,
+        "rent_with_3_houses": 1000,
+        "rent_with_4_houses": 1280,
+        "rent_with_hotel": 1520,
+        "house_cost": 240,
+        "hotel_cost": 240,
+        "district": "Saffron",
+        "mortgage_value": 170,
+        "board_position": 31
+      }
+    },
+    {
+      "id": "el-p17",
+      "name": "Orchard Terrace",
+      "type_line": "Property — Estate",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P17.webp",
+      "tags": ["street", "verdant"],
+      "text": {
+        "deed_text": "Title deed for Orchard Terrace. [Verdant] district. Price ₡370. Mortgage value ₡185.",
+        "rent_text": "Rent ₡34. Full district ₡68. 1 [House] ₡170. 2 [House] ₡470. 3 [House] ₡1100. 4 [House] ₡1400. [Hotel] ₡1650. Each house costs ₡280. A hotel costs ₡280 and four houses."
+      },
+      "stats": {
+        "price": 370,
+        "rent_base": 34,
+        "rent_full_district": 68,
+        "rent_with_house": 170,
+        "rent_with_2_houses": 470,
+        "rent_with_3_houses": 1100,
+        "rent_with_4_houses": 1400,
+        "rent_with_hotel": 1650,
+        "house_cost": 280,
+        "hotel_cost": 280,
+        "district": "Verdant",
+        "mortgage_value": 185,
+        "board_position": 34
+      }
+    },
+    {
+      "id": "el-p18",
+      "name": "Bramble Walk",
+      "type_line": "Property — Estate",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P18.webp",
+      "tags": ["street", "verdant"],
+      "text": {
+        "deed_text": "Title deed for Bramble Walk. [Verdant] district. Price ₡390. Mortgage value ₡195.",
+        "rent_text": "Rent ₡36. Full district ₡72. 1 [House] ₡180. 2 [House] ₡500. 3 [House] ₡1150. 4 [House] ₡1460. [Hotel] ₡1720. Each house costs ₡280. A hotel costs ₡280 and four houses.",
+        "flavor_text": "The hedge is older than the deed, and it wins every argument."
+      },
+      "stats": {
+        "price": 390,
+        "rent_base": 36,
+        "rent_full_district": 72,
+        "rent_with_house": 180,
+        "rent_with_2_houses": 500,
+        "rent_with_3_houses": 1150,
+        "rent_with_4_houses": 1460,
+        "rent_with_hotel": 1720,
+        "house_cost": 280,
+        "hotel_cost": 280,
+        "district": "Verdant",
+        "mortgage_value": 195,
+        "board_position": 36
+      }
+    },
+    {
+      "id": "el-p19",
+      "name": "Regent Heights",
+      "type_line": "Property — Estate",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P19.webp",
+      "tags": ["street", "ivory"],
+      "text": {
+        "deed_text": "Title deed for Regent Heights. [Ivory] district. Price ₡430. Mortgage value ₡215.",
+        "rent_text": "Rent ₡42. Full district ₡84. 1 [House] ₡210. 2 [House] ₡580. 3 [House] ₡1300. 4 [House] ₡1620. [Hotel] ₡1900. Each house costs ₡320. A hotel costs ₡320 and four houses."
+      },
+      "stats": {
+        "price": 430,
+        "rent_base": 42,
+        "rent_full_district": 84,
+        "rent_with_house": 210,
+        "rent_with_2_houses": 580,
+        "rent_with_3_houses": 1300,
+        "rent_with_4_houses": 1620,
+        "rent_with_hotel": 1900,
+        "house_cost": 320,
+        "hotel_cost": 320,
+        "district": "Ivory",
+        "mortgage_value": 215,
+        "board_position": 39
+      }
+    },
+    {
+      "id": "el-p20",
+      "name": "Aurelian Promenade",
+      "type_line": "Property — Estate",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-P20.webp",
+      "tags": ["street", "ivory", "most expensive"],
+      "text": {
+        "deed_text": "Title deed for Aurelian Promenade. [Ivory] district. Price ₡480. Mortgage value ₡240.",
+        "rent_text": "Rent ₡50. Full district ₡100. 1 [House] ₡250. 2 [House] ₡680. 3 [House] ₡1500. 4 [House] ₡1850. [Hotel] ₡2200. Each house costs ₡320. A hotel costs ₡320 and four houses.",
+        "flavor_text": "The last address on the line, and the first one anybody names."
+      },
+      "stats": {
+        "price": 480,
+        "rent_base": 50,
+        "rent_full_district": 100,
+        "rent_with_house": 250,
+        "rent_with_2_houses": 680,
+        "rent_with_3_houses": 1500,
+        "rent_with_4_houses": 1850,
+        "rent_with_hotel": 2200,
+        "house_cost": 320,
+        "hotel_cost": 320,
+        "district": "Ivory",
+        "mortgage_value": 240,
+        "board_position": 41
+      }
+    },
+    {
+      "id": "el-d01",
+      "name": "North Depot",
+      "type_line": "Property — Transit",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-D01.webp",
+      "tags": ["depot", "transit"],
+      "text": {
+        "deed_text": "Title deed for North Depot. [Depot] property. Price ₡250. Mortgage value ₡125. A depot carries no houses and no hotels.",
+        "rent_text": "1 [Depot] ₡30. 2 [Depot] ₡60. 3 [Depot] ₡120. 4 [Depot] ₡240."
+      },
+      "stats": {
+        "price": 250,
+        "rent_one_depot": 30,
+        "rent_two_depots": 60,
+        "rent_three_depots": 120,
+        "rent_four_depots": 240,
+        "district": "Transit",
+        "mortgage_value": 125,
+        "board_position": 5
+      }
+    },
+    {
+      "id": "el-d02",
+      "name": "West Depot",
+      "type_line": "Property — Transit",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-D02.webp",
+      "tags": ["depot", "transit"],
+      "text": {
+        "deed_text": "Title deed for West Depot. [Depot] property. Price ₡250. Mortgage value ₡125. A depot carries no houses and no hotels.",
+        "rent_text": "1 [Depot] ₡30. 2 [Depot] ₡60. 3 [Depot] ₡120. 4 [Depot] ₡240.",
+        "flavor_text": "Four platforms, one clock, and a timetable nobody trusts."
+      },
+      "stats": {
+        "price": 250,
+        "rent_one_depot": 30,
+        "rent_two_depots": 60,
+        "rent_three_depots": 120,
+        "rent_four_depots": 240,
+        "district": "Transit",
+        "mortgage_value": 125,
+        "board_position": 37
+      }
+    },
+    {
+      "id": "el-d03",
+      "name": "East Depot",
+      "type_line": "Property — Transit",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-D03.webp",
+      "tags": ["depot", "transit"],
+      "text": {
+        "deed_text": "Title deed for East Depot. [Depot] property. Price ₡250. Mortgage value ₡125. A depot carries no houses and no hotels.",
+        "rent_text": "1 [Depot] ₡30. 2 [Depot] ₡60. 3 [Depot] ₡120. 4 [Depot] ₡240."
+      },
+      "stats": {
+        "price": 250,
+        "rent_one_depot": 30,
+        "rent_two_depots": 60,
+        "rent_three_depots": 120,
+        "rent_four_depots": 240,
+        "district": "Transit",
+        "mortgage_value": 125,
+        "board_position": 16
+      }
+    },
+    {
+      "id": "el-d04",
+      "name": "South Depot",
+      "type_line": "Property — Transit",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-D04.webp",
+      "tags": ["depot", "transit"],
+      "text": {
+        "deed_text": "Title deed for South Depot. [Depot] property. Price ₡250. Mortgage value ₡125. A depot carries no houses and no hotels.",
+        "rent_text": "1 [Depot] ₡30. 2 [Depot] ₡60. 3 [Depot] ₡120. 4 [Depot] ₡240."
+      },
+      "stats": {
+        "price": 250,
+        "rent_one_depot": 30,
+        "rent_two_depots": 60,
+        "rent_three_depots": 120,
+        "rent_four_depots": 240,
+        "district": "Transit",
+        "mortgage_value": 125,
+        "board_position": 27
+      }
+    },
+    {
+      "id": "el-w01",
+      "name": "City Reservoir",
+      "type_line": "Property — Works",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-W01.webp",
+      "tags": ["works", "utility"],
+      "text": {
+        "deed_text": "Title deed for the City Reservoir. [Works] property. Price ₡180. Mortgage value ₡90. A works property carries no houses and no hotels.",
+        "rent_text": "One [Works] property: rent is four times the roll. Both [Works] properties: rent is twelve times the roll."
+      },
+      "stats": {
+        "price": 180,
+        "rent_multiplier_one_works": 4,
+        "rent_multiplier_both_works": 12,
+        "district": "Works",
+        "mortgage_value": 90,
+        "board_position": 10
+      }
+    },
+    {
+      "id": "el-w02",
+      "name": "Power Exchange",
+      "type_line": "Property — Works",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-W02.webp",
+      "tags": ["works", "utility"],
+      "text": {
+        "deed_text": "Title deed for the Power Exchange. [Works] property. Price ₡180. Mortgage value ₡90. A works property carries no houses and no hotels.",
+        "rent_text": "One [Works] property: rent is four times the roll. Both [Works] properties: rent is twelve times the roll."
+      },
+      "stats": {
+        "price": 180,
+        "rent_multiplier_one_works": 4,
+        "rent_multiplier_both_works": 12,
+        "district": "Works",
+        "mortgage_value": 90,
+        "board_position": 28
+      }
+    },
+    {
+      "id": "el-f01",
+      "name": "Advance to The Gate",
+      "type_line": "Fortune Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-F01.webp",
+      "tags": ["fortune", "movement"],
+      "text": {
+        "card_text": "Move to [Gate]. Collect ₡200 from the Bank."
+      },
+      "stats": {
+        "deck": "Fortune",
+        "moves_to": "The Gate",
+        "collect_from_bank": 200
+      }
+    },
+    {
+      "id": "el-f02",
+      "name": "Track Repairs",
+      "type_line": "Fortune Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-F02.webp",
+      "tags": ["fortune", "repair"],
+      "text": {
+        "card_text": "Pay ₡25 for each [House] you own. Pay ₡100 for each [Hotel] you own."
+      },
+      "stats": {
+        "deck": "Fortune",
+        "pay_per_house": 25,
+        "pay_per_hotel": 100
+      }
+    },
+    {
+      "id": "el-f03",
+      "name": "Bailiff's Summons",
+      "type_line": "Fortune Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-F03.webp",
+      "tags": ["fortune", "detour"],
+      "text": {
+        "card_text": "Go to [Detour]. Do not pass [Gate]. Do not collect ₡200.",
+        "flavor_text": "The bailiff carries one letter, and it always has your name on it."
+      },
+      "stats": {
+        "deck": "Fortune",
+        "moves_to": "Detour Yard",
+        "passes_the_gate": false
+      }
+    },
+    {
+      "id": "el-f04",
+      "name": "Street Fair Permit",
+      "type_line": "Fortune Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-F04.webp",
+      "tags": ["fortune", "collect"],
+      "text": {
+        "card_text": "Collect ₡50 from each other player."
+      },
+      "stats": {
+        "deck": "Fortune",
+        "collect_from_each_player": 50
+      }
+    },
+    {
+      "id": "el-f05",
+      "name": "Release Token — Fortune Deck",
+      "type_line": "Fortune Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-F05.webp",
+      "tags": ["fortune", "release token"],
+      "text": {
+        "card_text": "Keep this card until you use it. It frees you from [Detour] once. You may sell it to another player for any agreed price."
+      },
+      "stats": {
+        "deck": "Fortune",
+        "kept_until_used": true
+      }
+    },
+    {
+      "id": "el-f06",
+      "name": "Ride the Line",
+      "type_line": "Fortune Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-F06.webp",
+      "tags": ["fortune", "movement", "depot"],
+      "text": {
+        "card_text": "Move forward to the next [Depot]. Pay its owner twice the printed depot rent. Buy it from the Bank at the printed price when nobody owns it."
+      },
+      "stats": {
+        "deck": "Fortune",
+        "moves_to": "Next Depot",
+        "rent_multiplier": 2
+      }
+    },
+    {
+      "id": "el-l01",
+      "name": "Ledger Audit Notice",
+      "type_line": "Ledger Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-L01.webp",
+      "tags": ["ledger", "payment"],
+      "text": {
+        "card_text": "Pay ₡75 to the Bank."
+      },
+      "stats": {
+        "deck": "Ledger",
+        "pay_to_bank": 75
+      }
+    },
+    {
+      "id": "el-l02",
+      "name": "Estate Dividend",
+      "type_line": "Ledger Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-L02.webp",
+      "tags": ["ledger", "collect"],
+      "text": {
+        "card_text": "Collect ₡120 from the Bank.",
+        "flavor_text": "A good year, written in a small hand."
+      },
+      "stats": {
+        "deck": "Ledger",
+        "collect_from_bank": 120
+      }
+    },
+    {
+      "id": "el-l03",
+      "name": "Rebate on Levies",
+      "type_line": "Ledger Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-L03.webp",
+      "tags": ["ledger", "collect"],
+      "text": {
+        "card_text": "Collect ₡40 from the Bank."
+      },
+      "stats": {
+        "deck": "Ledger",
+        "collect_from_bank": 40
+      }
+    },
+    {
+      "id": "el-l04",
+      "name": "Surveyor's Fee",
+      "type_line": "Ledger Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-L04.webp",
+      "tags": ["ledger", "repair"],
+      "text": {
+        "card_text": "Pay ₡20 for each [House] you own. Pay ₡85 for each [Hotel] you own."
+      },
+      "stats": {
+        "deck": "Ledger",
+        "pay_per_house": 20,
+        "pay_per_hotel": 85
+      }
+    },
+    {
+      "id": "el-l05",
+      "name": "Depot Refund",
+      "type_line": "Ledger Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-L05.webp",
+      "tags": ["ledger", "collect", "depot"],
+      "text": {
+        "card_text": "Collect ₡25 from the Bank for each [Depot] you own."
+      },
+      "stats": {
+        "deck": "Ledger",
+        "collect_per_depot": 25
+      }
+    },
+    {
+      "id": "el-l06",
+      "name": "Release Token — Ledger Deck",
+      "type_line": "Ledger Card",
+      "set_name": "Estate Line First Printing",
+      "png_uri": "estate-line/EL-L06.webp",
+      "tags": ["ledger", "release token"],
+      "text": {
+        "card_text": "Keep this card until you use it. It frees you from [Detour] once. You may sell it to another player for any agreed price."
+      },
+      "stats": {
+        "deck": "Ledger",
+        "kept_until_used": true
+      }
+    }
+  ]
+}

@@ -11,19 +11,31 @@ GAME DATA IN THIS REPOSITORY
 rulekit reads a corpus of JSON files. It works with any rulebook, and it holds
 no knowledge of any particular game. The corpora in data/ are examples.
 
-  data/demo/       An invented game, written for this project. Dedicated to the
-                   public domain under CC0 1.0. Copy it freely.
+Four of them were written for this project and are dedicated to the public
+domain under CC0 1.0. Copy them freely:
 
-  data/riftbound/  Reference data for the Riftbound trading card game. This data
-                   is the property of Riot Games, Inc. The Apache License does
-                   NOT cover it, and this project grants no rights to it.
+  data/chess/         Chess
+  data/texas-holdem/  Texas Hold'em poker
+  data/estate-line/   An invented property trading game
+  data/demo/          An invented trading card game
+
+Every word in those four is original to this project. No rulebook, PDF, or web
+page was copied to produce them. The rules of a game are a system, and a system
+is not owned. A particular author's wording is owned, so none is reused.
+
+One corpus is not ours:
+
+  data/riftbound/     Reference data for the Riftbound trading card game. This
+                      data is the property of Riot Games, Inc. The Apache
+                      License does NOT cover it, and this project grants no
+                      rights to it.
 
 rulekit was created under Riot Games' "Legal Jibber Jabber" policy using assets
 owned by Riot Games. Riot Games does not endorse or sponsor this project.
 
 Riot's policy permits non-commercial community use only. To use rulekit
-commercially, supply your own corpus. data/demo/ is public domain and is a
-working starting point. docs/corpus-format.md states the format field by field.
+commercially, use one of the four public-domain corpora above, or supply your
+own. docs/corpus-format.md states the format field by field.
 
 Riftbound and Riot Games are trademarks of Riot Games, Inc. This project names
 them only to say which data it reads.

@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "term-castling",
+      "term": "Castling",
+      "slug": "castling",
+      "definition": "Castling is the one move that takes two pieces at the same time. The king travels two squares toward one of its own rooks along the back rank, and that rook jumps over the king and lands on the square the king crossed. A player can castle only when the king and the chosen rook have made no move, when every square between them is empty, and when the king is not in check, does not cross an attacked square, and does not land on an attacked square.",
+      "short_definition": "A single move that takes the king two squares toward a rook and puts that rook on the far side of the king.",
+      "category": "special_move",
+      "aliases": [
+        "castle",
+        "castles",
+        "O-O"
+      ],
+      "defining_rule_id": "r-300-1",
+      "defining_rule_number": "300.1"
+    },
+    {
+      "id": "term-en-passant",
+      "term": "En Passant",
+      "slug": "en-passant",
+      "definition": "En passant is a pawn capture. A pawn that stands on its fifth rank can capture an enemy pawn that has just moved two squares forward and landed beside it on the same rank. The capturing pawn lands on the square the enemy pawn crossed, and the captured pawn leaves the board from the square it stopped on. The chance lasts for one move only, and it ends as soon as the player makes any other move.",
+      "short_definition": "A capture of a pawn that has just made a two-square move, as though it had moved one square.",
+      "category": "special_move",
+      "aliases": [
+        "en passant capture",
+        "ep",
+        "e.p."
+      ],
+      "defining_rule_id": "r-300-2",
+      "defining_rule_number": "300.2"
+    },
+    {
+      "id": "term-promotion",
+      "term": "Promotion",
+      "slug": "promotion",
+      "definition": "Promotion is the change of a pawn into another piece. A pawn that reaches the far rank of the board must become a queen, a rook, a bishop, or a knight of the same colour. The choice is free and does not depend on the pieces already captured, so a player can hold more than one queen. The new piece takes effect at once and can give check on the same move.",
+      "short_definition": "The change of a pawn on the far rank into a queen, a rook, a bishop, or a knight.",
+      "category": "special_move",
+      "aliases": [
+        "promote",
+        "queening",
+        "underpromotion"
+      ],
+      "defining_rule_id": "r-300-3",
+      "defining_rule_number": "300.3"
+    },
+    {
+      "id": "term-check",
+      "term": "Check",
+      "slug": "check",
+      "definition": "A king is in check when at least one enemy piece attacks the square it stands on. The player in check must answer with the next move, and has three ways to do it: move the king to a safe square, capture the checking piece, or place a piece between the checking piece and the king. A player does not have to announce a check.",
+      "short_definition": "An enemy piece attacks the king, and the player must answer on the next move.",
+      "category": "game_state",
+      "aliases": [
+        "in check",
+        "checking move"
+      ],
+      "defining_rule_id": "r-400-1",
+      "defining_rule_number": "400.1"
+    },
+    {
+      "id": "term-checkmate",
+      "term": "Checkmate",
+      "slug": "checkmate",
+      "definition": "Checkmate is the end of a game by attack on the king. A player is checkmated when the king is in check and no legal move exists. The game ends at that moment, and the player who gave the checkmate wins. No player ever captures a king, because the game stops one move earlier.",
+      "short_definition": "The king is in check and the player has no legal move, so the game ends in a win.",
+      "category": "game_state",
+      "aliases": [
+        "mate",
+        "check mate"
+      ],
+      "defining_rule_id": "r-400-4",
+      "defining_rule_number": "400.4"
+    },
+    {
+      "id": "term-stalemate",
+      "term": "Stalemate",
+      "slug": "stalemate",
+      "definition": "Stalemate is a draw by lack of a legal move. A player is stalemated when they have no legal move and their king is not in check. The game ends at that moment, and each player scores half a point. Stalemate and checkmate differ in one point only: the king is under attack in checkmate and safe in stalemate.",
+      "short_definition": "The player to move has no legal move and is not in check, so the game is a draw.",
+      "category": "game_state",
+      "aliases": [
+        "stale mate",
+        "stalemated"
+      ],
+      "defining_rule_id": "r-500-1",
+      "defining_rule_number": "500.1"
+    },
+    {
+      "id": "term-threefold-repetition",
+      "term": "Threefold Repetition",
+      "slug": "threefold-repetition",
+      "definition": "Threefold repetition is a ground for a draw claim. A player can claim the draw when the same position appears three times with the same player to move each time. Two positions count as the same only when every piece stands on the same square, the same player has the move, the castling rights match, and the same capture en passant is available. The three appearances do not have to follow one after the other.",
+      "short_definition": "The same position appears three times with the same player to move, which allows a draw claim.",
+      "category": "draw",
+      "aliases": [
+        "three-fold repetition",
+        "repetition of position",
+        "repetition"
+      ],
+      "defining_rule_id": "r-500-3",
+      "defining_rule_number": "500.3"
+    },
+    {
+      "id": "term-fifty-move-rule",
+      "term": "Fifty-Move Rule",
+      "slug": "fifty-move-rule",
+      "definition": "The fifty-move rule is a ground for a draw claim. A player can claim the draw when each player has made fifty moves in a row with no capture and no pawn move. Any capture resets the count to zero, and any pawn move resets the count to zero. The scoresheet holds the proof of the count.",
+      "short_definition": "Fifty moves by each player with no capture and no pawn move, which allows a draw claim.",
+      "category": "draw",
+      "aliases": [
+        "50-move rule",
+        "50 move draw"
+      ],
+      "defining_rule_id": "r-500-4",
+      "defining_rule_number": "500.4"
+    },
+    {
+      "id": "term-dead-position",
+      "term": "Dead Position",
+      "slug": "dead-position",
+      "definition": "A position is dead when no series of legal moves can produce a checkmate for either player. The game is a draw at that moment. King against king is dead, and so is king and bishop against king, and king and knight against king. King and bishop against king and bishop is dead when both bishops travel on squares of the same colour.",
+      "short_definition": "Neither player can reach a checkmate by any legal series of moves, so the game is a draw.",
+      "category": "draw",
+      "aliases": [
+        "insufficient material",
+        "insufficient mating material"
+      ],
+      "defining_rule_id": "r-500-5",
+      "defining_rule_number": "500.5"
+    },
+    {
+      "id": "term-perpetual-check",
+      "term": "Perpetual Check",
+      "slug": "perpetual-check",
+      "definition": "Perpetual check names a sequence in which one player gives check on every move and the opponent has no way out. It is not a separate way to end a game. The game ends as a draw through the repetition of the position or through the fifty-move count, and the player who wants the draw claims it under one of those rules.",
+      "short_definition": "An endless sequence of checks, which ends the game as a draw under the repetition rule or the fifty-move rule.",
+      "category": "draw",
+      "aliases": [
+        "perpetual",
+        "endless check"
+      ],
+      "defining_rule_id": "r-500-6",
+      "defining_rule_number": "500.6"
+    },
+    {
+      "id": "term-zugzwang",
+      "term": "Zugzwang",
+      "slug": "zugzwang",
+      "definition": "Zugzwang names a position in which a player would prefer to pass, but the rules give no such option. A player must move on their turn, and every legal move damages their own position. The word comes from the obligation to move, and the effect appears most often in endings with few pieces.",
+      "short_definition": "Every legal move damages the player's position, and the rules still force a move.",
+      "category": "position",
+      "aliases": [
+        "compulsion to move",
+        "obligation to move"
+      ],
+      "defining_rule_id": "r-100-6",
+      "defining_rule_number": "100.6"
+    },
+    {
+      "id": "term-fork",
+      "term": "Fork",
+      "slug": "fork",
+      "definition": "A fork is one move that attacks two or more enemy pieces at the same time. The defender can save one piece and loses another, unless a single answer meets both threats. A knight makes a fork often, because it attacks squares that no other piece defends easily, and a fork on the king forces the answer.",
+      "short_definition": "One piece attacks two or more enemy pieces at the same time.",
+      "category": "tactic",
+      "aliases": [
+        "double attack",
+        "forking"
+      ],
+      "defining_rule_id": "r-200-8",
+      "defining_rule_number": "200.8"
+    },
+    {
+      "id": "term-pin",
+      "term": "Pin",
+      "slug": "pin",
+      "definition": "A pin holds an enemy piece on a line. A queen, a rook, or a bishop attacks along the line, an enemy piece stands on that line, and a second enemy piece stands behind it. When the piece behind is the king, the piece in front cannot move at all, because that move would leave the king in check. When the piece behind is worth more than the piece in front, the move is legal but costly.",
+      "short_definition": "A piece cannot leave a line, because a more valuable piece stands behind it.",
+      "category": "tactic",
+      "aliases": [
+        "pinned piece",
+        "absolute pin",
+        "relative pin"
+      ],
+      "defining_rule_id": "r-200-8-a",
+      "defining_rule_number": "200.8.a"
+    },
+    {
+      "id": "term-skewer",
+      "term": "Skewer",
+      "slug": "skewer",
+      "definition": "A skewer attacks two enemy pieces on one line, with the more valuable piece in front. The piece in front moves away from the attack, and the attacker then captures the piece behind it. A skewer is the reverse of a pin, because a pin puts the more valuable piece behind.",
+      "short_definition": "An attack along a line that drives a valuable piece away and wins the piece behind it.",
+      "category": "tactic",
+      "aliases": [
+        "x-ray attack",
+        "reverse pin"
+      ],
+      "defining_rule_id": "r-200-8-a",
+      "defining_rule_number": "200.8.a"
+    },
+    {
+      "id": "term-discovered-attack",
+      "term": "Discovered Attack",
+      "slug": "discovered-attack",
+      "definition": "A discovered attack opens a line when a piece moves out of the way. A queen, a rook, or a bishop stands behind the piece that moves, and its attack starts the moment the line is clear. The piece that moved can make a threat of its own, so the opponent faces two threats together. A discovered attack on the king is a discovered check, and a check from both pieces is a double check.",
+      "short_definition": "A piece moves away and opens the attack of a long-range piece behind it.",
+      "category": "tactic",
+      "aliases": [
+        "discovery",
+        "discovered check",
+        "revealed attack"
+      ],
+      "defining_rule_id": "r-200-8-b",
+      "defining_rule_number": "200.8.b"
+    },
+    {
+      "id": "term-touch-move",
+      "term": "Touch-Move",
+      "slug": "touch-move",
+      "definition": "Touch-move is the rule that binds a player to the piece they touch. A player who touches one of their own pieces on purpose must move that piece, when a legal move for it exists. A player who touches an enemy piece on purpose must capture it, when a legal capture exists. A player who only wants to place a piece neatly in the centre of its square announces that before the touch, and must have the move at that time.",
+      "short_definition": "A player who touches a piece on purpose must move it or capture it, when a legal move exists.",
+      "category": "conduct",
+      "aliases": [
+        "touch move rule",
+        "j'adoube",
+        "i adjust"
+      ],
+      "defining_rule_id": "r-800-1",
+      "defining_rule_number": "800.1"
+    },
+    {
+      "id": "term-algebraic-notation",
+      "term": "Algebraic Notation",
+      "slug": "algebraic-notation",
+      "definition": "Algebraic notation is the written form of a chess move. It names each square with a file letter from a to h and a rank number from 1 to 8. A move gives the letter of the piece, then the end square, with K, Q, R, B, and N for the pieces and no letter for a pawn. The sign x marks a capture, a plus sign marks a check, and a hash sign marks a checkmate.",
+      "short_definition": "The written form of a move, built from a file letter, a rank number, and a piece letter.",
+      "category": "notation",
+      "aliases": [
+        "san",
+        "standard algebraic notation",
+        "chess notation"
+      ],
+      "defining_rule_id": "r-700-1",
+      "defining_rule_number": "700.1"
+    },
+    {
+      "id": "term-rank",
+      "term": "Rank",
+      "slug": "rank",
+      "definition": "A rank is a row of eight squares that runs from one player's left to that player's right. The board holds eight ranks, and they carry the numbers 1 to 8, counted from the side White starts on. A rook and a queen move along a rank.",
+      "short_definition": "A row of eight squares across the board, numbered 1 to 8.",
+      "category": "board",
+      "aliases": [
+        "row",
+        "horizontal line"
+      ],
+      "defining_rule_id": "r-100-1-b",
+      "defining_rule_number": "100.1.b"
+    },
+    {
+      "id": "term-file",
+      "term": "File",
+      "slug": "file",
+      "definition": "A file is a column of eight squares that runs from one player toward the other. The board holds eight files, and they carry the letters a to h, counted from White's left to White's right. A rook and a queen move along a file.",
+      "short_definition": "A column of eight squares up the board, lettered a to h.",
+      "category": "board",
+      "aliases": [
+        "column",
+        "vertical line"
+      ],
+      "defining_rule_id": "r-100-1-c",
+      "defining_rule_number": "100.1.c"
+    },
+    {
+      "id": "term-diagonal",
+      "term": "Diagonal",
+      "slug": "diagonal",
+      "definition": "A diagonal is a line of squares of one colour that touch only at their corners. A diagonal holds from two to eight squares. A bishop moves along a diagonal and therefore stays on one square colour for the whole game. A queen moves along a diagonal as well as along a rank and a file.",
+      "short_definition": "A line of same-colour squares that meet at their corners.",
+      "category": "board",
+      "aliases": [
+        "slanting line",
+        "corner to corner line"
+      ],
+      "defining_rule_id": "r-100-1-d",
+      "defining_rule_number": "100.1.d"
+    },
+    {
+      "id": "term-flag-fall",
+      "term": "Flag Fall",
+      "slug": "flag-fall",
+      "definition": "The flag fall is the moment a player's clock reaches zero. That player loses the game, as long as the opponent or the arbiter points it out. The player does not lose when the opponent has no series of legal moves that could produce a checkmate; the game is a draw in that case.",
+      "short_definition": "The moment a player's time reaches zero, which usually loses the game.",
+      "category": "clock",
+      "aliases": [
+        "time forfeit",
+        "loss on time",
+        "flagging"
+      ],
+      "defining_rule_id": "r-600-3",
+      "defining_rule_number": "600.3"
+    },
+    {
+      "id": "term-scoresheet",
+      "term": "Scoresheet",
+      "slug": "scoresheet",
+      "definition": "A scoresheet is the written record of a game. Each player writes both moves of every turn on it as the game goes on, with a number for each turn and White's move before Black's move. A claim for a draw by repetition or by the fifty-move count rests on the scoresheet, and the arbiter reads it to settle a dispute.",
+      "short_definition": "The written record of every move of a game, which a draw claim rests on.",
+      "category": "notation",
+      "aliases": [
+        "score sheet",
+        "game record",
+        "move record"
+      ],
+      "defining_rule_id": "r-700-8",
+      "defining_rule_number": "700.8"
+    }
+  ]
+}

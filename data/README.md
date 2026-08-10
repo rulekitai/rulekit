@@ -1,18 +1,29 @@
 # data
 
 **rulekit works with any rulebook.** It holds no knowledge of any particular
-game, and it reads whichever corpus you point it at. The directories here are
-examples, and one of them is the shape the format is documented against.
+game. It reads whichever corpus you point it at, and the directories here are
+examples.
 
-Each corpus carries its own terms, because each one comes from somewhere
-different. Read the table before you copy anything.
+They are deliberately unalike. A card game, an abstract board game, a property
+board game, and a betting card game read the same way, through the same format,
+with no code change between them. That is the claim this directory exists to
+prove.
 
-| Directory | What it holds | Terms |
-|---|---|---|
-| `demo/` | An invented game, Paper Kingdoms, written for this project | **CC0 1.0.** Public domain. Copy it freely. |
-| `riftbound/` | Reference data for the Riftbound trading card game | **Riot Games' property.** No rights granted. See below. |
+| Directory | The game | Cards | Terms |
+|---|---|---|---|
+| `demo/` | An invented trading card game | Yes | **CC0 1.0.** Public domain. |
+| `chess/` | Chess | No | **CC0 1.0.** Written for this project. |
+| `estate-line/` | An invented property trading game | Yes, and they are not trading cards | **CC0 1.0.** Written for this project. |
+| `texas-holdem/` | Texas Hold'em poker | No | **CC0 1.0.** Written for this project. |
+| `riftbound/` | Riftbound trading card game | Yes | **Riot Games' property.** No rights granted. |
 
-The tests read `demo/`, so no test depends on data this project does not own.
+Four of the five carry no third-party rights at all. The tests read `demo/`, so
+no test depends on data this project does not own.
+
+**Every word in the four CC0 corpora is original.** This project copied no
+rulebook, no PDF, and no web page to produce them. The rules of chess and of
+poker are systems, and a system is not owned. A particular author's wording is
+owned, so none is reused here.
 
 ## The Apache licence does not cover this directory
 
@@ -21,7 +32,7 @@ The `LICENSE` file at the root of this repository covers the code in
 
 A licence file at the root of a repository reads as though it covers everything
 beside it. This project cannot license a corpus that is not its own, so this
-statement sets the boundary.
+statement sets the boundary. Each corpus above states its own terms.
 
 ## Riftbound
 
@@ -31,8 +42,8 @@ rulekit was created under Riot Games' "Legal Jibber Jabber" policy using assets
 owned by Riot Games. Riot Games does not endorse or sponsor this project.
 
 **That policy permits non-commercial community use only.** To use rulekit in a
-commercial product, supply your own corpus. `demo/` is public domain and works
-as a starting point.
+commercial product, use one of the four public-domain corpora above, or supply
+your own.
 
 Riftbound and Riot Games are trademarks of Riot Games, Inc. This project names
 them only to say which data it reads.
@@ -48,5 +59,5 @@ pnpm rulekit validate data/<your-game>
 pnpm rulekit build data/<your-game>
 ```
 
-`docs/corpus-format.md` states each field. `demo/` is a complete example that
-you can copy, and its licence lets you.
+`docs/corpus-format.md` states each field. Any of the four public-domain corpora
+is a complete example that you can copy, and its licence lets you.

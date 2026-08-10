@@ -1,0 +1,99 @@
+{
+  "game": {
+    "name": "Estate Line",
+    "slug": "estate-line",
+    "description": "Estate Line is an invented property trading board game. Players move around a board of 44 spaces, buy streets, depots and works properties, build houses and hotels, and charge each other rent until one player is left."
+  },
+  "vocabulary": [
+    {
+      "use": "Crown",
+      "insteadOf": ["dollar", "pound", "coin"],
+      "means": "It names the money of Estate Line. The symbol is ₡."
+    },
+    {
+      "use": "full district",
+      "insteadOf": ["colour group", "color set", "property set"],
+      "means": "It names every property of one colour, owned by one player."
+    },
+    {
+      "use": "Detour Yard",
+      "insteadOf": ["jail", "prison"],
+      "means": "It names the corner space that holds a player out of play."
+    },
+    {
+      "use": "works property",
+      "insteadOf": ["utility"],
+      "means": "It names the City Reservoir or the Power Exchange."
+    },
+    {
+      "use": "depot",
+      "insteadOf": ["station", "railroad"],
+      "means": "It names a transit property. The board holds four."
+    },
+    {
+      "use": "The Gate",
+      "insteadOf": ["start", "go"],
+      "means": "It names the start space. A player who passes it collects ₡200."
+    }
+  ],
+  "cards": {
+    "enabled": true,
+    "linkScheme": "card",
+    "maxInlineImages": 2,
+    "textFields": [
+      {
+        "field": "deed_text",
+        "describes": "the head of a title deed, holding the property name, the district, the price, and the mortgage value"
+      },
+      {
+        "field": "rent_text",
+        "describes": "the rent table on a title deed, holding every rent line and the building costs"
+      },
+      {
+        "field": "card_text",
+        "describes": "the text box on a Fortune card or a Ledger card, holding the instruction the player follows"
+      },
+      {
+        "field": "flavor_text",
+        "describes": "a printed line of colour text that carries no rule"
+      }
+    ]
+  },
+  "tokens": {
+    "syntax": "[House] or [Depot]",
+    "groups": [
+      { "label": "Buildings", "examples": ["[House]", "[Hotel]"] },
+      { "label": "Board spaces", "examples": ["[Gate]", "[Detour]", "[Commons]", "[Depot]", "[Works]"] },
+      {
+        "label": "Districts",
+        "examples": [
+          "[Umber]",
+          "[Sky]",
+          "[Rose]",
+          "[Amber]",
+          "[Crimson]",
+          "[Saffron]",
+          "[Verdant]",
+          "[Ivory]"
+        ]
+      }
+    ]
+  },
+  "scope": {
+    "answer": [
+      "Rule text and rule numbers.",
+      "A property's price, rent lines, building costs, district, and mortgage value.",
+      "What a Fortune card or a Ledger card instructs a player to do.",
+      "Defined terms, such as rent, mortgage, full district, and the even build rule.",
+      "Rule structure: parent rules, sub-rules, related rules, and rulebook sections."
+    ],
+    "refuse": []
+  },
+  "extraGuidance": [
+    "The symbol ₡ is the Crown, the money of Estate Line. Write amounts as ₡200 or as 200 Crowns. Never write a real-world currency symbol.",
+    "A property card prints its text in two boxes. `deed_text` holds the price, the district, and the mortgage value. `rent_text` holds every rent line and the building costs. Read both before you state what a property charges, and never conclude from `deed_text` alone that a card prints no rent.",
+    "Property cards carry no rarity, because Estate Line prints one copy of each deed. Do not report a rarity for them.",
+    "Property `stats` differ by property type. A street prints `rent_base` through `rent_with_hotel` plus `house_cost`. A depot prints `rent_one_depot` through `rent_four_depots` and no house cost. A works property prints `rent_multiplier_one_works` and `rent_multiplier_both_works`. Read the keys the card carries, and do not expect the keys of another type.",
+    "Estate Line has one rulebook, the Official Rules. Section 950 follows section 900, and both are current."
+  ]
+}

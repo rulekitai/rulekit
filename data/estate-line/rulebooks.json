@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "book-estate-line",
+      "name": "Estate Line Official Rules",
+      "slug": "official-rules",
+      "version": "2.0",
+      "effective_date": "2026-04-01",
+      "is_active": true
+    }
+  ]
+}

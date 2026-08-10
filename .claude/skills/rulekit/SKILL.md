@@ -42,8 +42,13 @@ cat data/*/profile.json   # whether a profile already exists
 node --version            # 22.5 or newer
 ```
 
-**A Riftbound app needs no corpus work.** `data/riftbound/` holds the rules,
-the cards, and the profile. Point at it and skip `rulekit-corpus`.
+**Five corpora already ship**, so most apps need no corpus work: `riftbound`,
+`chess`, `texas-holdem`, `estate-line`, and `demo`. Point at one and skip
+`rulekit-corpus`.
+
+**Four of the five are public domain.** `riftbound` is Riot Games' property and
+permits non-commercial use only, so a commercial app must use one of the others
+or supply its own corpus.
 
 ## The shape of a finished integration
 

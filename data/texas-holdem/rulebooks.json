@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "book-holdem",
+      "name": "Texas Hold'em House Rules",
+      "slug": "house-rules",
+      "version": "1.0",
+      "effective_date": "2026-01-01",
+      "is_active": true
+    }
+  ]
+}

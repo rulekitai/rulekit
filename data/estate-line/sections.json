@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "sec-100",
+      "rule_book_id": "book-estate-line",
+      "section_number": "100",
+      "title": "Components and Setup",
+      "slug": "components-and-setup",
+      "description": "The board, the money, the Banker, and the steps that start a game.",
+      "display_order": 0
+    },
+    {
+      "id": "sec-200",
+      "rule_book_id": "book-estate-line",
+      "section_number": "200",
+      "title": "The Turn",
+      "slug": "the-turn",
+      "description": "Turn order, the dice, doubles, and the spaces that are not properties.",
+      "display_order": 1
+    },
+    {
+      "id": "sec-300",
+      "rule_book_id": "book-estate-line",
+      "section_number": "300",
+      "title": "Buying Property",
+      "slug": "buying-property",
+      "description": "Buying from the Bank, the auction, title deeds, and full districts.",
+      "display_order": 2
+    },
+    {
+      "id": "sec-400",
+      "rule_book_id": "book-estate-line",
+      "section_number": "400",
+      "title": "Rent",
+      "slug": "rent",
+      "description": "Who pays rent, how much, and when a property charges nothing.",
+      "display_order": 3
+    },
+    {
+      "id": "sec-500",
+      "rule_book_id": "book-estate-line",
+      "section_number": "500",
+      "title": "Building",
+      "slug": "building",
+      "description": "Houses, hotels, the even build rule, and the limited supply.",
+      "display_order": 4
+    },
+    {
+      "id": "sec-600",
+      "rule_book_id": "book-estate-line",
+      "section_number": "600",
+      "title": "Fortune and Ledger Cards",
+      "slug": "fortune-and-ledger-cards",
+      "description": "The two decks, and what each kind of card does.",
+      "display_order": 5
+    },
+    {
+      "id": "sec-700",
+      "rule_book_id": "book-estate-line",
+      "section_number": "700",
+      "title": "The Detour Yard",
+      "slug": "the-detour-yard",
+      "description": "How a player is sent to the yard, and the three ways out.",
+      "display_order": 6
+    },
+    {
+      "id": "sec-800",
+      "rule_book_id": "book-estate-line",
+      "section_number": "800",
+      "title": "Trading",
+      "slug": "trading",
+      "description": "Deals between players, and what a player may hand over.",
+      "display_order": 7
+    },
+    {
+      "id": "sec-900",
+      "rule_book_id": "book-estate-line",
+      "section_number": "900",
+      "title": "Mortgage and Bankruptcy",
+      "slug": "mortgage-and-bankruptcy",
+      "description": "Raising money against a deed, and leaving the game with none.",
+      "display_order": 8
+    },
+    {
+      "id": "sec-950",
+      "rule_book_id": "book-estate-line",
+      "section_number": "950",
+      "title": "Winning the Game",
+      "slug": "winning-the-game",
+      "description": "The long game, the short game, and a shared win.",
+      "display_order": 9
+    }
+  ]
+}

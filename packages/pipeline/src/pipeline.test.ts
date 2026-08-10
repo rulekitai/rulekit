@@ -121,6 +121,23 @@ describe("the glossary trigger", () => {
     assert.equal(definitionSubject("Fade"), "fade")
   })
 
+  test("drops the article a reader puts in front of a term", () => {
+    // The article belongs to the sentence, not to the term. Stripping only
+    // "the" answered "what is the button" and refused "what is a kicker",
+    // which reached the store as "a kicker" and matched nothing.
+    assert.equal(definitionSubject("what is a kicker"), "kicker")
+    assert.equal(definitionSubject("what is an ability"), "ability")
+    assert.equal(definitionSubject("what is the button"), "button")
+    assert.equal(definitionSubject("define a fork"), "fork")
+  })
+
+  test("keeps an article that is part of the term", () => {
+    // "a" only goes when it is the leading word. A term that merely starts
+    // with those letters must survive intact.
+    assert.equal(definitionSubject("what is anteing"), "anteing")
+    assert.equal(definitionSubject("what is theft"), "theft")
+  })
+
   test("leaves a reasoning question alone", () => {
     // A question that merely mentions a keyword must fall through. The
     // definition alone answers it wrongly.

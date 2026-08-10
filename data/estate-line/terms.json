@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "term-rent",
+      "term": "Rent",
+      "slug": "rent",
+      "definition": "Rent is the money a player pays to the owner of the property they land on. The title deed states the amount. The owner must ask for the rent before the next player rolls.",
+      "short_definition": "The money a player pays the owner of the property they land on.",
+      "category": "core_term",
+      "aliases": [
+        "rent payment",
+        "rents"
+      ],
+      "defining_rule_id": "r-400-1",
+      "defining_rule_number": "400.1"
+    },
+    {
+      "id": "term-base-rent",
+      "term": "Base Rent",
+      "slug": "base-rent",
+      "definition": "Base rent is the rent an undeveloped property charges. The title deed prints it as the first rent line. A property in a full district charges twice the base rent.",
+      "short_definition": "The first rent line on a title deed, charged by an undeveloped property.",
+      "category": "core_term",
+      "aliases": [
+        "printed rent",
+        "undeveloped rent"
+      ],
+      "defining_rule_id": "r-400-2",
+      "defining_rule_number": "400.2"
+    },
+    {
+      "id": "term-mortgage",
+      "term": "Mortgage",
+      "slug": "mortgage",
+      "definition": "A mortgage is a loan the Bank makes against one title deed. The Bank pays the mortgage value the deed prints, and the owner turns that deed face down. A mortgaged property charges no rent. The owner lifts the mortgage by paying the mortgage value plus ten per cent of that value.",
+      "short_definition": "A loan from the Bank against one title deed. The property then charges no rent.",
+      "category": "core_term",
+      "aliases": [
+        "mortgaged",
+        "mortgage value"
+      ],
+      "defining_rule_id": "r-900-1",
+      "defining_rule_number": "900.1"
+    },
+    {
+      "id": "term-full-district",
+      "term": "Full District",
+      "slug": "full-district",
+      "definition": "A district is a set of properties that print the same colour. A player holds a full district when they own every property of that colour. A full district doubles the base rent on each undeveloped property in it, and it opens building.",
+      "short_definition": "Every property of one colour, owned by one player.",
+      "category": "core_term",
+      "aliases": [
+        "colour group",
+        "color group"
+      ],
+      "defining_rule_id": "r-300-4",
+      "defining_rule_number": "300.4"
+    },
+    {
+      "id": "term-auction",
+      "term": "Auction",
+      "slug": "auction",
+      "definition": "An auction is a sale to the highest bidder. A player who declines to buy a property sends it to auction at once. Bidding starts at 10 Crowns, and every player may bid. The highest bidder pays the Bank and takes the title deed.",
+      "short_definition": "A sale to the highest bidder, called when a player declines to buy.",
+      "category": "core_term",
+      "aliases": [
+        "bidding",
+        "bid"
+      ],
+      "defining_rule_id": "r-300-2",
+      "defining_rule_number": "300.2"
+    },
+    {
+      "id": "term-bankruptcy",
+      "term": "Bankruptcy",
+      "slug": "bankruptcy",
+      "definition": "Bankruptcy is the state of a player who owes more than everything they hold is worth. A bankrupt player leaves the game at once and hands over all their money and title deeds.",
+      "short_definition": "The state of a player who cannot pay a debt. That player leaves the game.",
+      "category": "core_term",
+      "aliases": [
+        "bankrupt",
+        "going bankrupt"
+      ],
+      "defining_rule_id": "r-900-5",
+      "defining_rule_number": "900.5"
+    },
+    {
+      "id": "term-detour-yard",
+      "term": "Detour Yard",
+      "slug": "detour-yard",
+      "definition": "The Detour Yard is the corner space that holds a player out of play. A player goes there from Bailiff's Corner, from a card, or after three doubles in one turn. A player leaves by rolling doubles, by paying 50 Crowns, or by using a Release Token.",
+      "short_definition": "The corner space that holds a player out of play.",
+      "category": "board_space",
+      "aliases": [
+        "a detour",
+        "detour",
+        "jail"
+      ],
+      "defining_rule_id": "r-700-1",
+      "defining_rule_number": "700.1"
+    },
+    {
+      "id": "term-house",
+      "term": "House",
+      "slug": "house",
+      "definition": "A house is the first improvement a property can carry. A player who holds a full district may buy houses for it at the price the title deed prints. No property may carry more than four houses.",
+      "short_definition": "The first improvement a property can carry. Four is the limit.",
+      "category": "improvement",
+      "aliases": [
+        "houses",
+        "cottage"
+      ],
+      "defining_rule_id": "r-500-1",
+      "defining_rule_number": "500.1"
+    },
+    {
+      "id": "term-hotel",
+      "term": "Hotel",
+      "slug": "hotel",
+      "definition": "A hotel is the second improvement a property can carry. A player who holds four houses on one property may buy a hotel for it. The player returns the four houses to the Bank and pays the printed hotel price. No property may carry more than one hotel.",
+      "short_definition": "The second improvement, bought after four houses. One is the limit.",
+      "category": "improvement",
+      "aliases": [
+        "hotels",
+        "manor"
+      ],
+      "defining_rule_id": "r-500-3",
+      "defining_rule_number": "500.3"
+    },
+    {
+      "id": "term-title-deed",
+      "term": "Title Deed",
+      "slug": "title-deed",
+      "definition": "A title deed is the card that proves ownership of one property. It prints the price, every rent line, the building costs, and the mortgage value. A player keeps each deed face up until they mortgage it, trade it, or lose it.",
+      "short_definition": "The card that proves ownership of one property.",
+      "category": "component",
+      "aliases": [
+        "deed",
+        "deed card"
+      ],
+      "defining_rule_id": "r-300-3",
+      "defining_rule_number": "300.3"
+    },
+    {
+      "id": "term-the-commons",
+      "term": "The Commons",
+      "slug": "the-commons",
+      "definition": "The Commons is a rest space. A player who lands on The Commons takes no action. That player pays nothing and collects nothing.",
+      "short_definition": "A rest space. A player who lands on it takes no action.",
+      "category": "board_space",
+      "aliases": [
+        "commons",
+        "a commons",
+        "rest space"
+      ],
+      "defining_rule_id": "r-200-4",
+      "defining_rule_number": "200.4"
+    },
+    {
+      "id": "term-doubles",
+      "term": "Doubles",
+      "slug": "doubles",
+      "definition": "A roll shows doubles when both dice show the same number. A player who rolls doubles moves, acts on the space, and then rolls again. Three doubles in one turn sends the player to the Detour Yard.",
+      "short_definition": "A roll where both dice show the same number.",
+      "category": "core_term",
+      "aliases": [
+        "a double",
+        "double roll",
+        "doubles roll"
+      ],
+      "defining_rule_id": "r-200-3",
+      "defining_rule_number": "200.3"
+    },
+    {
+      "id": "term-crown",
+      "term": "Crown",
+      "slug": "crown",
+      "definition": "The Crown is the money of Estate Line. The Bank gives each player 1500 Crowns at the start of the game. Every price, rent, and levy in the rules is an amount of Crowns.",
+      "short_definition": "The money of Estate Line.",
+      "category": "component",
+      "aliases": [
+        "crowns",
+        "money"
+      ],
+      "defining_rule_id": "r-100-2",
+      "defining_rule_number": "100.2"
+    },
+    {
+      "id": "term-the-gate",
+      "term": "The Gate",
+      "slug": "the-gate",
+      "definition": "The Gate is the start space. Every player begins on it. A player who passes The Gate or lands on it collects 200 Crowns from the Bank, once for each pass.",
+      "short_definition": "The start space. Passing it pays 200 Crowns.",
+      "category": "board_space",
+      "aliases": [
+        "gate",
+        "a gate",
+        "start space"
+      ],
+      "defining_rule_id": "r-100-4",
+      "defining_rule_number": "100.4"
+    },
+    {
+      "id": "term-depot",
+      "term": "Depot",
+      "slug": "depot",
+      "definition": "A depot is a transit property. The board holds four depots. A depot carries no houses and no hotels. It charges 30 Crowns while its owner holds one depot, 60 Crowns for two, 120 Crowns for three, and 240 Crowns for all four.",
+      "short_definition": "A transit property. Its rent rises with the number of depots one owner holds.",
+      "category": "property_type",
+      "aliases": [
+        "depots",
+        "transit property"
+      ],
+      "defining_rule_id": "r-300-5",
+      "defining_rule_number": "300.5"
+    },
+    {
+      "id": "term-works-property",
+      "term": "Works Property",
+      "slug": "works-property",
+      "definition": "The City Reservoir and the Power Exchange are works properties. A works property carries no houses and no hotels. It charges four times the roll while its owner holds one works property, and twelve times the roll while its owner holds both.",
+      "short_definition": "The City Reservoir or the Power Exchange. Its rent follows the roll.",
+      "category": "property_type",
+      "aliases": [
+        "works",
+        "utility"
+      ],
+      "defining_rule_id": "r-300-6",
+      "defining_rule_number": "300.6"
+    },
+    {
+      "id": "term-banker",
+      "term": "Banker",
+      "slug": "banker",
+      "definition": "The Banker is the player who holds the Bank's money, the unsold title deeds, the houses, and the hotels. The Banker keeps that property apart from their own. The Bank never runs out of money.",
+      "short_definition": "The player who holds the Bank's money, deeds, and buildings.",
+      "category": "role",
+      "aliases": [
+        "the bank",
+        "bank"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-fortune-card",
+      "term": "Fortune Card",
+      "slug": "fortune-card",
+      "definition": "A Fortune card is a card from the Fortune deck. A player who lands on a Fortune space draws the top card, reads it aloud, and follows it at once. Fortune cards move a player, pay a player, or charge a player.",
+      "short_definition": "A card from the Fortune deck, drawn on a Fortune space.",
+      "category": "card_type",
+      "aliases": [
+        "fortune deck",
+        "fortune"
+      ],
+      "defining_rule_id": "r-600-1",
+      "defining_rule_number": "600.1"
+    },
+    {
+      "id": "term-ledger-card",
+      "term": "Ledger Card",
+      "slug": "ledger-card",
+      "definition": "A Ledger card is a card from the Ledger deck. A player who lands on a Ledger space draws the top card, reads it aloud, and follows it at once. Ledger cards mostly pay money to a player or charge money from a player.",
+      "short_definition": "A card from the Ledger deck, drawn on a Ledger space.",
+      "category": "card_type",
+      "aliases": [
+        "ledger deck",
+        "ledger"
+      ],
+      "defining_rule_id": "r-600-1",
+      "defining_rule_number": "600.1"
+    },
+    {
+      "id": "term-even-build-rule",
+      "term": "Even Build Rule",
+      "slug": "even-build-rule",
+      "definition": "The even build rule spreads houses across a district. No property may carry two more houses than another property in the same district. A player who sells houses also sells them evenly.",
+      "short_definition": "Houses spread evenly. No property leads another by two houses.",
+      "category": "core_term",
+      "aliases": [
+        "even build",
+        "level building"
+      ],
+      "defining_rule_id": "r-500-2",
+      "defining_rule_number": "500.2"
+    },
+    {
+      "id": "term-release-token",
+      "term": "Release Token",
+      "slug": "release-token",
+      "definition": "A Release Token is a card that frees a player from the Detour Yard once. The player uses it before they roll, and then returns it to the bottom of its deck. A player may sell a Release Token to another player for any agreed price.",
+      "short_definition": "A card that frees a player from the Detour Yard once.",
+      "category": "card_type",
+      "aliases": [
+        "release card",
+        "pardon"
+      ],
+      "defining_rule_id": "r-700-4",
+      "defining_rule_number": "700.4"
+    },
+    {
+      "id": "term-levy",
+      "term": "Levy",
+      "slug": "levy",
+      "definition": "A levy is a payment to the Bank. A player who lands on a levy space pays the printed amount. The City Levy costs 220 Crowns, and the Ledger Audit costs 120 Crowns.",
+      "short_definition": "A payment to the Bank, charged by a levy space.",
+      "category": "board_space",
+      "aliases": [
+        "levies",
+        "tax"
+      ],
+      "defining_rule_id": "r-200-5",
+      "defining_rule_number": "200.5"
+    },
+    {
+      "id": "term-bailiffs-corner",
+      "term": "Bailiff's Corner",
+      "slug": "bailiffs-corner",
+      "definition": "Bailiff's Corner is the corner space opposite the Detour Yard. A player who lands on it goes at once to the Detour Yard. That player passes no space and collects no 200 Crowns.",
+      "short_definition": "The corner space that sends a player to the Detour Yard.",
+      "category": "board_space",
+      "aliases": [
+        "a bailiffs corner",
+        "bailiff",
+        "bailiff space"
+      ],
+      "defining_rule_id": "r-200-6",
+      "defining_rule_number": "200.6"
+    }
+  ]
+}

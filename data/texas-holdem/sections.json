@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "sec-100",
+      "rule_book_id": "book-holdem",
+      "section_number": "100",
+      "title": "The Deck and the Deal",
+      "slug": "the-deck-and-the-deal",
+      "description": "The pack, the hole cards, the board, the burn card, and the chips a player may bet.",
+      "display_order": 0
+    },
+    {
+      "id": "sec-200",
+      "rule_book_id": "book-holdem",
+      "section_number": "200",
+      "title": "Blinds, the Button, and Position",
+      "slug": "blinds-button-position",
+      "description": "The forced bets, the disc that marks the deal, and the order players act in.",
+      "display_order": 1
+    },
+    {
+      "id": "sec-300",
+      "rule_book_id": "book-holdem",
+      "section_number": "300",
+      "title": "The Betting Rounds",
+      "slug": "the-betting-rounds",
+      "description": "Pre-flop, the flop, the turn, and the river, and how each round ends.",
+      "display_order": 2
+    },
+    {
+      "id": "sec-400",
+      "rule_book_id": "book-holdem",
+      "section_number": "400",
+      "title": "Betting Actions",
+      "slug": "betting-actions",
+      "description": "Check, bet, call, raise, and fold, and the limits on each of them.",
+      "display_order": 3
+    },
+    {
+      "id": "sec-500",
+      "rule_book_id": "book-holdem",
+      "section_number": "500",
+      "title": "All-In Play and Side Pots",
+      "slug": "all-in-and-side-pots",
+      "description": "What happens when a player runs out of chips, and how the pots divide.",
+      "display_order": 4
+    },
+    {
+      "id": "sec-600",
+      "rule_book_id": "book-holdem",
+      "section_number": "600",
+      "title": "The Showdown",
+      "slug": "the-showdown",
+      "description": "Who shows first, which hand wins, and how a tied pot divides.",
+      "display_order": 5
+    },
+    {
+      "id": "sec-700",
+      "rule_book_id": "book-holdem",
+      "section_number": "700",
+      "title": "Hand Rankings",
+      "slug": "hand-rankings",
+      "description": "The ten ranks of five-card hand, from the strongest down to the weakest.",
+      "display_order": 6
+    },
+    {
+      "id": "sec-800",
+      "rule_book_id": "book-holdem",
+      "section_number": "800",
+      "title": "Irregularities",
+      "slug": "irregularities",
+      "description": "Dead hands, misdeals, exposed cards, and who settles a dispute.",
+      "display_order": 7
+    },
+    {
+      "id": "sec-900",
+      "rule_book_id": "book-holdem",
+      "section_number": "900",
+      "title": "Tournament Play",
+      "slug": "tournament-play",
+      "description": "The rules that apply only when players compete for a fixed prize pool.",
+      "display_order": 8
+    }
+  ]
+}

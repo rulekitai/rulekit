@@ -22,8 +22,10 @@ correct one of the other five.
 
 1. **Nothing is published to npm.** Fork this repository, or copy `packages/`
    into another one.
-2. **A Riftbound application writes no corpus.** `data/riftbound/` already holds
-   the rules, the cards, and the profile.
+2. **Five corpora already ship**, so check before writing one: `riftbound`,
+   `chess`, `texas-holdem`, `estate-line`, and `demo`. Four of the five are
+   public domain. `riftbound` is Riot Games' property and permits
+   non-commercial use only.
 3. **`corpus.db` is not in version control.** The command `rulekit build <dir>`
    writes it from the JSON beside it. The CLI does not need the file, because it
    builds one in memory. A server does need it.
@@ -39,7 +41,7 @@ pnpm rulekit build <dir>       # writes corpus.db
 pnpm rulekit ask <dir> "..."   # answers with no model and no key
 pnpm rulekit eval <dir>        # checks that answers invent nothing. Needs a key.
 
-pnpm lint && pnpm check-types && pnpm test     # 267 tests, no model, no network
+pnpm lint && pnpm check-types && pnpm test     # 269 tests, no model, no network
 pnpm test:e2e                                  # the interface, in a browser
 ```
 

@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "term-hole-cards",
+      "term": "Hole Cards",
+      "slug": "hole-cards",
+      "definition": "The two cards the dealer gives a player face down at the start of a hand. They belong to that player alone. A player combines them with the board to make a five-card hand.",
+      "short_definition": "The two private cards a player holds.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "pocket cards",
+        "hole card",
+        "down cards"
+      ],
+      "defining_rule_id": "r-100-2",
+      "defining_rule_number": "100.2"
+    },
+    {
+      "id": "term-board",
+      "term": "Board",
+      "slug": "board",
+      "definition": "The five cards the dealer puts face up in the middle of the table. Every player at the table shares the board and may use any of its cards.",
+      "short_definition": "The five shared cards face up on the table.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "community cards",
+        "board cards"
+      ],
+      "defining_rule_id": "r-100-3",
+      "defining_rule_number": "100.3"
+    },
+    {
+      "id": "term-burn-card",
+      "term": "Burn Card",
+      "slug": "burn-card",
+      "definition": "The top card of the pack, put face down to one side before the flop, the turn, and the river. A burn card takes no part in the hand and no player sees it.",
+      "short_definition": "A card set aside face down before each new board card.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "burn"
+      ],
+      "defining_rule_id": "r-100-5",
+      "defining_rule_number": "100.5"
+    },
+    {
+      "id": "term-pot",
+      "term": "Pot",
+      "slug": "pot",
+      "definition": "The chips the players bet during a hand. The winner of the hand takes the pot. A player bets only the chips that sat on the table when the hand started.",
+      "short_definition": "The chips the players compete for in one hand.",
+      "category": "table_vocabulary",
+      "aliases": [],
+      "defining_rule_id": "r-100-6",
+      "defining_rule_number": "100.6"
+    },
+    {
+      "id": "term-button",
+      "term": "Button",
+      "slug": "button",
+      "definition": "A round disc that marks the seat counted as the dealer for one hand. It moves one seat clockwise after each hand. The button decides where the deal starts and where the action starts.",
+      "short_definition": "The disc marking the nominal dealer seat.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "dealer button"
+      ],
+      "defining_rule_id": "r-200-1",
+      "defining_rule_number": "200.1"
+    },
+    {
+      "id": "term-blind",
+      "term": "Blind",
+      "slug": "blind",
+      "definition": "A forced bet two players put in the pot before they see any card. The player left of the button posts the small blind, and the next player posts the big blind.",
+      "short_definition": "A forced bet posted before the deal.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "blinds",
+        "forced bet"
+      ],
+      "defining_rule_id": "r-200-2",
+      "defining_rule_number": "200.2"
+    },
+    {
+      "id": "term-position",
+      "term": "Position",
+      "slug": "position",
+      "definition": "The place a player holds in the action order of a betting round. A player who acts late in the round already knows what the earlier players did.",
+      "short_definition": "A player's place in the action order.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "table position",
+        "seat position"
+      ],
+      "defining_rule_id": "r-200-4",
+      "defining_rule_number": "200.4"
+    },
+    {
+      "id": "term-flop",
+      "term": "Flop",
+      "slug": "flop",
+      "definition": "The first three board cards. The dealer burns one card and turns all three face up together. A betting round follows.",
+      "short_definition": "The first three board cards.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "third street"
+      ],
+      "defining_rule_id": "r-300-3",
+      "defining_rule_number": "300.3"
+    },
+    {
+      "id": "term-turn",
+      "term": "Turn",
+      "slug": "turn",
+      "definition": "The fourth board card. The dealer burns one card and turns it face up alone. A betting round follows.",
+      "short_definition": "The fourth board card.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "fourth street"
+      ],
+      "defining_rule_id": "r-300-4",
+      "defining_rule_number": "300.4"
+    },
+    {
+      "id": "term-river",
+      "term": "River",
+      "slug": "river",
+      "definition": "The fifth and last board card. The dealer burns one card and turns it face up alone. The last betting round of the hand follows.",
+      "short_definition": "The fifth and last board card.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "fifth street"
+      ],
+      "defining_rule_id": "r-300-5",
+      "defining_rule_number": "300.5"
+    },
+    {
+      "id": "term-check-raise",
+      "term": "Check-Raise",
+      "slug": "check-raise",
+      "definition": "A check followed by a raise in the same betting round. A player checks, another player bets, and the first player then raises. The rules allow this play.",
+      "short_definition": "A check, then a raise in the same round.",
+      "category": "betting_action",
+      "aliases": [
+        "check raise"
+      ],
+      "defining_rule_id": "r-400-2-a",
+      "defining_rule_number": "400.2.a"
+    },
+    {
+      "id": "term-string-bet",
+      "term": "String Bet",
+      "slug": "string-bet",
+      "definition": "A bet a player makes in more than one motion without stating the amount first. The dealer counts only the chips of the first motion.",
+      "short_definition": "Chips pushed forward in more than one motion.",
+      "category": "betting_action",
+      "aliases": [
+        "string raise"
+      ],
+      "defining_rule_id": "r-400-7",
+      "defining_rule_number": "400.7"
+    },
+    {
+      "id": "term-all-in",
+      "term": "All-In",
+      "slug": "all-in",
+      "definition": "The state of a player who put every remaining chip in the pot. An all-in player stays in the hand to the showdown but wins only the chips that player matched.",
+      "short_definition": "Every remaining chip is in the pot.",
+      "category": "betting_action",
+      "aliases": [
+        "all in"
+      ],
+      "defining_rule_id": "r-500-1",
+      "defining_rule_number": "500.1"
+    },
+    {
+      "id": "term-side-pot",
+      "term": "Side Pot",
+      "slug": "side-pot",
+      "definition": "A pot built from the chips bet above an all-in amount. Only the players who put chips in that side pot may win it. The dealer builds one pot for each all-in level.",
+      "short_definition": "A pot an all-in player cannot win.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "side-pot"
+      ],
+      "defining_rule_id": "r-500-3",
+      "defining_rule_number": "500.3"
+    },
+    {
+      "id": "term-showdown",
+      "term": "Showdown",
+      "slug": "showdown",
+      "definition": "The point after the last betting round when two or more players remain. Those players turn their hole cards face up and compare hands, and the best hand takes the pot.",
+      "short_definition": "The comparison of hands after the last bet.",
+      "category": "table_vocabulary",
+      "aliases": [],
+      "defining_rule_id": "r-600-1",
+      "defining_rule_number": "600.1"
+    },
+    {
+      "id": "term-muck",
+      "term": "Muck",
+      "slug": "muck",
+      "definition": "The pile of discarded cards beside the dealer. A hand that reaches the muck is dead and can win nothing. Players also use the word for the act of giving up a hand face down.",
+      "short_definition": "The pile of discarded, dead cards.",
+      "category": "table_vocabulary",
+      "aliases": [],
+      "defining_rule_id": "r-600-6",
+      "defining_rule_number": "600.6"
+    },
+    {
+      "id": "term-kicker",
+      "term": "Kicker",
+      "slug": "kicker",
+      "definition": "The highest card outside the ranked part of a hand. When two players hold the same rank of hand, the kicker decides the pot. Players compare kickers one at a time, highest first.",
+      "short_definition": "The side card that breaks a tie.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "side card"
+      ],
+      "defining_rule_id": "r-600-8",
+      "defining_rule_number": "600.8"
+    },
+    {
+      "id": "term-royal-flush",
+      "term": "Royal Flush",
+      "slug": "royal-flush",
+      "definition": "Five cards of one suit that run from ten up to the ace. It is the strongest hand in the game. Two royal flushes tie, and the pot then divides.",
+      "short_definition": "Ten to ace, all in one suit.",
+      "category": "hand_ranking",
+      "aliases": [
+        "royal",
+        "the royal"
+      ],
+      "defining_rule_id": "r-700-2",
+      "defining_rule_number": "700.2"
+    },
+    {
+      "id": "term-straight-flush",
+      "term": "Straight Flush",
+      "slug": "straight-flush",
+      "definition": "Five cards of one suit in an unbroken sequence. The highest card of the sequence decides which of two straight flushes wins.",
+      "short_definition": "Five cards of one suit in sequence.",
+      "category": "hand_ranking",
+      "aliases": [
+        "straight-flush"
+      ],
+      "defining_rule_id": "r-700-3",
+      "defining_rule_number": "700.3"
+    },
+    {
+      "id": "term-four-of-a-kind",
+      "term": "Four of a Kind",
+      "slug": "four-of-a-kind",
+      "definition": "Four cards of one rank plus one more card. The rank of the four cards decides which of two such hands wins.",
+      "short_definition": "Four cards of the same rank.",
+      "category": "hand_ranking",
+      "aliases": [
+        "quads",
+        "four of kind"
+      ],
+      "defining_rule_id": "r-700-4",
+      "defining_rule_number": "700.4"
+    },
+    {
+      "id": "term-full-house",
+      "term": "Full House",
+      "slug": "full-house",
+      "definition": "Three cards of one rank plus two cards of a second rank. The rank of the three cards decides the winner first. If those match, the rank of the pair decides.",
+      "short_definition": "Three of one rank plus a pair.",
+      "category": "hand_ranking",
+      "aliases": [
+        "boat",
+        "full boat"
+      ],
+      "defining_rule_id": "r-700-5",
+      "defining_rule_number": "700.5"
+    },
+    {
+      "id": "term-flush",
+      "term": "Flush",
+      "slug": "flush",
+      "definition": "Five cards of one suit that do not form a sequence. Compare the highest card first, then the next highest. A suit never decides between two flushes.",
+      "short_definition": "Five cards of one suit, out of sequence.",
+      "category": "hand_ranking",
+      "aliases": [],
+      "defining_rule_id": "r-700-6",
+      "defining_rule_number": "700.6"
+    },
+    {
+      "id": "term-straight",
+      "term": "Straight",
+      "slug": "straight",
+      "definition": "Five cards in an unbroken sequence that do not all share one suit. The highest card of the sequence decides which of two straights wins.",
+      "short_definition": "Five cards in sequence, mixed suits.",
+      "category": "hand_ranking",
+      "aliases": [
+        "run"
+      ],
+      "defining_rule_id": "r-700-7",
+      "defining_rule_number": "700.7"
+    },
+    {
+      "id": "term-three-of-a-kind",
+      "term": "Three of a Kind",
+      "slug": "three-of-a-kind",
+      "definition": "Three cards of one rank plus two unmatched cards. The rank of the three cards decides the winner, and the two remaining cards then act as kickers.",
+      "short_definition": "Three cards of the same rank.",
+      "category": "hand_ranking",
+      "aliases": [
+        "trips",
+        "set"
+      ],
+      "defining_rule_id": "r-700-8",
+      "defining_rule_number": "700.8"
+    },
+    {
+      "id": "term-two-pair",
+      "term": "Two Pair",
+      "slug": "two-pair",
+      "definition": "Two cards of one rank, two cards of a second rank, and one more card. Compare the higher pair first, then the lower pair, then the last card.",
+      "short_definition": "Two separate pairs plus one card.",
+      "category": "hand_ranking",
+      "aliases": [
+        "two pairs"
+      ],
+      "defining_rule_id": "r-700-9",
+      "defining_rule_number": "700.9"
+    },
+    {
+      "id": "term-one-pair",
+      "term": "One Pair",
+      "slug": "one-pair",
+      "definition": "Two cards of one rank plus three unmatched cards. Compare the rank of the pair first. If the pairs match, compare the three remaining cards in order.",
+      "short_definition": "Two cards of the same rank.",
+      "category": "hand_ranking",
+      "aliases": [
+        "pair",
+        "a pair"
+      ],
+      "defining_rule_id": "r-700-10",
+      "defining_rule_number": "700.10"
+    },
+    {
+      "id": "term-high-card",
+      "term": "High Card",
+      "slug": "high-card",
+      "definition": "Five cards that match none of the higher ranks. The highest card decides, then the next highest, and so on through all five cards.",
+      "short_definition": "No pair and no better rank.",
+      "category": "hand_ranking",
+      "aliases": [
+        "no pair",
+        "high-card"
+      ],
+      "defining_rule_id": "r-700-11",
+      "defining_rule_number": "700.11"
+    },
+    {
+      "id": "term-nuts",
+      "term": "Nuts",
+      "slug": "nuts",
+      "definition": "The strongest hand a player can hold on a given board. The board decides what the nuts is, and each new board card can change it.",
+      "short_definition": "The best possible hand on this board.",
+      "category": "table_vocabulary",
+      "aliases": [
+        "nut hand"
+      ],
+      "defining_rule_id": "r-700-12",
+      "defining_rule_number": "700.12"
+    }
+  ]
+}

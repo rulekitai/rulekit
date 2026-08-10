@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "book-laws",
+      "name": "Laws of Chess",
+      "slug": "laws-of-chess",
+      "version": "1.0",
+      "effective_date": "2026-01-01",
+      "is_active": true
+    }
+  ]
+}
