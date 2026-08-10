@@ -1,0 +1,7 @@
+# Every file in this repository needs a review from @rulekitai before a merge.
+#
+# The ruleset on main names this file, so an approval from any other account
+# does not satisfy the requirement. The last pattern that matches a file wins,
+# so a more specific line below would override this one.
+
+* @rulekitai
