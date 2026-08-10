@@ -2,7 +2,7 @@
   "name": "@rulekit/agent",
   "version": "0.1.0",
   "description": "Tools, instructions, skills, and a runtime for a grounded rules assistant.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=22.5.0"

@@ -1,0 +1,29 @@
+rulekit
+Copyright 2026 rulekitai
+
+Licensed under the Apache License, Version 2.0 (the "License"). You may obtain
+a copy of the License in the LICENSE file beside this one.
+
+--------------------------------------------------------------------------------
+GAME DATA IN THIS REPOSITORY
+--------------------------------------------------------------------------------
+
+rulekit reads a corpus of JSON files. It works with any rulebook, and it holds
+no knowledge of any particular game. The corpora in data/ are examples.
+
+  data/demo/       An invented game, written for this project. Dedicated to the
+                   public domain under CC0 1.0. Copy it freely.
+
+  data/riftbound/  Reference data for the Riftbound trading card game. This data
+                   is the property of Riot Games, Inc. The Apache License does
+                   NOT cover it, and this project grants no rights to it.
+
+rulekit was created under Riot Games' "Legal Jibber Jabber" policy using assets
+owned by Riot Games. Riot Games does not endorse or sponsor this project.
+
+Riot's policy permits non-commercial community use only. To use rulekit
+commercially, supply your own corpus. data/demo/ is public domain and is a
+working starting point. docs/corpus-format.md states the format field by field.
+
+Riftbound and Riot Games are trademarks of Riot Games, Inc. This project names
+them only to say which data it reads.

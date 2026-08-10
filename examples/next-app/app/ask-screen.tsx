@@ -5,7 +5,7 @@ import { useChatSessions } from "@rulekit/react/use-chat-sessions"
 import { Chat } from "@rulekit/ui/chat"
 import { ChatSessionList } from "@rulekit/ui/chat-session-list"
 import { RuleKitProvider } from "@rulekit/ui/provider"
-import { useCallback, useEffect, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useState } from "react"
 
 /**
  * The chat screen.
@@ -20,6 +20,8 @@ export function AskScreen(props: {
   subtitle: string
   cardScheme: string
   suggestions: string[]
+  /** Shown under the conversation. A corpus whose data belongs to somebody else needs one. */
+  legalNote?: ReactNode
 }) {
   const sessions = useChatSessions()
   const [notice, setNotice] = useState<string | null>(null)
@@ -71,6 +73,7 @@ export function AskScreen(props: {
       cardScheme={props.cardScheme}
       suggestions={props.suggestions}
       disclaimer="Written by an AI from the rules data. Check anything that decides a game."
+      legalNote={props.legalNote}
     >
       <div className="app-shell">
         <aside className="app-sidebar">

@@ -2,7 +2,7 @@
   "name": "@rulekit/server",
   "version": "0.1.0",
   "description": "One web-standard HTTP handler that mounts anywhere.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=22.5.0"

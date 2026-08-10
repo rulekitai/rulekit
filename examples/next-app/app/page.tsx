@@ -17,6 +17,23 @@ type ProfileFile = {
   cards?: { linkScheme?: string }
 }
 
+/**
+ * The notice a corpus needs under every answer.
+ *
+ * A corpus whose data belongs to somebody else usually comes with terms that
+ * require one, and the terms differ per game. So this is read from the corpus
+ * directory rather than written into the app: point the app at another game and
+ * the notice follows the data.
+ */
+function legalNote(dir: string) {
+  try {
+    const text = readFileSync(resolve(dir, "NOTICE.txt"), "utf8").trim()
+    return text ? <span>{text}</span> : null
+  } catch {
+    return null
+  }
+}
+
 export default function Page() {
   let profile: ProfileFile = {}
   try {
@@ -35,6 +52,7 @@ export default function Page() {
         "It is an unofficial reference, not a ruling."
       }
       cardScheme={profile.cards?.linkScheme ?? "card"}
+      legalNote={legalNote(CORPUS_DIR)}
       suggestions={[
         "What does rule 100.1 say?",
         "What is Shield?",

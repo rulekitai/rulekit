@@ -2,7 +2,7 @@
   "name": "@rulekit/pipeline",
   "version": "0.1.0",
   "description": "The answer pipeline: stages, cache, gate, and credentials.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=22.5.0"

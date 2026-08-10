@@ -2,7 +2,7 @@
   "name": "@rulekit/ui",
   "version": "0.1.0",
   "description": "Styled chat components for a rules assistant. Themed with CSS variables.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "files": [
     "dist",

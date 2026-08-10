@@ -2,7 +2,7 @@
   "name": "@rulekit/corpus",
   "version": "0.1.0",
   "description": "The rules corpus: a JSON schema, a SQLite builder, and one read interface.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=22.5.0"

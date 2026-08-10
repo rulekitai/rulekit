@@ -2,7 +2,7 @@
   "name": "@rulekit/react",
   "version": "0.1.0",
   "description": "Headless React hooks for a rules chat. No styling.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "files": [
     "dist",

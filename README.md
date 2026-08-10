@@ -7,8 +7,13 @@ It reads a corpus of JSON files that you supply. Every answer comes from that
 corpus. Each claim carries its rule number, its card name, or its date. When the
 corpus holds no answer, the assistant says so. It does not invent one.
 
-MIT licence. No pricing model. No required model provider. No account, except
-one model key.
+**It works with any rulebook.** No game is built in. A card game, a board game,
+a sport, or a set of house rules all read the same way, and the project holds no
+knowledge of any of them. Two example corpora ship: an invented game that this
+project owns, and one real game. Both are examples, and neither is the point.
+
+Apache 2.0 licence. No pricing model. No required model provider. No account,
+except one model key.
 
 ## Run it
 
@@ -154,12 +159,31 @@ event. That is why this command exists.
 
 ```bash
 pnpm check-types      # every package
-pnpm test             # 266 tests, no model and no network
+pnpm test             # 267 tests, no model and no network
 pnpm rulekit validate data/demo
 pnpm test:e2e         # the interface, in a browser
 ```
 
 ## Licence
 
-MIT, for the code. The contents of `data/` are game reference data, and the MIT
-grant does not cover them. See `data/README.md`.
+**Apache 2.0, for the code**: everything in `packages/`, `templates/`, and
+`examples/`.
+
+**Game data carries its own terms**, because each corpus comes from somewhere
+different. The Apache licence does not cover `data/`.
+
+| Corpus | Terms |
+|---|---|
+| `data/demo/` | **CC0 1.0.** Public domain. Written for this project. Copy it freely. |
+| `data/riftbound/` | **Riot Games' property.** No rights granted. Non-commercial use only. |
+
+`data/README.md` states this in full, and `NOTICE` travels with every copy of
+the code.
+
+**To use rulekit in a commercial product, supply your own corpus.** `data/demo/`
+is public domain and works as a starting point. `docs/corpus-format.md` states
+the format field by field.
+
+rulekit was created under Riot Games' "Legal Jibber Jabber" policy using assets
+owned by Riot Games. Riot Games does not endorse or sponsor this project.
+Riftbound and Riot Games are trademarks of Riot Games, Inc.

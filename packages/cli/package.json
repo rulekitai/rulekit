@@ -2,7 +2,7 @@
   "name": "@rulekit/cli",
   "version": "0.1.0",
   "description": "The rulekit command: validate, build, init, and ask.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=22.5.0"
