@@ -14,7 +14,7 @@ price and no account, except one model key.
 ## Install
 
 ```bash
-git clone <this repository>
+git clone https://github.com/rulekitai/rulekit.git
 cd rulekit
 pnpm install
 ```
