@@ -207,6 +207,23 @@ describe("ask", () => {
     assert.match(out, /static=passed/)
   })
 
+  test("a miss shows a question of each shape that this corpus does answer", async () => {
+    // Without an example, the next attempt is a guess. The examples come from
+    // the corpus in front of the reader, so both of them work as printed.
+    const { out } = await run(() => commandAsk(DEMO, "how do Guard and Swift interact"))
+    assert.match(out, /rulekit ask .*"what does rule [\d.a-z]+ say"/)
+    assert.match(out, /rulekit ask .*"what is .+"/)
+  })
+
+  test("names a rule number the corpus does not hold, rather than reporting a plain miss", async () => {
+    // A wrong rule number and a question of the wrong shape both leave every
+    // stage passed. Saying which one happened is what stops a retry of the same
+    // wrong number.
+    const { code, out } = await run(() => commandAsk(DEMO, "what does rule 999.9 say"))
+    assert.equal(code, 0)
+    assert.match(out, /holds no rule 999\.9/)
+  })
+
   test("still answers a corpus that has no profile", async () => {
     const dir = await corpusWith("no-profile")
     await rm(join(dir, "profile.json"))

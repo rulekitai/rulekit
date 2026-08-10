@@ -11,7 +11,9 @@ pnpm rulekit ask my-game "what is <a keyword in your game>"
 ```
 
 That last command answers with no model and no key, so you can judge a corpus
-before you connect anything.
+before you connect anything. It runs the free stages only, so it answers a rule
+number and a keyword. It reports a miss for a question of any other shape, and a
+miss here says nothing about the corpus. The agent answers those questions.
 
 ## 1. The corpus
 

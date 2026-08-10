@@ -138,7 +138,9 @@ pnpm rulekit build my-game
 pnpm rulekit ask my-game "what is <a keyword in the game>"
 ```
 
-`ask` uses no model and no key, so judge a corpus before connecting anything.
+`ask` uses no model and no key, so judge a corpus before connecting anything. It
+runs the free stages only. Ask it a rule number or a keyword. A question of any
+other shape reports a miss, because it reaches no agent.
 
 Watch for three failures:
 

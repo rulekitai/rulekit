@@ -65,7 +65,8 @@ Three files change in their app. Nothing inside `packages/` changes.
 
 The integration is done when all four are true:
 
-- `pnpm rulekit ask <corpus> "<a rule question>"` prints an answer.
+- `pnpm rulekit ask <corpus> "what does rule <n> say"` prints that rule. This
+  command runs the free stages only, so ask it a rule number or a keyword.
 - Their own route answers a question over HTTP.
 - Their interface shows the answer as it streams.
 - `pnpm rulekit validate <corpus>` prints `Valid.`

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs"
 import { cp, mkdir, readFile, stat } from "node:fs/promises"
-import { dirname, join, resolve } from "node:path"
-import { argv, exit, stderr, stdout } from "node:process"
+import { dirname, join, relative, resolve } from "node:path"
+import { argv, cwd, exit, stderr, stdout } from "node:process"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { type Profile, parseProfile } from "@rulekit/agent/profile"
 import { buildDatabase } from "@rulekit/corpus/build"
@@ -32,8 +32,11 @@ Usage:
   rulekit validate <dir>          Check a corpus and name every problem
   rulekit build <dir> [--out f]   Compile a corpus to a SQLite database
   rulekit init <dir>              Copy the example corpus as a starting point
-  rulekit ask <dir> "<question>"  Ask a question with no model, using only the
-                                  free stages. Useful for checking a corpus.
+  rulekit ask <dir> "<question>"  Ask a rule-number or keyword question, with no
+                                  model. This runs the free stages only, so it
+                                  never reaches the agent. Use it to check a
+                                  corpus, not to ask the whole range of
+                                  questions a served assistant answers.
   rulekit eval <dir> [options]    Run the corpus's eval.json through the agent
                                   and check nothing was invented. Needs a model
                                   credential. Exits non-zero on any fabrication.
@@ -270,8 +273,25 @@ async function commandAsk(dir: string, question: string): Promise<number> {
   await store.close()
 
   if (!answered.answer) {
-    out(`No free stage could answer this. It would go to the agent.`)
+    // A miss has two causes that read alike from outside, so name which one it
+    // was. A question the classifier never matched and a rule number the corpus
+    // does not hold both leave every stage passed, and somebody who cannot tell
+    // them apart retries the same wrong shape.
+    const { classify } = await import("@rulekit/pipeline/stages/static-classify")
+    const asked = classify(question)
+    const missingRule = asked.intent === "RULE_N" ? asked.ruleNumber : null
+
+    if (missingRule) out(`This corpus holds no rule ${missingRule}.`)
+    else out(`No free stage could answer this. It would go to the agent, and the agent needs a model key.`)
     out(`Stages tried: ${answered.trace.map((t) => `${t.stage}=${t.outcome}`).join(", ")}`)
+
+    const where = relative(cwd(), dir) || dir
+    const rule = result.corpus.rules.find((r) => r.rule_type !== "section_header" && r.content.trim() !== "")
+    const term = result.corpus.terms[0]
+    out(`\nThe free stages answer two shapes of question:`)
+    if (rule) out(`  rulekit ask ${where} "what does rule ${rule.rule_number} say"`)
+    if (term) out(`  rulekit ask ${where} "what is ${term.term}"`)
+    out(`\nThe agent answers every other question. README.md, "Run it", starts one.`)
     return 0
   }
   out(`[served by ${answered.answer.servedBy} in ${answered.answer.latencyMs} ms]\n`)

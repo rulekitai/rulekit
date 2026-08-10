@@ -46,7 +46,10 @@ correct one of the other five.
 ```bash
 pnpm rulekit validate <dir>    # names each problem it finds
 pnpm rulekit build <dir>       # writes corpus.db
-pnpm rulekit ask <dir> "..."   # answers with no model and no key
+pnpm rulekit ask <dir> "..."   # free stages only. A rule number or a keyword.
+                               # It never calls the agent, so a question of any
+                               # other shape reports a miss. Use the example app
+                               # to reach the agent.
 pnpm rulekit eval <dir>        # checks that answers invent nothing. Needs a key.
 
 pnpm lint && pnpm check-types && pnpm test     # 284 tests, no model, no network

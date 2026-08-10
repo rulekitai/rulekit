@@ -59,6 +59,20 @@ pnpm rulekit ask data/riftbound "is Called Shot banned"
 - **banned** in **Constructed**, effective 2026-03-30
 ```
 
+**`rulekit ask` runs the free stages only. It never calls the agent.** So it
+answers a rule number, a legality question, and a keyword, and it reports a miss
+for everything else. That makes it a check on a corpus, and not the whole
+assistant. Two questions of the shape it answers:
+
+```bash
+pnpm rulekit ask data/chess "what does rule 200.6 say"   # a rule number
+pnpm rulekit ask data/chess "what is castling"           # a keyword
+```
+
+Ask "how does a knight move" and the command reports a miss, although the corpus
+holds the answer in rule 200.6. That question needs the agent, so start the
+example app above and ask it there.
+
 ## How the assistant makes an answer
 
 A question goes through a chain of stages. The first stage that can answer wins.
