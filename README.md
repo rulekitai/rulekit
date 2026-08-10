@@ -7,26 +7,8 @@ It reads a corpus of JSON files that you supply. Every answer comes from that
 corpus. Each claim carries its rule number, its card name, or its date. When the
 corpus holds no answer, the assistant says so. It does not invent one.
 
-**It works with any rulebook.** No game is built in. **Five example corpora
-ship**, and they are deliberately unalike:
-
-| Corpus | The game | Rules | Terms | Its named pieces |
-|---|---|---|---|---|
-| `data/chess/` | Chess | 90 | 44 | 6 pieces and 3 items of equipment |
-| `data/texas-holdem/` | Texas Hold'em poker | 93 | 59 | The 52 cards of the pack |
-| `data/estate-line/` | An invented property trading game | 90 | 38 | 38 deeds and fortunes, 6 tokens |
-| `data/demo/` | An invented trading card game | 27 | 6 | 12 cards |
-| `data/riftbound/` | Riftbound | 3317 | 25 | 941 cards |
-
-Same format, same code, no change between them. **No two of them share a single
-attribute name**: chess pieces carry a piece value and a notation symbol, poker
-cards carry a rank and a suit, and a deed carries a price and five levels of
-rent.
-
-Four of the five are public domain and were written for this project.
-
-Apache 2.0 licence. No pricing model. No required model provider. No account,
-except one model key.
+No game is built in, and no model provider is required. Apache 2.0 licence, no
+pricing model, and no account except one model key.
 
 ## Run it
 
@@ -43,37 +25,40 @@ pnpm dev                           # http://localhost:3210
 A clean clone reaches a working chat in **21 seconds**. The example app's first
 build takes 17 of them. Use Node 22 or newer. An `.nvmrc` file is here.
 
-**Most questions need no key.** The assistant reads a rule lookup, a legality
-check, and a keyword definition straight from the corpus. Each takes a few
-milliseconds. The test suite also runs without a key.
+To check the repository: `pnpm lint && pnpm check-types && pnpm test` runs 284
+tests with no model and no network.
+
+## Try it with no model key
+
+Most questions need no key. A rule lookup, a legality question, and a keyword
+definition are read straight from the corpus in a few milliseconds.
 
 ```bash
 pnpm rulekit ask data/riftbound "is Called Shot banned"
+pnpm rulekit ask data/chess "what does rule 200.6 say"
+pnpm rulekit ask data/chess "what is castling"
 ```
 
-```
-[served by static in 8 ms]
+`rulekit ask` runs those free stages only, and never calls the agent. It reports
+a miss for a question of any other shape. Start the example app above to reach
+the agent.
 
-[Called Shot](card:riftbound/SFD-122.webp) is on the banned list:
-- **banned** in **Constructed 2v2**, effective 2026-07-24
-- **banned** in **Constructed**, effective 2026-03-30
-```
+## The five corpora that ship
 
-**`rulekit ask` runs the free stages only. It never calls the agent.** So it
-answers a rule number, a legality question, and a keyword, and it reports a miss
-for everything else. That makes it a check on a corpus, and not the whole
-assistant. Two questions of the shape it answers:
+They are deliberately unalike, and **no two share a single attribute name**.
+Chess pieces carry a piece value and a notation symbol, poker cards carry a rank
+and a suit, and a deed carries a price and five levels of rent. Same format,
+same code, no change between them.
 
-```bash
-pnpm rulekit ask data/chess "what does rule 200.6 say"   # a rule number
-pnpm rulekit ask data/chess "what is castling"           # a keyword
-```
+| Corpus | The game | Rules | Terms | Its named pieces |
+|---|---|---|---|---|
+| `data/chess/` | Chess | 90 | 44 | 6 pieces and 3 items of equipment |
+| `data/texas-holdem/` | Texas Hold'em poker | 93 | 59 | The 52 cards of the pack |
+| `data/estate-line/` | An invented property trading game | 90 | 38 | 38 deeds and fortunes, 6 tokens |
+| `data/demo/` | An invented trading card game | 27 | 6 | 12 cards |
+| `data/riftbound/` | Riftbound | 3317 | 25 | 941 cards |
 
-Ask "how does a knight move" and the command reports a miss, although the corpus
-holds the answer in rule 200.6. That question needs the agent, so start the
-example app above and ask it there.
-
-## How the assistant makes an answer
+## How an answer is made
 
 A question goes through a chain of stages. The first stage that can answer wins.
 
@@ -86,95 +71,7 @@ A question goes through a chain of stages. The first stage that can answer wins.
 
 Only a question that all three stages miss goes to the agent. The agent searches
 the corpus with tools, then writes an answer with sources.
-
-Two more stages ship switched off, because each needs an account you may not
-want: a semantic cache, and a pass with a cheap model.
-
-## The whole picture
-
-Four diagrams, one per concern. Only the last one costs a model call.
-
-### 1. A corpus is compiled, once
-
-```mermaid
-flowchart LR
-    JSON["data/my-game/<br>eight JSON files"] --> VALIDATE["rulekit validate"]
-    VALIDATE --> BUILD["rulekit build"]
-    BUILD --> DB[("corpus.db<br>SQLite, full-text search")]
-```
-
-No model runs here, and nothing is fetched. `profile.json` sits beside those
-files and is read when a server starts, not compiled into the database.
-
-### 2. An agent is born, once per server process
-
-```mermaid
-flowchart TB
-    DB[("corpus.db")] --> STORE["SqliteStore.open<br>one read interface"]
-    PROFILE["profile.json"] --> PARSED["parseProfile<br>the game's own words"]
-    SKILLS["builtinSkills<br>three procedures"] --> PROMPT
-
-    STORE --> CONTENTS["corpusContents<br>which collections hold rows?"]
-    CONTENTS --> TOOLS["defineRulesTools"]
-    PARSED --> TOOLS
-    PARSED --> PROMPT["buildInstructions<br>the system prompt"]
-    TOOLS --> AGENT["createRulesAgent"]
-    PROMPT --> AGENT
-    STORE --> PIPELINE["createPipeline<br>the free stages, in order of cost"]
-```
-
-The corpus is a file, so this takes milliseconds and needs no database server.
-
-### 3. A question walks the free stages
-
-```mermaid
-flowchart TB
-    Q(["A reader asks a question"]) --> GATE{"gate.allow"}
-    GATE -->|"no"| STOP(["Refused. Nothing was read."])
-    GATE -->|"yes"| S1{"exact cache"}
-    S1 -->|"miss"| S2{"static"}
-    S2 -->|"miss"| S3{"glossary"}
-    S3 -->|"miss"| TURN["the agent turn"]
-
-    S1 -->|"hit"| ANSWER(["The answer, and the source of every claim"])
-    S2 -->|"hit"| ANSWER
-    S3 -->|"hit"| ANSWER
-    TURN --> ANSWER
-```
-
-The first stage that can answer wins. The gate runs before every stage, so a
-refusal reads nothing and costs nothing.
-
-### 4. The agent turn
-
-```mermaid
-flowchart TB
-    MODEL["The model, holding<br>the system prompt"] -->|"calls a tool"| TOOL["one tool"]
-    TOOL -->|"reads"| DB[("corpus.db")]
-    DB -->|"returns rows"| MODEL
-    MODEL -->|"stops calling tools"| ANSWER(["The answer, quoting those rows"])
-```
-
-Each pass around the loop is one model call. The turn ends by itself when the
-model answers without calling a tool.
-
-| The tools | When they are offered |
-|---|---|
-| `search_all`, `search_rules`, `get_rule`, `get_rule_context`, `search_terms`, `list_rulebooks`, `list_sections` | Always |
-| `list_errata`, `list_banlist`, `list_patch_notes` | When that collection holds a row |
-| `search_cards`, `get_cards` | When the profile enables cards |
-
-Read the four diagrams for three decisions:
-
-1. **The profile reaches both the tools and the prompt.** It decides what a tool
-   is called and what the model is told a printed value means, so a chess tool
-   says "piece" and never "card".
-2. **A tool exists only when the corpus can answer with it.** `corpusContents`
-   counts the rows first. A game with an empty banned list is never given a
-   banned-list tool.
-3. **A skill is a page the model reads for one shape of question.** The three
-   that ship cover reading a card, two things at once, and order and timing.
-   `card_lookup` is left out when a corpus holds no cards.
+[`docs/architecture.md`](docs/architecture.md) draws all four steps.
 
 ## The packages
 
@@ -188,116 +85,35 @@ Read the four diagrams for three decisions:
 | `@rulekit/ui` | Chat components, themed with CSS variables |
 | `@rulekit/cli` | `rulekit validate`, `build`, `init`, `ask`, and `eval` |
 
-`templates/eve-agent` holds the same agent on [Vercel Eve](https://eve.dev).
-`examples/next-app` holds a chat that you can copy.
+Nothing is published to npm. Fork this repository, or copy `packages/` into
+another one. `templates/eve-agent` holds the same agent on
+[Vercel Eve](https://eve.dev), and `examples/next-app` holds a chat you can copy.
 
-## Skills for an agent
+## Where to go next
 
-`.claude/skills/` holds six skills. They tell an AI coding agent how to put
+| Document | It covers |
+|---|---|
+| [`docs/adding-a-game.md`](docs/adding-a-game.md) | Write a corpus and a profile for your own game |
+| [`docs/corpus-format.md`](docs/corpus-format.md) | Every field of the eight JSON files |
+| [`docs/architecture.md`](docs/architecture.md) | How a corpus becomes an agent, and how a turn runs |
+| [`docs/verifying-answers.md`](docs/verifying-answers.md) | Prove that the answers invent nothing |
+| [`docs/design-decisions.md`](docs/design-decisions.md) | Why a file, no data collection, and no pricing model |
+
+`.claude/skills/` holds six skills that tell an AI coding agent how to put
 rulekit into an application. Start with the `rulekit` skill. It sends the agent
 to the correct one of the other five.
 
-## Design decisions
-
-**The corpus is a file.** Node includes SQLite and its full-text search. You run
-no database and compile no native module, so no installation step can fail. A
-rule lookup reads a disk. It cannot be slow, and it cannot be down.
-
-**This project collects no data.** It holds no importer, no scraper, and no
-parser, and it fetches nothing. A corpus is an input in a documented shape, and
-you decide how to make one. This keeps other people's page layouts, rate limits,
-and terms out of the repository.
-
-**There is no pricing model.** Before the server answers, it asks one question:
-is this caller allowed? The shipped answer is always yes. To add quotas or
-billing, write one object, the `Gate` interface. You change nothing inside these
-packages.
-
-**No model provider is required.** The model is one `"provider/model"` string,
-so you change provider with one environment variable.
-
-**You add a game with one file.** Rules that hold for every rulebook are built
-in. A `profile.json` holds the rest: what the game is, what it calls things, and
-how it writes its symbols. You write a profile, not a prompt.
-
-## Add your own game
-
-1. Write the JSON. `docs/corpus-format.md` states each field. `rulekit init
-   my-game` copies a complete example to start from.
-2. Run `pnpm rulekit validate my-game`. It names each problem it finds.
-3. Run `pnpm rulekit build my-game`.
-4. Write `my-game/profile.json`. See `docs/adding-a-game.md`.
-
-## Check that the assistant invents nothing
-
-The design rests on one claim: every answer comes from the corpus. `rulekit
-eval` asks a list of test questions, then checks each answer for two faults. No
-model judges either fault. Both are text matching against the corpus.
-
-```bash
-pnpm rulekit eval data/riftbound
-```
-
-- **The answer made up a rule number.** Each rule number in an answer must
-  exist in the corpus. A wrong rule number, stated with confidence, reads
-  exactly like a correct one.
-- **The answer made up a quotation.** Each quoted passage must appear in the
-  corpus. Invented words inside a real rule number are the same lie, with a
-  source attached.
-
-Either fault exits with a non-zero code, so a script can refuse to deploy.
-
-The command also reports how many expected rules an answer gave. That figure is
-information only, and it never fails a run: an answer can give four of seven
-expected rules and still be correct.
-
-The command needs a model key and takes about ten minutes. Run it before you
-adopt a model or change the instructions, not on each push. Add `--regrade
-<file>` to score a previous run again, with no model calls.
-
-**A run that stops early counts as a failure.** A question that gives no answer
-names no rule and quotes nothing, so each check on its content passes. To count
-those as clean lets a failed run read as a perfect score.
-
-**Measured with `anthropic/claude-sonnet-5` on the Riftbound corpus that
-ships:** 12 of 18 questions ran before the model key reached its spending limit.
-11 answers were clean. One made up rule `315.1.b.1`, which does not exist, where
-`315.1.b` does. No answer made up a quotation.
-
-The same question made up the same rule against an earlier copy of the corpus.
-So it is a repeatable weakness of this model on this rulebook, and not a single
-event. That is why this command exists.
-
-## Verify the repository
-
-```bash
-pnpm check-types      # every package
-pnpm test             # 284 tests, no model and no network
-pnpm rulekit validate data/demo
-pnpm test:e2e         # the interface, in a browser
-```
-
 ## Licence
 
-**Apache 2.0, for the code**: everything in `packages/`, `templates/`, and
-`examples/`.
+**Apache 2.0 for the code**: everything in `packages/`, `templates/`, and
+`examples/`. **Game data carries its own terms**, and the Apache licence does not
+cover `data/`. Four of the five corpora are CC0 1.0 public domain and were
+written for this project. `data/riftbound/` is Riot Games' property and permits
+non-commercial use only.
 
-**Game data carries its own terms**, because each corpus comes from somewhere
-different. The Apache licence does not cover `data/`.
-
-| Corpus | Terms |
-|---|---|
-| `data/chess/`, `data/texas-holdem/`, `data/estate-line/`, `data/demo/` | **CC0 1.0.** Public domain. Written for this project. Copy them freely. |
-| `data/riftbound/` | **Riot Games' property.** No rights granted. Non-commercial use only. |
-
-`data/README.md` states this in full, and `NOTICE` travels with every copy of
-the code.
-
-**To use rulekit in a commercial product, use one of the four public-domain
-corpora, or supply your own.** Every word in those four is original to this
-project: no rulebook, PDF, or web page was copied to produce them. The rules of
-a game are a system, and a system is not owned. A particular author's wording is
-owned, so none is reused.
+To use rulekit in a commercial product, use one of the four public-domain
+corpora, or supply your own. [`data/README.md`](data/README.md) states every
+term in full, and `NOTICE` travels with every copy of the code.
 
 rulekit was created under Riot Games' "Legal Jibber Jabber" policy using assets
 owned by Riot Games. Riot Games does not endorse or sponsor this project.
