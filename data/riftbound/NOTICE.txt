@@ -1,1 +1,17 @@
-Riftbound data is the property of Riot Games, Inc. This assistant was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.
+RIFTBOUND DATA
+
+Riot Games, Inc. owns the data in this directory. The Apache License in the
+root directory of this repository does NOT cover it, and this project grants
+no rights to it.
+
+Riot Games' "Legal Jibber Jabber" policy permitted the creation of rulekit
+with assets that Riot Games owns. Riot Games does not endorse or sponsor this
+project.
+
+That policy permits non-commercial community use only. To use rulekit in a
+commercial product, use one of the four public-domain corpora in data/, or
+supply your own corpus. The file docs/corpus-format.md states the format field
+by field.
+
+Riftbound and Riot Games are trademarks of Riot Games, Inc. This project names
+them only to state which data it reads.

@@ -1,0 +1,14 @@
+DEMO CORPUS
+
+rulekitai wrote every word in this directory and dedicates it to the public
+domain under CC0 1.0 Universal. The file LICENSE beside this one holds the
+full legal code of that dedication.
+
+This corpus holds the rules of an invented trading card game, with its defined terms and its cards.
+
+No rulebook, PDF file, or web page was copied to produce it. The rules of a
+game are a system, and nobody owns a system. An author owns a particular set
+of words, so this corpus reuses none.
+
+You can copy, change, and sell this corpus, and you need to ask nobody. No
+attribution is necessary.

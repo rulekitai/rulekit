@@ -20,6 +20,12 @@ prove that claim.
 Four of the five corpora hold no third-party rights. The tests read `demo/`, so
 no test depends on data that this project does not own.
 
+**Each directory states its own terms**, so a corpus that you copy on its own
+still carries them. The four public-domain corpora hold a `LICENSE` file with
+the full CC0 1.0 legal code, and a `NOTICE.txt` file that states what the
+dedication covers. The directory `riftbound/` holds a `NOTICE.txt` file and no
+licence file, because this project grants no rights to that data.
+
 **This project wrote every word of the four CC0 corpora.** It copied no
 rulebook, no PDF file, and no web page to make them. The rules of chess and the
 rules of poker are systems, and nobody owns a system. An author owns a

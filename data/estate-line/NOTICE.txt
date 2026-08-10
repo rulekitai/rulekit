@@ -1,0 +1,14 @@
+ESTATE LINE CORPUS
+
+rulekitai wrote every word in this directory and dedicates it to the public
+domain under CC0 1.0 Universal. The file LICENSE beside this one holds the
+full legal code of that dedication.
+
+This corpus holds the rules of Estate Line, an invented property trading game, with its deeds, its fortunes, and its tokens.
+
+No rulebook, PDF file, or web page was copied to produce it. The rules of a
+game are a system, and nobody owns a system. An author owns a particular set
+of words, so this corpus reuses none.
+
+You can copy, change, and sell this corpus, and you need to ask nobody. No
+attribution is necessary.

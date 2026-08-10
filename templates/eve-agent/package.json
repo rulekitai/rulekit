@@ -2,6 +2,7 @@
   "name": "rulekit-eve-agent",
   "version": "0.1.0",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "description": "The same rules agent, running on Vercel Eve instead of the AI SDK.",
   "scripts": {
