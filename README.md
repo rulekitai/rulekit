@@ -92,101 +92,79 @@ want: a semantic cache, and a pass with a cheap model.
 
 ## The whole picture
 
-Four things happen, and only the last one costs a model call. JSON becomes a
-database, the database and the profile build an agent, a question walks the free
-stages, and a miss reaches the agent.
+Four diagrams, one per concern. Only the last one costs a model call.
+
+### 1. A corpus is compiled, once
+
+```mermaid
+flowchart LR
+    JSON["data/my-game/<br>eight JSON files"] --> VALIDATE["rulekit validate"]
+    VALIDATE --> BUILD["rulekit build"]
+    BUILD --> DB[("corpus.db<br>SQLite, full-text search")]
+```
+
+No model runs here, and nothing is fetched. `profile.json` sits beside those
+files and is read when a server starts, not compiled into the database.
+
+### 2. An agent is born, once per server process
 
 ```mermaid
 flowchart TB
-    subgraph BUILD["1. Build the corpus. Once, with no model and no network."]
-        direction LR
-        JSON["data/my-game/<br>rules, terms, cards,<br>errata, banlist, patch notes"]
-        VALIDATE["rulekit validate<br>names every problem"]
-        COMPILE["rulekit build"]
-        DB[("corpus.db<br>SQLite, full-text search")]
-        PROFILE["profile.json<br>what this game calls things"]
-        JSON --> VALIDATE --> COMPILE --> DB
-    end
+    DB[("corpus.db")] --> STORE["SqliteStore.open<br>one read interface"]
+    PROFILE["profile.json"] --> PARSED["parseProfile<br>the game's own words"]
+    SKILLS["builtinSkills<br>three procedures"] --> PROMPT
 
-    subgraph BORN["2. The agent is born. Once per server process."]
-        direction TB
-        STORE["SqliteStore.open<br>one read interface"]
-        PARSED["parseProfile<br>the game's own words"]
-        CONTENTS["corpusContents<br>which collections hold rows?"]
-        SKILLS["builtinSkills<br>card_lookup, interaction, sequence"]
-        TOOLS["defineRulesTools<br>a tool is offered ONLY when<br>the corpus can answer with it"]
-        PROMPT["buildInstructions<br>identity, grounding rules, vocabulary,<br>card fields, and the skills inlined"]
-        PIPELINE["createPipeline<br>the free stages, in order of cost"]
-        AGENT["createRulesAgent"]
-
-        STORE --> CONTENTS --> TOOLS
-        STORE --> PIPELINE
-        PARSED --> TOOLS
-        PARSED --> PROMPT
-        SKILLS --> PROMPT
-        TOOLS --> AGENT
-        PROMPT --> AGENT
-    end
-
-    DB ==> STORE
-    PROFILE ==> PARSED
-
-    subgraph ASK["3. One question. The first stage that can answer wins."]
-        direction TB
-        Q(["A reader asks a question"])
-        GATE{"gate.allow<br>quota or billing.<br>Ships as always yes."}
-        STOP(["Refused. Nothing was read."])
-        S1{"exact cache"}
-        S2{"static<br>a rule number,<br>a legality question"}
-        S3{"glossary<br>what is X"}
-
-        Q --> GATE
-        GATE -->|"no"| STOP
-        GATE -->|"yes"| S1
-        S1 -->|"miss"| S2 -->|"miss"| S3
-    end
-
-    subgraph LOOP["4. The agent turn. Reached only by a miss. One model call per step."]
-        direction TB
-        MODEL["The model reads the system prompt,<br>then chooses a tool"]
-        CORE["Always offered:<br>search_all, search_rules, get_rule,<br>get_rule_context, search_terms,<br>list_rulebooks, list_sections"]
-        EXTRA["Offered only when the corpus holds them:<br>list_errata, list_banlist, list_patch_notes,<br>search_cards, get_cards"]
-        READ["The tool reads corpus.db<br>and returns rows"]
-        WRITE["The model writes the answer<br>and quotes what the rows say"]
-
-        MODEL --> CORE --> READ
-        MODEL --> EXTRA --> READ
-        READ --> MODEL
-        MODEL --> WRITE
-    end
-
-    ANSWER(["The answer, and the source of every claim"])
-
-    PIPELINE ==>|"runs the stages"| S1
-    AGENT ==>|"system prompt and tools"| MODEL
-    S1 -->|"hit"| ANSWER
-    S2 -->|"hit"| ANSWER
-    S3 -->|"hit"| ANSWER
-    S3 -.->|"miss"| MODEL
-    WRITE ==> ANSWER
-
-    classDef data fill:#e8f0fe,stroke:#1a56b8,color:#0b2a5b
-    classDef free fill:#e6f4ea,stroke:#137333,color:#0b3d1c
-    classDef model fill:#fef3e0,stroke:#b06000,color:#5c3200
-    classDef stop fill:#fce8e6,stroke:#c5221f,color:#5c1512
-
-    class JSON,PROFILE,DB,STORE,PARSED,CONTENTS,READ data
-    class VALIDATE,COMPILE,S1,S2,S3,GATE,PIPELINE,Q,ANSWER free
-    class TOOLS,SKILLS,PROMPT,AGENT,MODEL,CORE,EXTRA,WRITE model
-    class STOP stop
-
-    style BUILD fill:#ffffff,stroke:#c7ccd1,color:#333333
-    style BORN fill:#ffffff,stroke:#c7ccd1,color:#333333
-    style ASK fill:#ffffff,stroke:#c7ccd1,color:#333333
-    style LOOP fill:#ffffff,stroke:#c7ccd1,color:#333333
+    STORE --> CONTENTS["corpusContents<br>which collections hold rows?"]
+    CONTENTS --> TOOLS["defineRulesTools"]
+    PARSED --> TOOLS
+    PARSED --> PROMPT["buildInstructions<br>the system prompt"]
+    TOOLS --> AGENT["createRulesAgent"]
+    PROMPT --> AGENT
+    STORE --> PIPELINE["createPipeline<br>the free stages, in order of cost"]
 ```
 
-Read the diagram for three decisions:
+The corpus is a file, so this takes milliseconds and needs no database server.
+
+### 3. A question walks the free stages
+
+```mermaid
+flowchart TB
+    Q(["A reader asks a question"]) --> GATE{"gate.allow"}
+    GATE -->|"no"| STOP(["Refused. Nothing was read."])
+    GATE -->|"yes"| S1{"exact cache"}
+    S1 -->|"miss"| S2{"static"}
+    S2 -->|"miss"| S3{"glossary"}
+    S3 -->|"miss"| TURN["the agent turn"]
+
+    S1 -->|"hit"| ANSWER(["The answer, and the source of every claim"])
+    S2 -->|"hit"| ANSWER
+    S3 -->|"hit"| ANSWER
+    TURN --> ANSWER
+```
+
+The first stage that can answer wins. The gate runs before every stage, so a
+refusal reads nothing and costs nothing.
+
+### 4. The agent turn
+
+```mermaid
+flowchart TB
+    MODEL["The model, holding<br>the system prompt"] -->|"calls a tool"| TOOL["one tool"]
+    TOOL -->|"reads"| DB[("corpus.db")]
+    DB -->|"returns rows"| MODEL
+    MODEL -->|"stops calling tools"| ANSWER(["The answer, quoting those rows"])
+```
+
+Each pass around the loop is one model call. The turn ends by itself when the
+model answers without calling a tool.
+
+| The tools | When they are offered |
+|---|---|
+| `search_all`, `search_rules`, `get_rule`, `get_rule_context`, `search_terms`, `list_rulebooks`, `list_sections` | Always |
+| `list_errata`, `list_banlist`, `list_patch_notes` | When that collection holds a row |
+| `search_cards`, `get_cards` | When the profile enables cards |
+
+Read the four diagrams for three decisions:
 
 1. **The profile reaches both the tools and the prompt.** It decides what a tool
    is called and what the model is told a printed value means, so a chess tool
