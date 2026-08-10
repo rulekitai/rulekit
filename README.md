@@ -99,26 +99,32 @@ agent searches the corpus with tools, then it writes an answer with its sources.
 
 ## The packages
 
+Two packages. The split follows the only line that matters: whether you need
+React and a Markdown renderer.
+
 | Package | What it contains |
 |---|---|
-| `@rulekitai/corpus` | The JSON schema, a SQLite builder, and one read interface |
-| `@rulekitai/agent` | Tools, instructions, procedures, and an AI SDK runtime |
-| `@rulekitai/pipeline` | The stages, the cache, the permission check, and credentials |
-| `@rulekitai/server` | One HTTP handler that uses web standards |
-| `@rulekitai/react` | Hooks with no styling |
-| `@rulekitai/ui` | Chat components, with CSS variables for the theme |
-| `@rulekitai/cli` | `rulekit validate`, `build`, `init`, `ask`, and `eval` |
-
-Each package is on npm. Install the ones you need:
+| `@rulekitai/rulekit` | The corpus, the agent, the answer pipeline, the HTTP handler, and the `rulekit` command |
+| `@rulekitai/ui` | React hooks and styled chat components |
 
 ```bash
-pnpm add @rulekitai/corpus @rulekitai/agent @rulekitai/pipeline @rulekitai/server
-pnpm add @rulekitai/react @rulekitai/ui   # a React interface
-pnpm add -D @rulekitai/cli                # validate, build, ask, and eval
+pnpm add @rulekitai/rulekit        # a server, or the command line
+pnpm add @rulekitai/ui react       # a React interface, as well
+pnpm add ai                        # only if you use the agent
 ```
 
-The `ai` package is a peer dependency of `@rulekitai/agent`, and `react` is a
-peer dependency of `@rulekitai/react` and `@rulekitai/ui`.
+Each part keeps its own subpath, so an import states where it comes from:
+
+```ts
+import { SqliteStore } from "@rulekitai/rulekit/corpus/sqlite-store"
+import { createRulesAgent } from "@rulekitai/rulekit/agent/runtime"
+import { createPipeline } from "@rulekitai/rulekit/pipeline/pipeline"
+import { createAskHandler } from "@rulekitai/rulekit/server/handler"
+import { useAskStream } from "@rulekitai/ui/use-ask-stream"
+```
+
+The `ai` package is a peer dependency, and the code loads it only when you use
+the agent. `react` is a peer dependency of `@rulekitai/ui`.
 
 The directory `templates/eve-agent` contains the same agent on
 [Vercel Eve](https://eve.dev). The directory `examples/next-app` contains a chat

@@ -12,8 +12,7 @@
     "deploy": "eve deploy"
   },
   "dependencies": {
-    "@rulekitai/agent": "workspace:*",
-    "@rulekitai/corpus": "workspace:*",
+    "@rulekitai/rulekit": "workspace:*",
     "ai": "^7.0.38",
     "eve": "^0.31.0",
     "zod": "^4.4.0"

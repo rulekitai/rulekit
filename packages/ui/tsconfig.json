@@ -2,5 +2,6 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": { "rootDir": "src", "outDir": "dist", "jsx": "react-jsx", "noEmit": false },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "references": [{ "path": "../agent" }, { "path": "../react" }]
+  "exclude": ["src/**/*.test.ts"],
+  "references": [{ "path": "../rulekit" }]
 }

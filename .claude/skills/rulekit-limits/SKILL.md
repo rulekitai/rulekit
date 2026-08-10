@@ -72,7 +72,7 @@ per-model prices goes stale in silence.
 ## Step 4: let callers bring their own key
 
 Four resolvers ship. `fromEnv`, `fromHeader`, and `firstOf` are in
-`@rulekitai/pipeline/gate`. `fromDeviceLogin` is in `@rulekitai/pipeline/oauth`.
+`@rulekitai/rulekit/pipeline/gate`. `fromDeviceLogin` is in `@rulekitai/rulekit/pipeline/oauth`.
 
 | Resolver | Reads the key from |
 |---|---|

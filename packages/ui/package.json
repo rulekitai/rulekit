@@ -1,7 +1,7 @@
 {
   "name": "@rulekitai/ui",
-  "version": "0.1.1",
-  "description": "Styled chat components for a rules assistant. Themed with CSS variables.",
+  "version": "0.2.0",
+  "description": "React hooks and styled chat components for a grounded rules assistant.",
   "keywords": [
     "rules",
     "rulebook",
@@ -82,14 +82,33 @@
       "types": "./dist/chat-session-list.d.ts",
       "development": "./src/chat-session-list.tsx",
       "default": "./dist/chat-session-list.js"
+    },
+    "./message": {
+      "types": "./dist/message.d.ts",
+      "development": "./src/message.ts",
+      "default": "./dist/message.js"
+    },
+    "./storage": {
+      "types": "./dist/storage.d.ts",
+      "development": "./src/storage.ts",
+      "default": "./dist/storage.js"
+    },
+    "./use-ask-stream": {
+      "types": "./dist/use-ask-stream.d.ts",
+      "development": "./src/use-ask-stream.ts",
+      "default": "./dist/use-ask-stream.js"
+    },
+    "./use-chat-sessions": {
+      "types": "./dist/use-chat-sessions.d.ts",
+      "development": "./src/use-chat-sessions.ts",
+      "default": "./dist/use-chat-sessions.js"
     }
   },
   "scripts": {
     "build": "tsc --build"
   },
   "dependencies": {
-    "@rulekitai/agent": "workspace:*",
-    "@rulekitai/react": "workspace:*",
+    "@rulekitai/rulekit": "workspace:*",
     "react-markdown": "^10.0.0",
     "remark-gfm": "^4.0.0"
   },

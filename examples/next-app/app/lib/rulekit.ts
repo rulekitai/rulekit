@@ -1,13 +1,13 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
-import { type Profile, parseProfile } from "@rulekitai/agent/profile"
-import { createRulesAgent, type RulesAgent } from "@rulekitai/agent/runtime"
-import { SqliteStore } from "@rulekitai/corpus/sqlite-store"
-import { MemoryCache } from "@rulekitai/pipeline/cache"
-import { createPipeline, type Pipeline } from "@rulekitai/pipeline/pipeline"
-import { exactCacheStage } from "@rulekitai/pipeline/stages/cache"
-import { glossaryStage } from "@rulekitai/pipeline/stages/glossary"
-import { staticAnswersStage } from "@rulekitai/pipeline/stages/static"
+import { type Profile, parseProfile } from "@rulekitai/rulekit/agent/profile"
+import { createRulesAgent, type RulesAgent } from "@rulekitai/rulekit/agent/runtime"
+import { SqliteStore } from "@rulekitai/rulekit/corpus/sqlite-store"
+import { MemoryCache } from "@rulekitai/rulekit/pipeline/cache"
+import { createPipeline, type Pipeline } from "@rulekitai/rulekit/pipeline/pipeline"
+import { exactCacheStage } from "@rulekitai/rulekit/pipeline/stages/cache"
+import { glossaryStage } from "@rulekitai/rulekit/pipeline/stages/glossary"
+import { staticAnswersStage } from "@rulekitai/rulekit/pipeline/stages/static"
 
 /**
  * Everything wired together, once per server process.

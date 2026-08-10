@@ -1,20 +1,21 @@
 # @rulekitai/ui
 
-Styled chat components for a rules assistant. Themed with CSS variables.
+React hooks and styled chat components for a grounded rules assistant.
 
-Part of [rulekit](https://github.com/rulekitai/rulekit), a rules assistant that answers from your own
-rulebook, quotes it, and gives the source of each claim.
+Part of [rulekit](https://github.com/rulekitai/rulekit).
 
 ## Install
 
 ```bash
-pnpm add @rulekitai/ui
+pnpm add @rulekitai/ui @rulekitai/rulekit
 ```
+
+`react` is a peer dependency.
 
 ## Use
 
 ```tsx
-import { useAskStream } from "@rulekitai/react/use-ask-stream"
+import { useAskStream } from "@rulekitai/ui/use-ask-stream"
 import { Chat } from "@rulekitai/ui/chat"
 import { RuleKitProvider } from "@rulekitai/ui/provider"
 import "@rulekitai/ui/styles.css"
@@ -38,22 +39,17 @@ function Assistant() {
 ```
 
 `Chat` holds no state and opens no connection. It renders what you give it, so
-the hook above supplies the messages. `RuleKitProvider` must be a parent of it,
-because the components read the card link scheme and the legal note from that
-provider.
+the hook above supplies the messages. `RuleKitProvider` must be a parent,
+because the components read the card link scheme and the legal note from it.
 
-The components read CSS variables, so your theme controls their appearance.
-React is a peer dependency.
+The hooks carry no styling, so you can use them without the components. The
+components read CSS variables, so your theme controls their appearance.
 
 ## Documentation
 
-- [The corpus format](https://github.com/rulekitai/rulekit/blob/main/docs/corpus-format.md)
+- [The three interface levels](https://github.com/rulekitai/rulekit/blob/main/docs/architecture.md)
 - [Adding a game](https://github.com/rulekitai/rulekit/blob/main/docs/adding-a-game.md)
-- [Architecture](https://github.com/rulekitai/rulekit/blob/main/docs/architecture.md)
 
 ## Licence
 
 Apache 2.0. See the `LICENSE` file beside this one.
-
-The example corpora in the repository carry their own terms, and this package
-contains none of them.

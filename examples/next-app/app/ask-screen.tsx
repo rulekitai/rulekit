@@ -1,10 +1,10 @@
 "use client"
 
-import { useAskStream } from "@rulekitai/react/use-ask-stream"
-import { useChatSessions } from "@rulekitai/react/use-chat-sessions"
 import { Chat } from "@rulekitai/ui/chat"
 import { ChatSessionList } from "@rulekitai/ui/chat-session-list"
 import { RuleKitProvider } from "@rulekitai/ui/provider"
+import { useAskStream } from "@rulekitai/ui/use-ask-stream"
+import { useChatSessions } from "@rulekitai/ui/use-chat-sessions"
 import { type ReactNode, useCallback, useEffect, useState } from "react"
 
 /**

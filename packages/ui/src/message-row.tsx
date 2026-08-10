@@ -1,8 +1,8 @@
 "use client"
 
-import type { ChatMessage } from "@rulekitai/react/message"
 import { AnswerMarkdown } from "./answer-markdown.tsx"
 import { AnswerTrace } from "./answer-trace.tsx"
+import type { ChatMessage } from "./message.ts"
 import { useRuleKit } from "./provider.tsx"
 
 /** How a stage is named to a reader. An internal name means nothing to them. */

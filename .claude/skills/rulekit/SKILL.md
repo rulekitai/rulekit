@@ -1,6 +1,6 @@
 ---
 name: rulekit
-description: Add a grounded rules assistant to an app, using the rulekit packages. Routes to the skill for the task at hand. Use when the user wants to add a rules chat, a rules lookup, a judge assistant, or a card-and-rules question box to their site; mentions rulekit, `@rulekitai/server`, `createAskHandler`, or a corpus of rules; or asks how to make an assistant answer only from their own rulebook.
+description: Add a grounded rules assistant to an app, using the rulekit packages. Routes to the skill for the task at hand. Use when the user wants to add a rules chat, a rules lookup, a judge assistant, or a card-and-rules question box to their site; mentions rulekit, `@rulekitai/rulekit`, `createAskHandler`, or a corpus of rules; or asks how to make an assistant answer only from their own rulebook.
 ---
 
 # rulekit

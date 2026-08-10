@@ -10,7 +10,7 @@ description: Build the chat interface for a rulekit endpoint, at one of three le
 | Level | Use | When |
 |---|---|---|
 | Styled | `@rulekitai/ui` | The fastest. Themed with CSS variables. |
-| Headless | `@rulekitai/react` | Their own design system. No styling ships. |
+| Headless | `@rulekitai/ui`, hooks only | Their own design system. Import the hooks and none of the components. |
 | Raw stream | Read the response | Vue, Svelte, plain JavaScript, or a mobile app. |
 
 Read the raw stream only when React is absent. The hooks already hold the parts
@@ -60,7 +60,7 @@ The endpoint returns one JSON object per line.
 | `done` | The final answer | Stop, and save. |
 | `error` | A message | Show it. Save nothing. |
 
-Read the body line by line and parse each line. `@rulekitai/agent/events` holds
+Read the body line by line and parse each line. `@rulekitai/rulekit/agent/events` holds
 `decodeEvents` if the client runs JavaScript.
 
 ## Step 5: connect the app's own pieces

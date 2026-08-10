@@ -10,12 +10,11 @@ description: Install rulekit and mount its ask endpoint in a server. Covers fork
 Install them from npm, in their own application:
 
 ```bash
-pnpm add @rulekitai/corpus @rulekitai/agent @rulekitai/pipeline @rulekitai/server
-pnpm add -D @rulekitai/cli
+pnpm add @rulekitai/rulekit
 pnpm add ai                          # a peer dependency of the agent
 ```
 
-Add `@rulekitai/react` and `@rulekitai/ui` for a React interface. Read the
+Add `@rulekitai/ui` for a React interface. Read the
 `rulekit-interface` skill for the three levels.
 
 Their application also needs a corpus. Copy one of the four public-domain

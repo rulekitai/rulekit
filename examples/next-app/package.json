@@ -12,11 +12,7 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@rulekitai/agent": "workspace:*",
-    "@rulekitai/corpus": "workspace:*",
-    "@rulekitai/pipeline": "workspace:*",
-    "@rulekitai/react": "workspace:*",
-    "@rulekitai/server": "workspace:*",
+    "@rulekitai/rulekit": "workspace:*",
     "@rulekitai/ui": "workspace:*",
     "ai": "^7.0.0",
     "next": "^16.3.0",

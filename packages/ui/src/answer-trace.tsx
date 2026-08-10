@@ -1,6 +1,6 @@
 "use client"
 
-import type { TraceStep } from "@rulekitai/agent/events"
+import type { TraceStep } from "@rulekitai/rulekit/agent/events"
 import { useMemo, useState } from "react"
 
 /**

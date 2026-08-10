@@ -11,21 +11,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.0.0
         version: 2.5.7
-      '@rulekitai/agent':
+      '@rulekitai/rulekit':
         specifier: workspace:*
-        version: link:packages/agent
-      '@rulekitai/cli':
-        specifier: workspace:*
-        version: link:packages/cli
-      '@rulekitai/corpus':
-        specifier: workspace:*
-        version: link:packages/corpus
-      '@rulekitai/pipeline':
-        specifier: workspace:*
-        version: link:packages/pipeline
-      '@rulekitai/server':
-        specifier: workspace:*
-        version: link:packages/server
+        version: link:packages/rulekit
       '@types/node':
         specifier: '22'
         version: 22.20.1
@@ -35,21 +23,9 @@ importers:
 
   examples/next-app:
     dependencies:
-      '@rulekitai/agent':
+      '@rulekitai/rulekit':
         specifier: workspace:*
-        version: link:../../packages/agent
-      '@rulekitai/corpus':
-        specifier: workspace:*
-        version: link:../../packages/corpus
-      '@rulekitai/pipeline':
-        specifier: workspace:*
-        version: link:../../packages/pipeline
-      '@rulekitai/react':
-        specifier: workspace:*
-        version: link:../../packages/react
-      '@rulekitai/server':
-        specifier: workspace:*
-        version: link:../../packages/server
+        version: link:../../packages/rulekit
       '@rulekitai/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -76,81 +52,20 @@ importers:
         specifier: ^19.0.0
         version: 19.2.4(@types/react@19.2.18)
 
-  packages/agent:
+  packages/rulekit:
     dependencies:
-      '@rulekitai/corpus':
-        specifier: workspace:*
-        version: link:../corpus
       ai:
         specifier: ^5.0.0 || ^6.0.0 || ^7.0.0
-        version: 6.0.246(zod@4.4.3)
+        version: 7.0.58(zod@4.4.3)
       zod:
         specifier: ^4.4.0
         version: 4.4.3
-
-  packages/cli:
-    dependencies:
-      '@rulekitai/agent':
-        specifier: workspace:*
-        version: link:../agent
-      '@rulekitai/corpus':
-        specifier: workspace:*
-        version: link:../corpus
-      '@rulekitai/pipeline':
-        specifier: workspace:*
-        version: link:../pipeline
-      zod:
-        specifier: ^4.4.0
-        version: 4.4.3
-
-  packages/corpus:
-    dependencies:
-      zod:
-        specifier: ^4.4.0
-        version: 4.4.3
-
-  packages/pipeline:
-    dependencies:
-      '@rulekitai/agent':
-        specifier: workspace:*
-        version: link:../agent
-      '@rulekitai/corpus':
-        specifier: workspace:*
-        version: link:../corpus
-
-  packages/react:
-    dependencies:
-      '@rulekitai/agent':
-        specifier: workspace:*
-        version: link:../agent
-      react:
-        specifier: ^18.0.0 || ^19.0.0
-        version: 19.2.8
-    devDependencies:
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.18
-
-  packages/server:
-    dependencies:
-      '@rulekitai/agent':
-        specifier: workspace:*
-        version: link:../agent
-      '@rulekitai/corpus':
-        specifier: workspace:*
-        version: link:../corpus
-      '@rulekitai/pipeline':
-        specifier: workspace:*
-        version: link:../pipeline
 
   packages/ui:
     dependencies:
-      '@rulekitai/agent':
+      '@rulekitai/rulekit':
         specifier: workspace:*
-        version: link:../agent
-      '@rulekitai/react':
-        specifier: workspace:*
-        version: link:../react
+        version: link:../rulekit
       react:
         specifier: ^18.0.0 || ^19.0.0
         version: 19.2.8
@@ -167,12 +82,9 @@ importers:
 
   templates/eve-agent:
     dependencies:
-      '@rulekitai/agent':
+      '@rulekitai/rulekit':
         specifier: workspace:*
-        version: link:../../packages/agent
-      '@rulekitai/corpus':
-        specifier: workspace:*
-        version: link:../../packages/corpus
+        version: link:../../packages/rulekit
       ai:
         specifier: ^7.0.38
         version: 7.0.58(zod@4.4.3)
@@ -185,21 +97,9 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@3.0.166':
-    resolution: {integrity: sha512-DHmHmu7yvTgMRLbB28+oe0/L645HckluwibD4WiL0aSdWUkZ9nl51BMMEuD1ed90arRlmhP/l4iszdH1c9JzFg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
-
   '@ai-sdk/gateway@4.0.46':
     resolution: {integrity: sha512-LIAO6kAG8fpXQb9L0iwPk1FIbXftvqnyC56v5NEAzeWTeL8fUsy/Hx86VPBTWEDFdwbVprjWifJOAqS6AOj3mA==}
     engines: {node: '>=22'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
-
-  '@ai-sdk/provider-utils@4.0.42':
-    resolution: {integrity: sha512-Q07lZsq4ir+xwAGVfSbY2WNGLrbfWINFaL2I/vTBFrkuXeP7VZh+UtQgLOKZS6Z/6flNFW22jDYdbINvwTV/PA==}
-    engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
@@ -208,10 +108,6 @@ packages:
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
-
-  '@ai-sdk/provider@3.0.14':
-    resolution: {integrity: sha512-5X1k57JBJ4H7H1QjX7CnJYAB1I19r/trVZTMcSms7/kLNZ8RaU4Nt2agcwZzv82Hfx6Q7/TOLU7agAKeFfc8cA==}
-    engines: {node: '>=18'}
 
   '@ai-sdk/provider@4.0.7':
     resolution: {integrity: sha512-6or44XprPzKbr8zkmzosowSE0pxkvJcoojBL+mCZvPUt3kvXp3XSNqeVun9golb1acEfSo6yaEBRT18h2VU+1Q==}
@@ -276,10 +172,6 @@ packages:
 
   '@emnapi/runtime@1.11.3':
     resolution: {integrity: sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==}
-
-  '@fastify/busboy@2.1.1':
-    resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
-    engines: {node: '>=14'}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -773,12 +665,6 @@ packages:
 
   '@workflow/serde@4.1.0':
     resolution: {integrity: sha512-pav4F2BoirECWR7Nf1TKt+2eETcBj7jj4cBefQ8VXQCA6NPkaKeLfj/zMgi+3zYV5ZIBT4GuUiphsj0/b9hPQQ==}
-
-  ai@6.0.246:
-    resolution: {integrity: sha512-3sFlNjA2+Oo1q1DDzy9KZKr3EjO3nzBVI4zpXPnp2/6uDDW83btpD0qpxMpMImVp/DfTzkBo+XCTxRolSHKRQA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
 
   ai@7.0.58:
     resolution: {integrity: sha512-GfgO90CQQ0yYuoxJAUOeQ6tviyYw1BUIDygSZ1q3Ce6kSc93tYmB5eltKY/NxC0YOouAax7JvDqVnYxvIAr04Q==}
@@ -1322,10 +1208,6 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
-  undici@5.29.0:
-    resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
-    engines: {node: '>=14.0'}
-
   undici@7.29.0:
     resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
     engines: {node: '>=20.18.1'}
@@ -1443,26 +1325,11 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@3.0.166(zod@4.4.3)':
-    dependencies:
-      '@ai-sdk/provider': 3.0.14
-      '@ai-sdk/provider-utils': 4.0.42(zod@4.4.3)
-      '@vercel/oidc': 3.2.0
-      zod: 4.4.3
-
   '@ai-sdk/gateway@4.0.46(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 4.0.7
       '@ai-sdk/provider-utils': 5.0.25(zod@4.4.3)
       '@vercel/oidc': 3.2.0
-      zod: 4.4.3
-
-  '@ai-sdk/provider-utils@4.0.42(zod@4.4.3)':
-    dependencies:
-      '@ai-sdk/provider': 3.0.14
-      '@standard-schema/spec': 1.1.0
-      eventsource-parser: 3.1.0
-      undici: 5.29.0
       zod: 4.4.3
 
   '@ai-sdk/provider-utils@5.0.25(zod@4.4.3)':
@@ -1473,10 +1340,6 @@ snapshots:
       eventsource-parser: 3.1.0
       undici: 7.29.0
       zod: 4.4.3
-
-  '@ai-sdk/provider@3.0.14':
-    dependencies:
-      json-schema: 0.4.0
 
   '@ai-sdk/provider@4.0.7':
     dependencies:
@@ -1521,8 +1384,6 @@ snapshots:
     dependencies:
       tslib: 2.8.1
     optional: true
-
-  '@fastify/busboy@2.1.1': {}
 
   '@img/colour@1.1.0':
     optional: true
@@ -1657,7 +1518,8 @@ snapshots:
   '@next/swc-win32-x64-msvc@16.3.0':
     optional: true
 
-  '@opentelemetry/api@1.9.1': {}
+  '@opentelemetry/api@1.9.1':
+    optional: true
 
   '@oxc-project/types@0.143.0': {}
 
@@ -1816,14 +1678,6 @@ snapshots:
   '@vercel/oidc@3.2.0': {}
 
   '@workflow/serde@4.1.0': {}
-
-  ai@6.0.246(zod@4.4.3):
-    dependencies:
-      '@ai-sdk/gateway': 3.0.166(zod@4.4.3)
-      '@ai-sdk/provider': 3.0.14
-      '@ai-sdk/provider-utils': 4.0.42(zod@4.4.3)
-      '@opentelemetry/api': 1.9.1
-      zod: 4.4.3
 
   ai@7.0.58(zod@4.4.3):
     dependencies:
@@ -2641,10 +2495,6 @@ snapshots:
       '@typescript/typescript-win32-x64': 7.0.2
 
   undici-types@6.21.0: {}
-
-  undici@5.29.0:
-    dependencies:
-      '@fastify/busboy': 2.1.1
 
   undici@7.29.0: {}
 

@@ -1,7 +1,7 @@
 "use client"
 
-import type { ChatSummary } from "@rulekitai/react/storage"
 import { useState } from "react"
+import type { ChatSummary } from "./storage.ts"
 
 /**
  * The saved conversations.

@@ -140,14 +140,14 @@ RULEKIT_CORPUS=my-game pnpm dev
 In your own application, the connection is a few lines:
 
 ```ts
-import { parseProfile } from "@rulekitai/agent/profile"
-import { createRulesAgent } from "@rulekitai/agent/runtime"
-import { SqliteStore } from "@rulekitai/corpus/sqlite-store"
-import { createPipeline } from "@rulekitai/pipeline/pipeline"
-import { exactCacheStage } from "@rulekitai/pipeline/stages/cache"
-import { glossaryStage } from "@rulekitai/pipeline/stages/glossary"
-import { staticAnswersStage } from "@rulekitai/pipeline/stages/static"
-import { createAskHandler } from "@rulekitai/server/handler"
+import { parseProfile } from "@rulekitai/rulekit/agent/profile"
+import { createRulesAgent } from "@rulekitai/rulekit/agent/runtime"
+import { SqliteStore } from "@rulekitai/rulekit/corpus/sqlite-store"
+import { createPipeline } from "@rulekitai/rulekit/pipeline/pipeline"
+import { exactCacheStage } from "@rulekitai/rulekit/pipeline/stages/cache"
+import { glossaryStage } from "@rulekitai/rulekit/pipeline/stages/glossary"
+import { staticAnswersStage } from "@rulekitai/rulekit/pipeline/stages/static"
+import { createAskHandler } from "@rulekitai/rulekit/server/handler"
 
 const store = SqliteStore.open("my-game/corpus.db")
 const profile = parseProfile(myProfileJson)

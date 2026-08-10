@@ -26,3 +26,4 @@ out/
 test-results/
 playwright-report/
 blob-report/
+packages/rulekit/data/

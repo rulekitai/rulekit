@@ -44,9 +44,9 @@ function doneShape(events) {
 }
 
 async function runAiSdk() {
-  const { parseProfile } = await import("@rulekitai/agent/profile")
-  const { createRulesAgent } = await import("@rulekitai/agent/runtime")
-  const { SqliteStore } = await import("@rulekitai/corpus/sqlite-store")
+  const { parseProfile } = await import("@rulekitai/rulekit/agent/profile")
+  const { createRulesAgent } = await import("@rulekitai/rulekit/agent/runtime")
+  const { SqliteStore } = await import("@rulekitai/rulekit/corpus/sqlite-store")
 
   const store = SqliteStore.open(join(CORPUS, "corpus.db"))
   const profile = parseProfile(JSON.parse(readFileSync(join(CORPUS, "profile.json"), "utf8")))
@@ -59,7 +59,7 @@ async function runAiSdk() {
 }
 
 async function runEve() {
-  const { decodeEvents } = await import("@rulekitai/agent/events")
+  const { decodeEvents } = await import("@rulekitai/rulekit/agent/events")
   const headers = { "content-type": "application/json" }
   if (env.RULEKIT_INTERNAL_SECRET) headers.authorization = `Bearer ${env.RULEKIT_INTERNAL_SECRET}`
 

@@ -1,9 +1,9 @@
 "use client"
 
-import type { ChatMessage } from "@rulekitai/react/message"
 import { type ReactNode, useCallback, useEffect, useRef } from "react"
 import { Composer } from "./composer.tsx"
 import { EmptyState } from "./empty-state.tsx"
+import type { ChatMessage } from "./message.ts"
 import { MessageRow } from "./message-row.tsx"
 import { useRuleKit } from "./provider.tsx"
 import { ThinkingIndicator } from "./thinking-indicator.tsx"

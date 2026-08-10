@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
-import { buildInstructions } from "@rulekitai/agent/instructions"
-import { parseProfile } from "@rulekitai/agent/profile"
+import { buildInstructions } from "@rulekitai/rulekit/agent/instructions"
+import { parseProfile } from "@rulekitai/rulekit/agent/profile"
 import { defineInstructions } from "eve/instructions"
 import { CORPUS_DIR } from "../lib/corpus.ts"
 

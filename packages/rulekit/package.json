@@ -1,0 +1,194 @@
+{
+  "name": "@rulekitai/rulekit",
+  "version": "0.2.0",
+  "description": "A grounded rules assistant: the corpus, the agent, the answer pipeline, the HTTP handler, and the rulekit command.",
+  "keywords": [
+    "rules",
+    "rulebook",
+    "rules-assistant",
+    "citations",
+    "grounded",
+    "rag",
+    "sqlite",
+    "ai-sdk",
+    "llm",
+    "cli"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/rulekitai/rulekit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rulekitai/rulekit.git",
+    "directory": "packages/rulekit"
+  },
+  "bugs": {
+    "url": "https://github.com/rulekitai/rulekit/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "data"
+  ],
+  "bin": {
+    "rulekit": "./dist/cli/bin.js"
+  },
+  "exports": {
+    "./corpus/schema": {
+      "types": "./dist/corpus/schema.d.ts",
+      "development": "./src/corpus/schema.ts",
+      "default": "./dist/corpus/schema.js"
+    },
+    "./corpus/types": {
+      "types": "./dist/corpus/types.d.ts",
+      "development": "./src/corpus/types.ts",
+      "default": "./dist/corpus/types.js"
+    },
+    "./corpus/load": {
+      "types": "./dist/corpus/load.d.ts",
+      "development": "./src/corpus/load.ts",
+      "default": "./dist/corpus/load.js"
+    },
+    "./corpus/build": {
+      "types": "./dist/corpus/build.d.ts",
+      "development": "./src/corpus/build.ts",
+      "default": "./dist/corpus/build.js"
+    },
+    "./corpus/store": {
+      "types": "./dist/corpus/store.d.ts",
+      "development": "./src/corpus/store.ts",
+      "default": "./dist/corpus/store.js"
+    },
+    "./corpus/sqlite-store": {
+      "types": "./dist/corpus/sqlite-store.d.ts",
+      "development": "./src/corpus/sqlite-store.ts",
+      "default": "./dist/corpus/sqlite-store.js"
+    },
+    "./corpus/json-store": {
+      "types": "./dist/corpus/json-store.d.ts",
+      "development": "./src/corpus/json-store.ts",
+      "default": "./dist/corpus/json-store.js"
+    },
+    "./corpus/text": {
+      "types": "./dist/corpus/text.d.ts",
+      "development": "./src/corpus/text.ts",
+      "default": "./dist/corpus/text.js"
+    },
+    "./agent/tools": {
+      "types": "./dist/agent/tools.d.ts",
+      "development": "./src/agent/tools.ts",
+      "default": "./dist/agent/tools.js"
+    },
+    "./agent/profile": {
+      "types": "./dist/agent/profile.d.ts",
+      "development": "./src/agent/profile.ts",
+      "default": "./dist/agent/profile.js"
+    },
+    "./agent/instructions": {
+      "types": "./dist/agent/instructions.d.ts",
+      "development": "./src/agent/instructions.ts",
+      "default": "./dist/agent/instructions.js"
+    },
+    "./agent/turn": {
+      "types": "./dist/agent/turn.d.ts",
+      "development": "./src/agent/turn.ts",
+      "default": "./dist/agent/turn.js"
+    },
+    "./agent/events": {
+      "types": "./dist/agent/events.d.ts",
+      "development": "./src/agent/events.ts",
+      "default": "./dist/agent/events.js"
+    },
+    "./agent/runtime": {
+      "types": "./dist/agent/runtime.d.ts",
+      "development": "./src/agent/runtime.ts",
+      "default": "./dist/agent/runtime.js"
+    },
+    "./agent/skills": {
+      "types": "./dist/agent/skills.d.ts",
+      "development": "./src/agent/skills.ts",
+      "default": "./dist/agent/skills.js"
+    },
+    "./pipeline/types": {
+      "types": "./dist/pipeline/types.d.ts",
+      "development": "./src/pipeline/types.ts",
+      "default": "./dist/pipeline/types.js"
+    },
+    "./pipeline/pipeline": {
+      "types": "./dist/pipeline/pipeline.d.ts",
+      "development": "./src/pipeline/pipeline.ts",
+      "default": "./dist/pipeline/pipeline.js"
+    },
+    "./pipeline/cache": {
+      "types": "./dist/pipeline/cache.d.ts",
+      "development": "./src/pipeline/cache.ts",
+      "default": "./dist/pipeline/cache.js"
+    },
+    "./pipeline/gate": {
+      "types": "./dist/pipeline/gate.d.ts",
+      "development": "./src/pipeline/gate.ts",
+      "default": "./dist/pipeline/gate.js"
+    },
+    "./pipeline/oauth": {
+      "types": "./dist/pipeline/oauth.d.ts",
+      "development": "./src/pipeline/oauth.ts",
+      "default": "./dist/pipeline/oauth.js"
+    },
+    "./pipeline/stages/static": {
+      "types": "./dist/pipeline/stages/static.d.ts",
+      "development": "./src/pipeline/stages/static.ts",
+      "default": "./dist/pipeline/stages/static.js"
+    },
+    "./pipeline/stages/static-classify": {
+      "types": "./dist/pipeline/stages/static-classify.d.ts",
+      "development": "./src/pipeline/stages/static-classify.ts",
+      "default": "./dist/pipeline/stages/static-classify.js"
+    },
+    "./pipeline/stages/static-render": {
+      "types": "./dist/pipeline/stages/static-render.d.ts",
+      "development": "./src/pipeline/stages/static-render.ts",
+      "default": "./dist/pipeline/stages/static-render.js"
+    },
+    "./pipeline/stages/cache": {
+      "types": "./dist/pipeline/stages/cache.d.ts",
+      "development": "./src/pipeline/stages/cache.ts",
+      "default": "./dist/pipeline/stages/cache.js"
+    },
+    "./pipeline/stages/glossary": {
+      "types": "./dist/pipeline/stages/glossary.d.ts",
+      "development": "./src/pipeline/stages/glossary.ts",
+      "default": "./dist/pipeline/stages/glossary.js"
+    },
+    "./pipeline/stages/agent": {
+      "types": "./dist/pipeline/stages/agent.d.ts",
+      "development": "./src/pipeline/stages/agent.ts",
+      "default": "./dist/pipeline/stages/agent.js"
+    },
+    "./server/handler": {
+      "types": "./dist/server/handler.d.ts",
+      "development": "./src/server/handler.ts",
+      "default": "./dist/server/handler.js"
+    }
+  },
+  "scripts": {
+    "build": "node ./scripts/copy-demo.mjs && tsc --build",
+    "test": "node --test src/**/*.test.ts"
+  },
+  "dependencies": {
+    "zod": "^4.4.0"
+  },
+  "peerDependencies": {
+    "ai": "^5.0.0 || ^6.0.0 || ^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
+  }
+}

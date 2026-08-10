@@ -30,7 +30,7 @@ export default defineAgent({
    * The outer bound on one session, not on one question.
    *
    * These stay wide on purpose. What bounds a single question is the step cap in
-   * `@rulekitai/agent/turn`, enforced in the channel. Eve answers a session that
+   * `@rulekitai/rulekit/agent/turn`, enforced in the channel. Eve answers a session that
    * runs out of budget by parking the turn on a prompt nobody is there to
    * answer, which is a worse outcome for a reader than a capped answer, so these
    * should only ever be reached by something pathological.
