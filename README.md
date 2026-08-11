@@ -170,6 +170,7 @@ that you can copy.
 | [`docs/architecture.md`](docs/architecture.md) | How the code makes an agent, and how one turn runs |
 | [`docs/verifying-answers.md`](docs/verifying-answers.md) | How to prove that the answers invent nothing |
 | [`docs/design-decisions.md`](docs/design-decisions.md) | Why one file, no data collection, and no price |
+| [`CHANGELOG.md`](CHANGELOG.md) | What changed in each release |
 
 The directory `.claude/skills/` contains six skills. They tell an AI coding
 agent how to add rulekit to an application. Read the `rulekit` skill first. It

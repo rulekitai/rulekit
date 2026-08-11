@@ -109,6 +109,11 @@ push a version tag. It stores no npm token. npm trusts this repository and this
 workflow file through OpenID Connect, and it issues a short-lived credential for
 one publish.
 
+**Write the changelog before you tag.** In `CHANGELOG.md`, rename the
+`Unreleased` heading to the version you are about to release, add today's date,
+and open a fresh empty `Unreleased` above it. A tag pushed before that step
+ships a release that nothing describes.
+
 ```bash
 git tag v0.2.0
 git push origin v0.2.0
