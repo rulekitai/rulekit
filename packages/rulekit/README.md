@@ -12,16 +12,35 @@ Part of [rulekit](https://github.com/rulekitai/rulekit).
 
 ```bash
 pnpm add @rulekitai/rulekit
-pnpm add ai                  # only if you use the agent
+pnpm add ai
 ```
+
+Install `ai` unless you serve rule lookups alone. The free stages answer a rule
+number, a legality question, and a keyword definition by reading rows, and the
+agent answers every other shape of question. So an assistant that people talk
+to needs the agent, and only a lookup service does not.
 
 ## Use
 
 ```bash
-npx rulekit init my-game       # copy the example corpus
+npx rulekit init my-game       # copy a corpus to start from
 npx rulekit validate my-game   # names every problem
 npx rulekit build my-game      # writes my-game/corpus.db
+npx rulekit ask my-game "what is Swift" --json   # one object, for a script
+npx rulekit --version
 ```
+
+Four corpora travel inside this package: `demo` (the default), `chess`,
+`texas-holdem`, and `estate-line`. Name one with `--corpus`:
+
+```bash
+npx rulekit init my-game --corpus chess
+```
+
+All four carry a CC0 1.0 dedication, so you may copy one and sell what you
+build on it. The Riftbound corpus is not here. Riot Games owns that data and
+permits non-commercial use only, so it stays in
+[the repository](https://github.com/rulekitai/rulekit/tree/main/data/riftbound).
 
 ```ts
 import { SqliteStore } from "@rulekitai/rulekit/corpus/sqlite-store"
@@ -60,9 +79,32 @@ reaches the agent.
 | `@rulekitai/rulekit/agent/*` | Tools, instructions, procedures, and an AI SDK runtime |
 | `@rulekitai/rulekit/pipeline/*` | The stages, the cache, the permission check, and credentials |
 | `@rulekitai/rulekit/server/*` | The HTTP handler |
+| `@rulekitai/rulekit/sqlite-warning` | Hides Node's SQLite notice, described below |
+
+**There is no root import.** `import ... from "@rulekitai/rulekit"` throws a
+message that names the subpaths instead, because every part is taken on its
+own: the corpus store without the agent, or the agent without the command.
 
 Add [`@rulekitai/ui`](https://www.npmjs.com/package/@rulekitai/ui) for React
 hooks and chat components.
+
+## The SQLite notice
+
+The corpus store reads `node:sqlite`, which ships inside Node and is still
+marked experimental. Node therefore prints this before your server starts:
+
+```
+ExperimentalWarning: SQLite is an experimental feature and might change at any time
+```
+
+Nothing is wrong. The `rulekit` command hides that one warning by itself. A
+server of your own decides for itself, in one line:
+
+```ts
+import { hideSqliteExperimentalWarning } from "@rulekitai/rulekit/sqlite-warning"
+
+hideSqliteExperimentalWarning() // hides that one notice, prints every other warning
+```
 
 ## Documentation
 
@@ -72,6 +114,7 @@ hooks and chat components.
 
 ## Licence
 
-Apache 2.0. See the `LICENSE` file beside this one. The example corpora carry
-their own terms, and this package ships only the public-domain demo corpus that
-`rulekit init` copies.
+Apache 2.0. See the `LICENSE` file beside this one. The corpora carry their own
+terms. This package ships four, and every one of them carries a CC0 1.0
+dedication, so `rulekit init` hands you something you may sell what you build
+on.

@@ -13,7 +13,105 @@ would mean inventing one.
 
 ## [Unreleased]
 
-Nothing yet.
+Somebody built a Riftbound rules bot with Vite and React, from the published
+0.2.0 packages and nothing else, and wrote down every place the project failed
+them. This release is that list, worked through. Most of it has one cause: the
+documentation, the skills, and the command messages were written by people
+standing inside this repository, and a reader who installs from npm stands
+somewhere else, where `data/`, `docs/`, `packages/`, and `examples/` do not
+exist.
+
+**One thing to change when you upgrade.** Nothing, unless you passed
+`--conditions=development` to run this project's source. That condition is now
+called `rulekit-source`.
+
+### Fixed
+
+- **A Vite application can now install these packages and start.** Every
+  subpath listed its TypeScript source under a condition named `development`.
+  Vite matches that name with no instruction from anybody, so it loaded raw
+  TypeScript out of `node_modules`, and pnpm keeps a package behind a symbolic
+  link, from which the package cannot reach its own dependencies. The dev
+  server then failed on every request, and neither message it printed named
+  either rulekit package. The condition is now called `rulekit-source`, which
+  no build tool matches unless it is asked. A test in each package fails if the
+  old name comes back.
+
+- **Four corpora now travel inside the package.** The skills promised five and
+  the package held one, so anybody building an assistant for a real game had to
+  clone this repository and copy a directory by hand, with nothing telling them
+  to. `rulekit init <dir> --corpus <name>` now copies `demo`, `chess`,
+  `texas-holdem`, or `estate-line`. All four carry a CC0 1.0 dedication. The
+  Riftbound corpus stays here, because Riot Games owns that data and permits
+  non-commercial use only, and the command says so when somebody asks for it.
+
+- **The model provider's failure text no longer reaches the reader.** A
+  provider writes its failures for whoever holds the account. With no
+  credential set, readers saw the hosting company named, an account page
+  linked, and instructions to run commands on a machine they do not have. With
+  a spent budget they saw "Current spend: $10.00, limit: $10.00. Please contact
+  your administrator", which is the operator's billing state. The reader now
+  gets one plain sentence and the operator gets the detail in the server log.
+  Pass `unavailableMessage` to `createAskHandler` to choose the sentence, or
+  `(detail) => detail` on an internal tool where every reader is an operator.
+
+- **The disclaimer can tell the truth.** `disclaimer` on `RuleKitProvider` now
+  also takes a function, which receives whatever served the answer. One fixed
+  sentence saying an AI wrote the answer was false for most answers, because
+  most answers come from the free stages where no model runs, and it sat
+  directly under a trace line saying the answer was read from the rules data.
+  `answerSource` in `@rulekitai/ui/message` turns a stage name into `"rules"`
+  or `"model"`.
+
+- **Every document a shipped message names can now be opened.** The help text,
+  the `init` and `eval` messages, and the notice inside the Riftbound corpus
+  all named `docs/corpus-format.md`, which npm does not carry. They now give
+  the full address. The notice reaches end users through some applications, so
+  that one was a dead path shown to readers with no directory at all.
+
+- **A missed question names a README section that exists.** It sent readers to
+  "Run it", which no README has had for some time. A test now reads the
+  headings out of the README and fails if the message drifts again.
+
+### Added
+
+- **`rulekit --version`, and `rulekit ask <dir> "<question>" --json`.** A script
+  can now check which version it calls and read a field out of an answer,
+  rather than matching prose with a pattern.
+
+- **A root import that explains itself.** `import ... from "@rulekitai/rulekit"`
+  failed in the module resolver, which named no subpath and showed no example.
+  Both packages now throw a sentence that lists the subpaths.
+
+- **`hideSqliteExperimentalWarning` from `@rulekitai/rulekit/sqlite-warning`.**
+  Node marks its own SQLite module experimental and announces it before your
+  server starts. The command has hidden that one warning for a while; a host
+  application can now do the same in one line, and keep every other warning.
+  The library never calls it: which warnings a program prints is the program's
+  decision.
+
+- **A browser test that a card link reaches the host's card renderer.** The
+  whole card feature did nothing before 0.3.0 and no test noticed, because a
+  card's name is printed either way and reading the answer cannot tell the
+  difference. The example application now draws cards with its own component,
+  which is also the answer for anybody whose corpus has no pictures: no corpus
+  ships any, because the pictures belong to whoever owns the game.
+
+### Changed
+
+- **The six skills now say where the reader is standing.** Every command and
+  path had one form, and it was the one that only works inside this repository.
+  Each now gives the `npx` form for an installed package beside the `pnpm` form
+  for a clone.
+
+- **The skills describe both shapes the ask endpoint answers in.** A question a
+  free stage answers returns one JSON object with no `type` field; only a
+  question that reaches the agent returns lines. The `rulekit-serve` skill
+  documented the lines alone, and its own example question takes the other
+  path, so following it exactly produced the opposite of what it predicted.
+
+- **The README no longer makes `ai` look optional.** The agent answers every
+  question the free stages miss, so nearly every real application installs it.
 
 ## [0.3.0] - 2026-08-11
 

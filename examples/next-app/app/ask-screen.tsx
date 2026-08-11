@@ -2,6 +2,7 @@
 
 import { Chat } from "@rulekitai/ui/chat"
 import { ChatSessionList } from "@rulekitai/ui/chat-session-list"
+import { answerSource } from "@rulekitai/ui/message"
 import { RuleKitProvider } from "@rulekitai/ui/provider"
 import { useAskStream } from "@rulekitai/ui/use-ask-stream"
 import { useChatSessions } from "@rulekitai/ui/use-chat-sessions"
@@ -14,6 +15,38 @@ import { type ReactNode, useCallback, useEffect, useState } from "react"
  * this example needs no login and no database, and a person who clones the
  * repository has a working chat with history the moment it starts.
  */
+
+/**
+ * A card, drawn as its printed name.
+ *
+ * A corpus stores a relative image path and no pictures, because the pictures
+ * belong to whoever owns the game. An app with no pictures still wants a reader
+ * to see that the assistant matched a real card, so the name is marked and the
+ * path is kept where somebody debugging can read it. An app that does host
+ * pictures returns an `<img>` here instead, or passes `cardImageUrl` and no
+ * renderer at all.
+ */
+function CardChip(card: { name: string; path: string; inline: boolean }) {
+  return (
+    <span className="app-card" title={card.path}>
+      {card.name}
+    </span>
+  )
+}
+
+/**
+ * A note under the answer that is true of that answer.
+ *
+ * Most questions here never reach a model: a rule number and a keyword are read
+ * out of the rules data in a few milliseconds. Saying "Written by an AI" under
+ * one of those told the reader the opposite of what happened, and it disagreed
+ * with the trace line directly above it.
+ */
+function disclaimerFor(servedBy: string): string {
+  return answerSource(servedBy) === "model"
+    ? "Written by an AI from the rules data. Check anything that decides a game."
+    : "Read from the rules data, with no AI. Check anything that decides a game."
+}
 
 export function AskScreen(props: {
   title: string
@@ -71,8 +104,9 @@ export function AskScreen(props: {
   return (
     <RuleKitProvider
       cardScheme={props.cardScheme}
+      renderers={{ card: CardChip }}
       suggestions={props.suggestions}
-      disclaimer="Written by an AI from the rules data. Check anything that decides a game."
+      disclaimer={disclaimerFor}
       legalNote={props.legalNote}
     >
       <div className="app-shell">

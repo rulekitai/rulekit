@@ -9,9 +9,11 @@ with assets that Riot Games owns. Riot Games does not endorse or sponsor this
 project.
 
 That policy permits non-commercial community use only. To use rulekit in a
-commercial product, use one of the four public-domain corpora in data/, or
-supply your own corpus. The file docs/corpus-format.md states the format field
-by field.
+commercial product, use one of the four public-domain corpora that ship with
+the package (demo, chess, texas-holdem, estate-line), or supply your own
+corpus. This document states the format field by field:
+
+  https://github.com/rulekitai/rulekit/blob/main/docs/corpus-format.md
 
 Riftbound and Riot Games are trademarks of Riot Games, Inc. This project names
 them only to state which data it reads.

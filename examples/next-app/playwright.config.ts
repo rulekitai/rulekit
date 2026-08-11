@@ -48,10 +48,17 @@ export default defineConfig({
     // Building it here takes about a second and removes a setup step that
     // nobody can guess.
     //
+    // THE WORKSPACE PACKAGES ARE BUILT TOO, for the same reason.
+    //
+    // Both packages point every import at their compiled output, and a fresh
+    // clone holds none. Without this step Next reports a missing module for
+    // every rulekit import, and the message names no command that would write
+    // one.
+    //
     // Then production mode, because that is what the streaming path behaves
     // like. `next dev` re-compiles on the first request and the extra seconds
     // land inside the assertions that time how fast a free answer arrives.
-    command: `pnpm -w rulekit build ${CORPUS} && pnpm build && pnpm exec next start --port ${PORT}`,
+    command: `pnpm -w rulekit build ${CORPUS} && pnpm -w build && pnpm build && pnpm exec next start --port ${PORT}`,
     port: PORT,
     reuseExistingServer: !process.env.CI,
     timeout: 300_000,

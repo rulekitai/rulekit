@@ -227,6 +227,16 @@ teaches nothing.
 The field `png_uri` holds a relative path. Nothing shows the image until a host
 application states where the images are, with `cardImageUrl` on the provider.
 
+**No corpus here ships the pictures, and none of them can.** A card picture
+belongs to whoever owns the game, and this project grants no rights to any of
+them. So `cardImageUrl` has nothing to point at until an application hosts its
+own copies, and it is legal for that application to do so.
+
+**Draw the name instead, and mark it.** This works with every corpus, and a
+reader still sees that the assistant matched a real card rather than typing a
+word. Pass `renderers.card` and no `cardImageUrl`. The example application in
+this repository does exactly that, in `CardChip`.
+
 ## errata.json and banlist.json
 
 Both files name a card inside the row, so a legality answer needs no card

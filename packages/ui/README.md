@@ -42,6 +42,11 @@ function Assistant() {
 the hook above supplies the messages. `RuleKitProvider` must be a parent,
 because the components read the card link scheme and the legal note from it.
 
+**Every component and hook has its own subpath, as above.** An application that
+wants the hooks alone never loads the styled components, so there is no root
+import: `import ... from "@rulekitai/ui"` throws a message that names the
+subpaths instead.
+
 The hooks carry no styling, so you can use them without the components. The
 components read CSS variables, so your theme controls their appearance.
 

@@ -45,9 +45,9 @@ looks like.
 ## Step 2: run it
 
 ```bash
-pnpm rulekit eval <corpus>
-pnpm rulekit eval <corpus> --model openai/gpt-5 --out result.json
-pnpm rulekit eval <corpus> --regrade result.json    # no model calls
+npx rulekit eval <corpus>
+npx rulekit eval <corpus> --model openai/gpt-5 --out result.json
+npx rulekit eval <corpus> --regrade result.json    # no model calls
 ```
 
 It needs a model key and takes about ten minutes. **Run it before adopting a

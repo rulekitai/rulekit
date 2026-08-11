@@ -85,7 +85,9 @@ export async function commandEval(options: EvalOptions): Promise<number> {
     file = fileSchema.parse(raw)
   } catch (error) {
     err(`No usable eval.json in ${options.corpusDir}: ${String(error)}`)
-    err("See docs/corpus-format.md for the shape.")
+    // The full address, because a reader who installed from npm holds no copy
+    // of the documents in this repository.
+    err("The shape: https://github.com/rulekitai/rulekit/blob/main/docs/corpus-format.md")
     return 2
   }
 

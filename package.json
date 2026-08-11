@@ -10,16 +10,16 @@
     "node": ">=22.5.0"
   },
   "scripts": {
-    "build": "node packages/rulekit/scripts/copy-demo.mjs && tsc --build",
+    "build": "node packages/rulekit/scripts/copy-corpora.mjs && tsc --build",
     "check-types": "tsc --build --force",
     "clean": "tsc --build --clean",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
-    "test": "node --conditions=development --no-warnings --test \"packages/*/src/**/*.test.ts\"",
-    "rulekit": "node --conditions=development --no-warnings packages/rulekit/src/cli/bin.ts",
+    "test": "node --conditions=rulekit-source --no-warnings --test \"packages/*/src/**/*.test.ts\"",
+    "rulekit": "node --conditions=rulekit-source --no-warnings packages/rulekit/src/cli/bin.ts",
     "test:e2e": "pnpm --filter rulekit-example test:e2e",
-    "compare-runtimes": "node --conditions=development --no-warnings scripts/compare-runtimes.mjs"
+    "compare-runtimes": "node --conditions=rulekit-source --no-warnings scripts/compare-runtimes.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",

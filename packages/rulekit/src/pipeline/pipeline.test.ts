@@ -291,15 +291,24 @@ describe("the pipeline", () => {
   })
 
   test("reports the whole run's latency, not one stage's share", async () => {
+    // THE BOUND IS LOOSE ON PURPOSE. A timer may fire a fraction of a
+    // millisecond early, and the latency is counted from a clock that reports
+    // whole milliseconds, so a sleep of exactly N can be measured as N minus
+    // one. This asserted the sleep exactly and failed about one run in ten.
+    // What the test is for is the gap between the stage that answered, which
+    // takes no measurable time here, and the whole run.
     const slow: Stage = {
       name: "slow",
       async run() {
-        await new Promise((r) => setTimeout(r, 12))
+        await new Promise((r) => setTimeout(r, 30))
         return null
       },
     }
     const result = await build([slow, agentStage(fakeAgent("done"))]).run({ question: "q" })
-    assert.ok((result.answer?.latencyMs ?? 0) >= 12)
+    assert.ok(
+      (result.answer?.latencyMs ?? 0) >= 20,
+      `the answer reported ${result.answer?.latencyMs} ms, which cannot include a stage that slept 30`,
+    )
   })
 
   test("answers a rule-number question from the rows, with no model", async () => {

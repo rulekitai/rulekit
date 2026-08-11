@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
-import { type ChatMessage, classifyTurn, toHistory, toServedBy } from "./message.ts"
+import { answerSource, type ChatMessage, classifyTurn, toHistory, toServedBy } from "./message.ts"
 import { LocalChatStorage, NoChatStorage, titleFrom } from "./storage.ts"
 
 const message = (over: Partial<ChatMessage>): ChatMessage => ({
@@ -8,6 +8,26 @@ const message = (over: Partial<ChatMessage>): ChatMessage => ({
   role: "user",
   text: "hello",
   ...over,
+})
+
+describe("whether a model wrote the answer", () => {
+  test("a free stage counts as the rules, so a notice can say so", () => {
+    // The reader was told "Written by an AI" under answers that no model
+    // touched, while the trace line above said the answer came from the rules
+    // data. A host app tests this to write a notice that stays true.
+    for (const stage of ["static", "glossary"]) assert.equal(answerSource(stage), "rules")
+  })
+
+  test("the agent counts as a model", () => {
+    for (const stage of ["agent", "cheap"]) assert.equal(answerSource(stage), "model")
+  })
+
+  test("a saved answer counts as the rules, because its own name is gone", () => {
+    // A cached answer keeps no record of what wrote it first. "Checked against
+    // the rules data" is true either way; "no model was involved" is not.
+    assert.equal(answerSource("cache"), "rules")
+    assert.equal(answerSource(undefined), "rules")
+  })
 })
 
 describe("what counts as conversation", () => {

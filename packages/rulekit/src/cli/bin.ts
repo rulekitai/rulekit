@@ -9,6 +9,7 @@ import { buildDatabase } from "../corpus/build.ts"
 import { type CorpusProblem, checkIntegrity, loadCorpus } from "../corpus/load.ts"
 import { SqliteStore } from "../corpus/sqlite-store.ts"
 import type { Corpus } from "../corpus/types.ts"
+import { hideSqliteExperimentalWarning } from "../sqlite-warning.ts"
 
 /**
  * The `rulekit` command.
@@ -23,57 +24,81 @@ type Problem = CorpusProblem
 const out = (line = "") => stdout.write(`${line}\n`)
 const err = (line: string) => stderr.write(`${line}\n`)
 
-/**
- * Hide one warning, and print every other one.
- *
- * `node:sqlite` ships inside Node and is still marked experimental, so Node
- * prints a warning before every command. It names nothing a reader can act on,
- * and it arrives before the output they asked for. The scripts in this
- * repository pass `--no-warnings`, so nobody here saw it; a reader who installs
- * the command from npm sees it every time.
- *
- * The filter names that one warning. Node prints a warning through a default
- * listener, so removing the listeners first is what stops the duplicate.
- */
-process.removeAllListeners("warning")
-process.on("warning", (warning) => {
-  const isSqliteNotice = warning.name === "ExperimentalWarning" && /SQLite/i.test(warning.message)
-  if (!isSqliteNotice) err(warning.stack ?? `${warning.name}: ${warning.message}`)
-})
+// A command is a program, so it decides which warnings it prints. See the
+// module for why this is not the library's decision to make.
+hideSqliteExperimentalWarning()
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 
 /**
- * Where `rulekit init` copies its starting corpus from.
+ * The corpora that ship inside the package, newest reader first.
+ *
+ * All four carry a CC0 1.0 dedication, so anybody may copy one and sell what
+ * they build on it. The Riftbound corpus is not here and never will be: Riot
+ * Games owns that data, and their policy permits non-commercial use only.
+ */
+const SHIPPED_CORPORA = ["demo", "chess", "texas-holdem", "estate-line"] as const
+
+/**
+ * Where `rulekit init` copies a corpus from.
  *
  * Two places, and the first that exists wins. An installed package holds its
  * own copy under `data/`, which the build puts there, because npm ships only
  * files from inside the package directory. A checkout of this repository reads
- * the original at the root, so `init` works before anybody runs a build.
+ * the originals at the root, so `init` works before anybody runs a build, and
+ * `--corpus riftbound` works there too.
  *
  * An earlier version resolved one path relative to the repository root. It
  * worked in the repository and pointed at nothing after an install from npm,
  * so `init` copied nothing and reported success.
  */
-const DEMO_CORPUS_CANDIDATES = [
-  resolve(HERE, "../../data/demo"), // inside the installed or built package
-  resolve(HERE, "../../../../data/demo"), // this repository, running from src
+const CORPUS_ROOTS = [
+  resolve(HERE, "../../data"), // inside the installed or built package
+  resolve(HERE, "../../../../data"), // this repository, running from src
 ]
+
+/** The version of this package, which a script may need to report. */
+function packageVersion(): string {
+  // Both the compiled command and the source command sit two directories below
+  // the package root, so one path serves both.
+  const manifest = JSON.parse(readFileSync(resolve(HERE, "../../package.json"), "utf8")) as {
+    version: string
+  }
+  return manifest.version
+}
+
+/** The corpus format, at an address that a reader outside this repository can open. */
+const CORPUS_FORMAT_DOC = "https://github.com/rulekitai/rulekit/blob/main/docs/corpus-format.md"
+
+/**
+ * The README section that shows how to serve an agent, and its address.
+ *
+ * A message once sent a reader to a section called "Run it". No README has had
+ * that heading for some time, so the reader arrived nowhere. A test beside this
+ * file reads the headings out of the README and fails if this pair drifts
+ * again. The full address is here because a reader who installed from npm holds
+ * no copy of the README this names.
+ */
+export const AGENT_README_SECTION = "Put it in your application"
+export const AGENT_README_URL = "https://github.com/rulekitai/rulekit#put-it-in-your-application"
 
 const USAGE = `rulekit — a grounded rules assistant over your own corpus
 
 Usage:
   rulekit validate <dir>          Check a corpus and name every problem
   rulekit build <dir> [--out f]   Compile a corpus to a SQLite database
-  rulekit init <dir>              Copy the example corpus as a starting point
+  rulekit init <dir> [--corpus c] Copy a corpus as a starting point.
+                                  Default demo. One of: ${SHIPPED_CORPORA.join(", ")}.
   rulekit ask <dir> "<question>"  Ask a rule-number or keyword question, with no
-                                  model. This runs the free stages only, so it
+    [--json]                      model. This runs the free stages only, so it
                                   never reaches the agent. Use it to check a
                                   corpus, not to ask the whole range of
                                   questions a served assistant answers.
+                                  --json prints one JSON object, for a script.
   rulekit eval <dir> [options]    Run the corpus's eval.json through the agent
                                   and check nothing was invented. Needs a model
                                   credential. Exits non-zero on any fabrication.
+  rulekit --version               Print the version of this package
 
 eval options:
   --model <id>     Model to grade. Default anthropic/claude-sonnet-5.
@@ -82,7 +107,8 @@ eval options:
   --step-cap <n>   Cap model calls per question. Default none, as in production.
   --regrade <file> Grade a previous run's answers again, with no model calls.
 
-Every corpus is a directory of JSON files. See docs/corpus-format.md.
+Every corpus is a directory of JSON files. The format:
+${CORPUS_FORMAT_DOC}
 `
 
 /** Print problems in a form somebody can act on, newest file first. */
@@ -256,18 +282,26 @@ async function commandBuild(dir: string, outFile: string | null): Promise<number
   return 0
 }
 
-async function commandInit(dir: string): Promise<number> {
-  const source = DEMO_CORPUS_CANDIDATES.find((path) => existsSync(path))
+async function commandInit(dir: string, corpus = "demo"): Promise<number> {
+  const source = CORPUS_ROOTS.map((root) => join(root, corpus)).find((path) => existsSync(path))
   if (!source) {
-    err("The example corpus is missing from this installation. Reinstall the package.")
+    // Name what this installation actually holds. The four that ship are the
+    // whole answer for anybody who installed from npm; Riftbound lives only in
+    // the repository, because Riot Games owns that data.
+    err(`No corpus called "${corpus}" is installed.`)
+    err(`This package ships: ${SHIPPED_CORPORA.join(", ")}.`)
+    err("The Riftbound corpus is in the repository only, at data/riftbound:")
+    err("  https://github.com/rulekitai/rulekit/tree/main/data/riftbound")
     return 1
   }
   await mkdir(dir, { recursive: true })
-  await cp(source, dir, { recursive: true })
-  out(`Copied the example corpus to ${dir}`)
+  // corpus.db is a build artefact. Copying one compiled from another directory
+  // would answer questions from rules that the JSON beside it no longer states.
+  await cp(source, dir, { recursive: true, filter: (from) => !from.endsWith("corpus.db") })
+  out(`Copied the ${corpus} corpus to ${dir}`)
   out("")
   out("Next:")
-  out(`  1. Edit the JSON files in ${dir}. See docs/corpus-format.md.`)
+  out(`  1. Edit the JSON files in ${dir}. The format: ${CORPUS_FORMAT_DOC}`)
   out(`  2. rulekit validate ${dir}`)
   out(`  3. rulekit build ${dir}`)
   return 0
@@ -280,7 +314,7 @@ async function commandInit(dir: string): Promise<number> {
  * stages cannot answer reports that plainly, which is the honest result rather
  * than a failure.
  */
-async function commandAsk(dir: string, question: string): Promise<number> {
+async function commandAsk(dir: string, question: string, asJson = false): Promise<number> {
   const result = await loadCorpus(dir)
   if (!result.ok) {
     err("The corpus could not be read. Run `rulekit validate` to see why.")
@@ -299,7 +333,9 @@ async function commandAsk(dir: string, question: string): Promise<number> {
   try {
     profile = parseProfile(JSON.parse(await readFile(join(dir, "profile.json"), "utf8")))
   } catch {
-    out("(no profile.json — using defaults)\n")
+    // A note for a person reading the output. It is left out of the JSON, which
+    // a script parses as one object and would choke on.
+    if (!asJson) out("(no profile.json — using defaults)\n")
   }
 
   const pipeline = createPipeline({
@@ -310,6 +346,8 @@ async function commandAsk(dir: string, question: string): Promise<number> {
   const answered = await pipeline.run({ question })
   await store.close()
 
+  const trace = answered.trace.map((step) => ({ stage: step.stage, outcome: step.outcome }))
+
   if (!answered.answer) {
     // A miss has two causes that read alike from outside, so name which one it
     // was. A question the classifier never matched and a rule number the corpus
@@ -319,9 +357,14 @@ async function commandAsk(dir: string, question: string): Promise<number> {
     const asked = classify(question)
     const missingRule = asked.intent === "RULE_N" ? asked.ruleNumber : null
 
+    if (asJson) {
+      out(JSON.stringify({ question, answered: false, missingRule, trace }))
+      return 0
+    }
+
     if (missingRule) out(`This corpus holds no rule ${missingRule}.`)
     else out(`No free stage could answer this. It would go to the agent, and the agent needs a model key.`)
-    out(`Stages tried: ${answered.trace.map((t) => `${t.stage}=${t.outcome}`).join(", ")}`)
+    out(`Stages tried: ${trace.map((t) => `${t.stage}=${t.outcome}`).join(", ")}`)
 
     const where = relative(cwd(), dir) || dir
     const rule = result.corpus.rules.find((r) => r.rule_type !== "section_header" && r.content.trim() !== "")
@@ -329,7 +372,16 @@ async function commandAsk(dir: string, question: string): Promise<number> {
     out(`\nThe free stages answer two shapes of question:`)
     if (rule) out(`  rulekit ask ${where} "what does rule ${rule.rule_number} say"`)
     if (term) out(`  rulekit ask ${where} "what is ${term.term}"`)
-    out(`\nThe agent answers every other question. README.md, "Run it", starts one.`)
+    out(`\nThe agent answers every other question. The README section "${AGENT_README_SECTION}" starts one:`)
+    out(`  ${AGENT_README_URL}`)
+    return 0
+  }
+
+  if (asJson) {
+    // `usage` holds what the answer cost, which no free stage spends. Every
+    // other field is printed as the pipeline produced it.
+    const { usage: _usage, ...answer } = answered.answer
+    out(JSON.stringify({ question, answered: true, ...answer, trace }))
     return 0
   }
   out(`[served by ${answered.answer.servedBy} in ${answered.answer.latencyMs} ms]\n`)
@@ -347,7 +399,7 @@ async function main(): Promise<number> {
   // A flag's VALUE is not a positional argument. Listing the value-taking flags
   // is what stops `--model anthropic/x` leaving "anthropic/x" to be read as the
   // corpus directory.
-  const VALUE_FLAGS = new Set(["--out", "--model", "--only", "--step-cap", "--regrade"])
+  const VALUE_FLAGS = new Set(["--out", "--model", "--only", "--step-cap", "--regrade", "--corpus"])
   const positional = rest.filter(
     (arg, index) => !arg.startsWith("--") && !VALUE_FLAGS.has(rest[index - 1] ?? ""),
   )
@@ -370,17 +422,17 @@ async function main(): Promise<number> {
     }
     case "init": {
       if (!positional[0]) {
-        err("Usage: rulekit init <dir>")
+        err(`Usage: rulekit init <dir> [--corpus ${SHIPPED_CORPORA.join("|")}]`)
         return 2
       }
-      return commandInit(resolve(positional[0]))
+      return commandInit(resolve(positional[0]), flag("corpus") ?? "demo")
     }
     case "ask": {
       if (!positional[0] || !positional[1]) {
-        err('Usage: rulekit ask <dir> "<question>"')
+        err('Usage: rulekit ask <dir> "<question>" [--json]')
         return 2
       }
-      return commandAsk(resolve(positional[0]), positional.slice(1).join(" "))
+      return commandAsk(resolve(positional[0]), positional.slice(1).join(" "), argv.includes("--json"))
     }
     case "eval": {
       if (!positional[0]) {
@@ -398,6 +450,11 @@ async function main(): Promise<number> {
         regradeFile: flag("regrade") ? resolve(flag("regrade") as string) : null,
       })
     }
+    case "--version":
+    case "-v":
+      // The bare version and nothing else, so a script can read it whole.
+      out(packageVersion())
+      return 0
     case "--help":
     case "-h":
     case "help":
@@ -443,4 +500,13 @@ if (isMainModule(process.argv[1], import.meta.url)) {
     })
 }
 
-export { commandAsk, commandBuild, commandInit, commandValidate, main, reportProblems }
+export {
+  commandAsk,
+  commandBuild,
+  commandInit,
+  commandValidate,
+  main,
+  packageVersion,
+  reportProblems,
+  SHIPPED_CORPORA,
+}

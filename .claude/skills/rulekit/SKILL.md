@@ -32,23 +32,37 @@ Read this page, pick the branch, then open that skill.
 
 Most integrations need `rulekit-serve` and `rulekit-interface` only.
 
-## Check the ground first
+## Know where you are standing
 
-Run these before you plan anything. They tell you which branch applies.
+Every command below has two forms, and which one works depends on where the
+user's project sits. Decide this before you plan anything.
+
+| You are | Corpora live in | Run the command as |
+|---|---|---|
+| In a project that installed from npm | The package, reached by `rulekit init` | `npx rulekit ...` |
+| In a clone of the rulekit repository | `data/`, at the root | `pnpm rulekit ...` |
+
+Then check the ground:
 
 ```bash
-ls data/                  # which games ship
-cat data/*/profile.json   # whether a profile already exists
-node --version            # 22.5 or newer
+node --version              # 22.5 or newer
+npx rulekit --version       # the package is installed, and which version
+ls data/                    # ONLY in a clone of the repository
 ```
 
-**Five corpora already ship**, so most apps need no corpus work: `riftbound`,
-`chess`, `texas-holdem`, `estate-line`, and `demo`. Point at one and skip
-`rulekit-corpus`.
+**Four corpora travel inside the package**: `demo` (an invented card game),
+`chess`, `texas-holdem`, and `estate-line`. Copy one and skip `rulekit-corpus`:
 
-**Four of the five are public domain.** `riftbound` is Riot Games' property and
-permits non-commercial use only, so a commercial app must use one of the others
-or supply its own corpus.
+```bash
+npx rulekit init my-game --corpus chess
+```
+
+All four carry a CC0 1.0 dedication, so a commercial product may use them.
+
+**The Riftbound corpus is in the repository only.** Riot Games owns that data
+and permits non-commercial use only, so it does not travel inside a package
+that anybody may sell. To use it, clone the repository and copy
+`data/riftbound/` into the project.
 
 ## The shape of a finished integration
 
@@ -59,14 +73,15 @@ their-app/
 └── corpus.db        → built once by `rulekit build`
 ```
 
-Three files change in their app. Nothing inside `packages/` changes.
+Three files change in their app. Nothing inside the installed packages changes.
 
 ## Completion criterion
 
 The integration is done when all four are true:
 
-- `pnpm rulekit ask <corpus> "what does rule <n> say"` prints that rule. This
-  command runs the free stages only, so ask it a rule number or a keyword.
+- `npx rulekit ask <corpus> "what does rule <n> say"` prints that rule. This
+  command runs the free stages only, so ask it a rule number or a keyword. Add
+  `--json` to read the answer from a script.
 - Their own route answers a question over HTTP.
 - Their interface shows the answer as it streams.
-- `pnpm rulekit validate <corpus>` prints `Valid.`
+- `npx rulekit validate <corpus>` prints `Valid.`

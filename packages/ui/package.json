@@ -32,75 +32,80 @@
     "src"
   ],
   "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "rulekit-source": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
     "./styles.css": "./src/styles.css",
     "./provider": {
       "types": "./dist/provider.d.ts",
-      "development": "./src/provider.tsx",
+      "rulekit-source": "./src/provider.tsx",
       "default": "./dist/provider.js"
     },
     "./chat": {
       "types": "./dist/chat.d.ts",
-      "development": "./src/chat.tsx",
+      "rulekit-source": "./src/chat.tsx",
       "default": "./dist/chat.js"
     },
     "./message-row": {
       "types": "./dist/message-row.d.ts",
-      "development": "./src/message-row.tsx",
+      "rulekit-source": "./src/message-row.tsx",
       "default": "./dist/message-row.js"
     },
     "./composer": {
       "types": "./dist/composer.d.ts",
-      "development": "./src/composer.tsx",
+      "rulekit-source": "./src/composer.tsx",
       "default": "./dist/composer.js"
     },
     "./answer-markdown": {
       "types": "./dist/answer-markdown.d.ts",
-      "development": "./src/answer-markdown.tsx",
+      "rulekit-source": "./src/answer-markdown.tsx",
       "default": "./dist/answer-markdown.js"
     },
     "./answer-trace": {
       "types": "./dist/answer-trace.d.ts",
-      "development": "./src/answer-trace.tsx",
+      "rulekit-source": "./src/answer-trace.tsx",
       "default": "./dist/answer-trace.js"
     },
     "./token-text": {
       "types": "./dist/token-text.d.ts",
-      "development": "./src/token-text.tsx",
+      "rulekit-source": "./src/token-text.tsx",
       "default": "./dist/token-text.js"
     },
     "./empty-state": {
       "types": "./dist/empty-state.d.ts",
-      "development": "./src/empty-state.tsx",
+      "rulekit-source": "./src/empty-state.tsx",
       "default": "./dist/empty-state.js"
     },
     "./thinking-indicator": {
       "types": "./dist/thinking-indicator.d.ts",
-      "development": "./src/thinking-indicator.tsx",
+      "rulekit-source": "./src/thinking-indicator.tsx",
       "default": "./dist/thinking-indicator.js"
     },
     "./chat-session-list": {
       "types": "./dist/chat-session-list.d.ts",
-      "development": "./src/chat-session-list.tsx",
+      "rulekit-source": "./src/chat-session-list.tsx",
       "default": "./dist/chat-session-list.js"
     },
     "./message": {
       "types": "./dist/message.d.ts",
-      "development": "./src/message.ts",
+      "rulekit-source": "./src/message.ts",
       "default": "./dist/message.js"
     },
     "./storage": {
       "types": "./dist/storage.d.ts",
-      "development": "./src/storage.ts",
+      "rulekit-source": "./src/storage.ts",
       "default": "./dist/storage.js"
     },
     "./use-ask-stream": {
       "types": "./dist/use-ask-stream.d.ts",
-      "development": "./src/use-ask-stream.ts",
+      "rulekit-source": "./src/use-ask-stream.ts",
       "default": "./dist/use-ask-stream.js"
     },
     "./use-chat-sessions": {
       "types": "./dist/use-chat-sessions.d.ts",
-      "development": "./src/use-chat-sessions.ts",
+      "rulekit-source": "./src/use-chat-sessions.ts",
       "default": "./dist/use-chat-sessions.js"
     }
   },

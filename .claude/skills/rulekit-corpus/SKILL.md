@@ -5,30 +5,34 @@ description: Write a corpus and a profile for a game that does not ship with rul
 
 # Write a corpus
 
-**Check first.** Five corpora already ship. If the game is one of these, this
-skill does not apply: point the app at the directory instead.
+**Check first.** Five corpora already exist. If the game is one of these, this
+skill does not apply: point the app at that corpus instead.
 
-| Directory | The game |
-|---|---|
-| `data/riftbound/` | Riftbound |
-| `data/chess/` | Chess |
-| `data/texas-holdem/` | Texas Hold'em poker |
-| `data/estate-line/` | An invented property trading game |
-| `data/demo/` | An invented trading card game |
+| Name | The game | Where it is |
+|---|---|---|
+| `demo` | An invented trading card game | Inside the package |
+| `chess` | Chess | Inside the package |
+| `texas-holdem` | Texas Hold'em poker | Inside the package |
+| `estate-line` | An invented property trading game | Inside the package |
+| `riftbound` | Riftbound | The repository only. Riot Games owns it. |
 
 **Copy the one whose shape matches the new game.** A game with no cards should
-start from `chess/`. A game whose cards carry prices rather than combat values
-should start from `estate-line/`. All four of those are public domain.
+start from `chess`. A game whose cards carry prices rather than combat values
+should start from `estate-line`. All four that ship are public domain, so a
+commercial product may build on any of them.
 
 ## Step 1: copy the worked example
 
 ```bash
-pnpm rulekit init my-game
-pnpm rulekit validate my-game    # passes on the copy
+npx rulekit init my-game --corpus demo   # or chess, texas-holdem, estate-line
+npx rulekit validate my-game             # passes on the copy
 ```
 
-`data/demo/` is a small invented game that uses every field. Replace its
-contents one file at a time, and validate after each.
+Inside a clone of the rulekit repository, write `pnpm rulekit` instead of `npx
+rulekit`, and the corpora are the directories under `data/`.
+
+`demo` is a small invented game that uses every field. Replace its contents one
+file at a time, and validate after each.
 
 ## Step 2: write the eight files
 
@@ -46,7 +50,8 @@ A file that must exist may be empty. A missing file fails the load, because
 **Start with `rules.json` alone.** The assistant works with everything else
 empty. It answers fewer kinds of question for free.
 
-`docs/corpus-format.md` states every field.
+<https://github.com/rulekitai/rulekit/blob/main/docs/corpus-format.md> states every
+field.
 
 ## Step 3: three fields decide whether it works
 
@@ -94,7 +99,7 @@ Both are cards. No game carries another game's empty columns.
 
 **Put a piece in `terms.json` as well.** The two do different work: a term
 answers "what is a knight" with no model call, and a card gives the assistant
-the numbers to reason with. `data/chess/` lists each piece in both.
+the numbers to reason with. The `chess` corpus lists each piece in both.
 
 ## Step 5: write the profile
 
@@ -133,9 +138,9 @@ restate, never invent. A profile adds to them and cannot remove them.
 ## Step 6: build and judge it
 
 ```bash
-pnpm rulekit validate my-game
-pnpm rulekit build my-game
-pnpm rulekit ask my-game "what is <a keyword in the game>"
+npx rulekit validate my-game
+npx rulekit build my-game
+npx rulekit ask my-game "what is <a keyword in the game>"
 ```
 
 `ask` uses no model and no key, so judge a corpus before connecting anything. It

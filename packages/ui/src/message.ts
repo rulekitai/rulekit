@@ -35,6 +35,24 @@ export function toServedBy(value: unknown): ServedBy | undefined {
 }
 
 /**
+ * Did a model write this answer, or did the corpus?
+ *
+ * The strongest claim this project makes is that most questions never reach a
+ * model. A disclaimer that says "Written by an AI" under a row read straight
+ * out of the rules data states the opposite, and the trace line above it
+ * disagrees with it on the same screen. This is what a host app tests to write
+ * a disclaimer that stays true.
+ *
+ * A saved answer keeps the name of whatever wrote it the first time, and this
+ * function only sees `cache`, so a cached answer counts as "rules". Say
+ * "checked against the rules data" rather than "no model was involved", and the
+ * sentence is true for both.
+ */
+export function answerSource(servedBy: string | undefined): "rules" | "model" {
+  return servedBy === "agent" || servedBy === "cheap" ? "model" : "rules"
+}
+
+/**
  * The messages that count as conversation.
  *
  * One pass, dropping and transforming together. A turn nothing answered is

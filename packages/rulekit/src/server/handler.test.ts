@@ -16,7 +16,7 @@ import { exactCacheStage } from "../pipeline/stages/cache.ts"
 import { glossaryStage } from "../pipeline/stages/glossary.ts"
 import { staticAnswersStage } from "../pipeline/stages/static.ts"
 import type { Answer, AskContext, Gate } from "../pipeline/types.ts"
-import { createAskHandler, MAX_QUESTION_CHARS, parseAskBody } from "./handler.ts"
+import { AGENT_UNAVAILABLE, createAskHandler, MAX_QUESTION_CHARS, parseAskBody } from "./handler.ts"
 
 const DEMO = resolve(dirname(fileURLToPath(import.meta.url)), "../../../../data/demo")
 
@@ -159,7 +159,14 @@ describe("the handler", () => {
     profile = parseProfile(JSON.parse(readFileSync(resolve(DEMO, "profile.json"), "utf8")))
   })
 
-  const build = (options: { agent?: AgentLike; gate?: Gate; stream?: boolean } = {}) =>
+  const build = (
+    options: {
+      agent?: AgentLike
+      gate?: Gate
+      stream?: boolean
+      unavailableMessage?: string | ((detail: string) => string)
+    } = {},
+  ) =>
     createAskHandler({
       pipeline: createPipeline({
         store,
@@ -170,7 +177,22 @@ describe("the handler", () => {
       agent: options.agent ?? fakeAgent("a reasoned answer"),
       gate: options.gate,
       stream: options.stream,
+      ...(options.unavailableMessage ? { unavailableMessage: options.unavailableMessage } : {}),
     })
+
+  /** Run something with the server log captured, so a test can read what it holds. */
+  async function withServerLog<T>(fn: () => Promise<T>): Promise<{ result: T; log: string }> {
+    const original = console.error
+    let log = ""
+    console.error = (...parts: unknown[]) => {
+      log += `${parts.map(String).join(" ")}\n`
+    }
+    try {
+      return { result: await fn(), log }
+    } finally {
+      console.error = original
+    }
+  }
 
   test("refuses anything but POST", async () => {
     const res = await build()(new Request("https://example.test/api/ask"))
@@ -318,12 +340,59 @@ describe("the handler", () => {
         seen.push(answer)
       },
     }
-    const res = await build({ agent: thrower, gate: recorder, stream: false })(
-      post({ question: "how do Guard and Swift interact" }),
+    const { result: res, log } = await withServerLog(() =>
+      build({ agent: thrower, gate: recorder, stream: false })(
+        post({ question: "how do Guard and Swift interact" }),
+      ),
     )
     assert.equal(res.status, 502)
-    assert.match((await res.json()).error, /stopped mid-turn/)
+    assert.equal((await res.json()).error, AGENT_UNAVAILABLE)
+    assert.match(log, /stopped mid-turn/)
     assert.equal(seen.length, 1, "a turn that threw must still reach the gate")
+  })
+
+  test("keeps the provider's failure text away from the reader, and logs it", async () => {
+    // A provider writes its failures for whoever holds the account. One of them
+    // reads "Current spend: $10.00, limit: $10.00. Please contact your
+    // administrator", which tells a person who asked a rules question about the
+    // operator's billing, and gives them nothing they can act on.
+    const broke: AgentLike = {
+      async *stream(): AsyncGenerator<AgentEvent> {
+        yield {
+          type: "error",
+          error: "API key budget exceeded. Current spend: $10.00, limit: $10.00. Contact your administrator.",
+        }
+        yield { type: "done", text: "", source: "agent", complete: false, model: null, latencyMs: 1 }
+      },
+    }
+
+    const { result: streamed, log } = await withServerLog(async () => {
+      const res = await build({ agent: broke })(post({ question: "how do Guard and Swift interact" }))
+      assert.ok(res.body)
+      const events: AgentEvent[] = []
+      for await (const event of decodeEvents(res.body)) events.push(event)
+      return events
+    })
+
+    const failure = streamed.find((event) => event.type === "error")
+    assert.ok(failure, "the stream must still report the failure")
+    assert.equal(failure.error, AGENT_UNAVAILABLE)
+    for (const event of streamed) {
+      assert.doesNotMatch(JSON.stringify(event), /budget|administrator|\$10\.00/)
+    }
+    // The operator does need the detail, so it goes where the operator reads.
+    assert.match(log, /budget exceeded/)
+  })
+
+  test("lets an internal tool show the provider's text on purpose", async () => {
+    // Where every reader is an operator, the detail is the useful thing.
+    const res = await build({
+      agent: silentAgent(),
+      stream: false,
+      unavailableMessage: (detail) => detail,
+    })(post({ question: "how do Guard and Swift interact" }))
+    assert.equal(res.status, 502)
+    assert.match((await res.json()).error, /the provider refused/)
   })
 
   test("never caches a turn that wrote nothing", async () => {
@@ -386,11 +455,14 @@ describe("the handler", () => {
         yield { type: "done", text: "", source: "agent", complete: false }
       },
     }
-    const res = await build({ agent: broken, stream: false })(
-      post({ question: "how do Guard and Swift interact" }),
+    const { result: res, log } = await withServerLog(() =>
+      build({ agent: broken, stream: false })(post({ question: "how do Guard and Swift interact" })),
     )
     assert.equal(res.status, 502)
-    assert.match((await res.json()).error, /unreachable/)
+    // The status and the sentence are for the reader. The cause is for the
+    // operator, and it is written where the operator reads.
+    assert.equal((await res.json()).error, AGENT_UNAVAILABLE)
+    assert.match(log, /unreachable/)
   })
 
   test("says so plainly when nothing can answer and no agent is configured", async () => {

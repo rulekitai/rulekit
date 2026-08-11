@@ -23,10 +23,11 @@ correct one of the other five.
 1. **The seven packages are on npm under `@rulekitai/`.** Install them, or work
    in this repository. A release goes out from a version tag, and
    `CONTRIBUTING.md` states how.
-2. **Five corpora already ship**, so check before writing one: `riftbound`,
-   `chess`, `texas-holdem`, `estate-line`, and `demo`. Four of the five are
-   public domain. `riftbound` is Riot Games' property and permits
-   non-commercial use only.
+2. **Five corpora already exist**, so check before writing one: `riftbound`,
+   `chess`, `texas-holdem`, `estate-line`, and `demo`. Four of the five carry a
+   CC0 1.0 dedication and travel inside the npm package, where `rulekit init
+   <dir> --corpus <name>` copies one. `riftbound` is Riot Games' property,
+   permits non-commercial use only, and stays in this repository.
 3. **`corpus.db` is not in version control.** The command `rulekit build <dir>`
    writes it from the JSON beside it. The CLI does not need the file, because it
    builds one in memory. A server does need it.
@@ -41,6 +42,14 @@ correct one of the other five.
 6. **A key with no value must be absent.** The loader drops `null` and `""`.
 7. **A tool is offered only when the corpus can answer with it.** A game with an
    empty `banlist.json` is never given a banned-list tool.
+8. **Both packages list their TypeScript source under a `rulekit-source` export
+   condition.** The scripts here pass `--conditions=rulekit-source` and skip the
+   compile step. Never rename it to `development` or `production`: Vite matches
+   both by itself, and would load raw TypeScript out of `node_modules` in every
+   application that installs these packages.
+9. **Run `pnpm build` once after `pnpm install`.** Every import points at
+   compiled output, and a fresh clone holds none, so `next build` in the example
+   fails with a missing module until you do.
 
 ## Commands
 
@@ -50,10 +59,10 @@ pnpm rulekit build <dir>       # writes corpus.db
 pnpm rulekit ask <dir> "..."   # free stages only. A rule number or a keyword.
                                # It never calls the agent, so a question of any
                                # other shape reports a miss. Use the example app
-                               # to reach the agent.
+                               # to reach the agent. Add --json for a script.
 pnpm rulekit eval <dir>        # checks that answers invent nothing. Needs a key.
 
-pnpm lint && pnpm check-types && pnpm test     # 284 tests, no model, no network
+pnpm lint && pnpm check-types && pnpm test     # every unit test, no model, no network
 pnpm test:e2e                                  # the interface, in a browser
 ```
 

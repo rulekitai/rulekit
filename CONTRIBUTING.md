@@ -12,9 +12,27 @@ Use Node 22 or a later version, and use pnpm. The Eve template in
 git clone https://github.com/rulekitai/rulekit.git
 cd rulekit
 pnpm install
+pnpm build
 ```
 
 The tests need no model key and no network.
+
+Run `pnpm build` once after the install. The `rulekit` command and the example
+application both read compiled output, and a fresh clone holds none.
+
+### The `rulekit-source` condition
+
+Every subpath in both packages lists its TypeScript source under a condition
+named `rulekit-source`, beside the compiled output under `default`. The scripts
+in this repository pass `--conditions=rulekit-source`, so they run the source
+and skip the compile step.
+
+**Never rename that condition to `development` or `production`.** Vite matches
+both of those names with no instruction from anybody. It would then load raw
+TypeScript out of `node_modules` in every application that installs these
+packages, and pnpm stores a package behind a symbolic link, from which the
+package cannot reach its own dependencies. A test in each package fails if the
+name comes back.
 
 ## The checks
 
@@ -25,7 +43,7 @@ there.
 ```bash
 pnpm lint                        # Biome
 pnpm check-types                 # TypeScript, every package
-pnpm test                        # 284 tests, no model and no network
+pnpm test                        # every unit test, no model and no network
 pnpm rulekit validate data/demo  # the corpus the tests read
 ```
 

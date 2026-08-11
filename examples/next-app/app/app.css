@@ -45,6 +45,18 @@ body {
   font-size: 0.85rem;
 }
 
+/* A card, drawn as its printed name. No picture ships with any corpus here, so
+   the name is the whole card, and it is marked so a reader can see that the
+   assistant matched a real card rather than typing a word. */
+.app-card {
+  padding: 1px 6px;
+  border: 1px solid var(--rk-border);
+  border-radius: 999px;
+  background: var(--rk-surface);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* The conversation list costs more than it gives on a narrow screen. */
 @media (max-width: 720px) {
   .app-sidebar {

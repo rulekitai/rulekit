@@ -48,6 +48,22 @@ test("names every printing when a reader asks about a shared name", async ({ pag
   await expect(answer.locator("li")).toHaveCount(3)
 })
 
+test("a card in an answer reaches this app's own card renderer", async ({ page }) => {
+  // THE WHOLE CARD FEATURE ONCE DID NOTHING, and nothing here noticed. The
+  // Markdown library removes the address of any link scheme it does not know,
+  // and it did that before `card:` reached the component, so every card in
+  // every answer fell through to plain text. Reading the answer text could not
+  // tell the difference, because the card's name is printed either way. This
+  // asserts on the element that only this app's renderer produces.
+  await ask(page, "is Yasuo banned")
+  const answer = await waitForAnswer(page)
+  const cards = answer.locator(".app-card")
+  await expect(cards).toHaveCount(3)
+  await expect(cards.first()).toContainText("Yasuo")
+  // The renderer receives the image path from the corpus, and keeps it.
+  await expect(cards.first()).toHaveAttribute("title", /\.webp$/)
+})
+
 test("defines a keyword from the glossary and cites the defining rule", async ({ page }) => {
   await ask(page, "what is Deflect")
   const answer = await waitForAnswer(page)
@@ -84,10 +100,15 @@ test("a follow-up skips the free stages, because it depends on context", async (
   expect(body.history.length).toBeGreaterThan(0)
 })
 
-test("shows the AI notice on an answer", async ({ page }) => {
+test("the notice under a free answer does not claim an AI wrote it", async ({ page }) => {
+  // "what is Deflect" is answered by the glossary, with no model call at all.
+  // A fixed notice saying "Written by an AI" contradicted the trace line
+  // directly above it, on the same screen, on most answers this app gives.
   await ask(page, "what is Deflect")
   await waitForAnswer(page)
-  await expect(lastAnswer(page).locator(".rk-disclaimer")).toBeVisible()
+  const notice = lastAnswer(page).locator(".rk-disclaimer")
+  await expect(notice).toBeVisible()
+  await expect(notice).toContainText("no AI")
 })
 
 test("a free answer arrives without a waiting state", async ({ page }) => {

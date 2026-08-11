@@ -21,12 +21,21 @@ Use Node 22 or a later version.
 
 ## Ask your first question
 
-No clone, and no model key. `init` gives you a small example corpus to start
-from, and the answer arrives in a few milliseconds.
+No clone, and no model key. `init` gives you a corpus to start from, and the
+answer arrives in a few milliseconds.
 
 ```bash
 npx rulekit init my-game
 npx rulekit ask my-game "what is Swift"
+```
+
+Four corpora travel inside the package, and `--corpus` names the one you want:
+`demo` (the default, an invented card game), `chess`, `texas-holdem`, and
+`estate-line`. All four carry a CC0 1.0 dedication, so you may copy one and
+build a product on it.
+
+```bash
+npx rulekit init my-game --corpus chess
 ```
 
 ```
@@ -94,6 +103,7 @@ send a change.
 git clone https://github.com/rulekitai/rulekit.git
 cd rulekit
 pnpm install
+pnpm build                          # the example application reads the output
 
 pnpm rulekit ask data/riftbound "is Called Shot banned"   # no model key
 
@@ -124,6 +134,12 @@ of rent. The format is the same for all five, and the code does not change.
 | `data/estate-line/` | An invented property trading game | 90 | 38 | 38 deeds and fortunes, 6 tokens |
 | `data/demo/` | An invented trading card game | 27 | 6 | 12 cards |
 | `data/riftbound/` | Riftbound | 3317 | 25 | 941 cards |
+
+**Four of the five travel inside the npm package**, so `rulekit init my-game
+--corpus chess` reaches them with no clone. Riftbound stays here: Riot Games
+owns that data, and their policy permits non-commercial use only. To use it,
+clone this repository and copy `data/riftbound/` into your project. Read
+[`data/README.md`](data/README.md) for the terms of each one.
 
 ## How the assistant makes an answer
 

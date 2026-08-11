@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { execFile } from "node:child_process"
 import { existsSync, realpathSync } from "node:fs"
 import { cp, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
@@ -7,12 +8,16 @@ import { after, before, describe, test } from "node:test"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { loadCorpus } from "../corpus/load.ts"
 import {
+  AGENT_README_SECTION,
+  AGENT_README_URL,
   checkProfileFields,
   commandAsk,
   commandBuild,
   commandInit,
   commandValidate,
   isMainModule,
+  packageVersion,
+  SHIPPED_CORPORA,
 } from "./bin.ts"
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../../..")
@@ -32,7 +37,16 @@ const DEMO = resolve(ROOT, "data/demo")
 
 let scratch: string
 
-/** Run a command with stdout captured. Returns the exit code and what it printed. */
+/**
+ * Run a command with stdout captured. Returns the exit code and what it printed.
+ *
+ * WHAT IT RETURNS MAY HOLD MORE THAN THE COMMAND WROTE. This replaces
+ * `process.stdout.write` for everybody, and the test runner writes its own
+ * report through the same function, so anything the runner announces inside the
+ * window lands in the captured text. Assert with a regular expression, which
+ * steps over that. A test that needs the exact output runs the command in its
+ * own process instead. See "the command as a program" below.
+ */
 async function run(fn: () => Promise<number>): Promise<{ code: number; out: string }> {
   const original = process.stdout.write.bind(process.stdout)
   let captured = ""
@@ -239,6 +253,101 @@ describe("ask", () => {
     assert.match(out, /no profile\.json/)
     assert.match(out, /Rule 300\.2\.a/)
   })
+
+  test("a miss names a README section that the README actually has", async () => {
+    // This message once sent the reader to a section called "Run it". No README
+    // has had that heading for some time, so the reader arrived nowhere. The
+    // test reads the headings out of the README rather than trusting the name.
+    const readme = await readFile(resolve(ROOT, "README.md"), "utf8")
+    const headings = [...readme.matchAll(/^#+\s+(.+)$/gm)].map((match) => match[1]?.trim())
+    assert.ok(
+      headings.includes(AGENT_README_SECTION),
+      `README.md has no heading "${AGENT_README_SECTION}". It has: ${headings.join(", ")}`,
+    )
+
+    const { out } = await run(() => commandAsk(DEMO, "how do Guard and Swift interact"))
+    assert.match(out, new RegExp(AGENT_README_SECTION))
+    assert.match(out, new RegExp(AGENT_README_URL.replace(/[.#/]/g, "\\$&")))
+  })
+})
+
+/**
+ * The `--json` answer, checked by running the command as a program.
+ *
+ * These tests do not use the capture helper above. That helper replaces
+ * `process.stdout.write` for everybody, and the test runner writes its own
+ * report through the same function, so a capture window holds whatever the
+ * runner happened to announce inside it. A regular expression steps over that
+ * noise; `JSON.parse` cannot, and must not, because the promise this flag makes
+ * is that the whole output is one object.
+ *
+ * Running the command in its own process is also the only way to test the
+ * argument parsing, which is where a flag either reaches its command or does
+ * not.
+ */
+describe("the command as a program", () => {
+  const BIN = resolve(ROOT, "packages/rulekit/src/cli/bin.ts")
+
+  /** Run the command in its own process. Node strips the types as it loads them. */
+  async function command(...args: string[]): Promise<{ code: number; stdout: string; stderr: string }> {
+    return new Promise((done) => {
+      const child = execFile(process.execPath, [BIN, ...args], (error, stdout, stderr) => {
+        done({ code: error && typeof error.code === "number" ? error.code : 0, stdout, stderr })
+      })
+      child.on("error", () => done({ code: 1, stdout: "", stderr: "spawn failed" }))
+    })
+  }
+
+  test("--version prints the version and nothing else", async () => {
+    const { code, stdout } = await command("--version")
+    assert.equal(code, 0)
+    assert.equal(stdout.trim(), packageVersion())
+  })
+
+  test("--json prints one object a script can read, and nothing else", async () => {
+    const { code, stdout } = await command("ask", DEMO, "what does rule 300.2.a say", "--json")
+    assert.equal(code, 0)
+    const answer = JSON.parse(stdout)
+    assert.equal(answer.answered, true)
+    assert.equal(answer.servedBy, "static")
+    assert.match(answer.text, /Guard/)
+    assert.ok(Array.isArray(answer.citations))
+    // The cost of an answer belongs to the operator, so it is left out here
+    // for the same reason the HTTP handler leaves it out.
+    assert.equal("usage" in answer, false)
+  })
+
+  test("--json reports a miss as data too, rather than as prose", async () => {
+    const { stdout } = await command("ask", DEMO, "what does rule 999.9 say", "--json")
+    const answer = JSON.parse(stdout)
+    assert.equal(answer.answered, false)
+    assert.equal(answer.missingRule, "999.9")
+    assert.ok(answer.trace.some((step: { stage: string }) => step.stage === "static"))
+  })
+
+  test("--json stays parsable when the corpus has no profile", async () => {
+    // The note about a missing profile is for a person. Printed as it is, it
+    // would sit in front of the object and every parser would fail on it.
+    const dir = await corpusWith("no-profile-json")
+    await rm(join(dir, "profile.json"))
+    const { stdout } = await command("ask", dir, "what does rule 300.2.a say", "--json")
+    assert.equal(JSON.parse(stdout).answered, true)
+  })
+
+  test("prints no experimental warning about SQLite", async () => {
+    // Node marks its own SQLite module experimental and announces it before
+    // anything the reader asked for. The command hides that one warning.
+    const { stderr } = await command("ask", DEMO, "what does rule 300.2.a say")
+    assert.doesNotMatch(stderr, /ExperimentalWarning/)
+  })
+
+  test("init copies the corpus that --corpus names", async () => {
+    const dir = join(scratch, "argv-corpus")
+    const { code, stdout } = await command("init", dir, "--corpus", "chess")
+    assert.equal(code, 0)
+    assert.match(stdout, /chess/)
+    assert.ok(existsSync(join(dir, "game.json")))
+  })
 })
 
 describe("init", () => {
@@ -256,6 +365,52 @@ describe("init", () => {
     const { out } = await run(() => commandInit(dir))
     assert.match(out, /rulekit validate/)
     assert.match(out, /corpus-format\.md/)
+  })
+
+  test("every document it names is a full address", async () => {
+    // A reader who installed from npm holds no docs/ directory. A bare path
+    // told them to open a file that their computer does not have.
+    const dir = join(scratch, "full-addresses")
+    const { out } = await run(() => commandInit(dir))
+    assert.doesNotMatch(out, /(^|[^/\w])docs\//)
+    assert.match(out, /https:\/\/github\.com\/rulekitai\/rulekit/)
+  })
+
+  test("copies any corpus the package ships, not only the demo", async () => {
+    // The skills promised five corpora and the package held one, so anybody
+    // building a real assistant had to clone this repository to find the rest.
+    for (const corpus of SHIPPED_CORPORA) {
+      const dir = join(scratch, `shipped-${corpus}`)
+      assert.equal((await run(() => commandInit(dir, corpus))).code, 0, corpus)
+      assert.equal((await run(() => commandValidate(dir))).code, 0, corpus)
+    }
+  })
+
+  test("copies no compiled database, so the rules and the answers agree", async () => {
+    // A database compiled from an older copy of the JSON answers, and answers
+    // with rules that the files beside it no longer state.
+    const dir = join(scratch, "no-database")
+    await run(() => commandInit(dir))
+    assert.equal(existsSync(join(dir, "corpus.db")), false)
+  })
+
+  test("names what it holds when the corpus is not one of them", async () => {
+    const dir = join(scratch, "unknown-corpus")
+    const { code, out } = await run(() => commandInit(dir, "monopoly"))
+    assert.equal(code, 1)
+    for (const corpus of SHIPPED_CORPORA) assert.match(out, new RegExp(corpus))
+    // Riftbound is the one somebody asks for and cannot have, so say where it is.
+    assert.match(out, /riftbound/i)
+    assert.equal(existsSync(dir), false)
+  })
+})
+
+describe("--version", () => {
+  test("reports the version in this package's manifest", async () => {
+    // A script pins a version and checks it. Reading the manifest through the
+    // same relative path the compiled command uses is what this guards.
+    const manifest = JSON.parse(await readFile(resolve(ROOT, "packages/rulekit/package.json"), "utf8"))
+    assert.equal(packageVersion(), manifest.version)
   })
 })
 

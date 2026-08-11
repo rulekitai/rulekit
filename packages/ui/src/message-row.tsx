@@ -32,7 +32,11 @@ function Meta(props: { message: ChatMessage }) {
 
 export function MessageRow(props: { message: ChatMessage; streaming?: boolean }) {
   const { message } = props
-  const { disclaimer } = useRuleKit()
+  const { disclaimer: configured } = useRuleKit()
+  // A host app that passes a function gets to say something true of THIS
+  // answer. Most answers cost no model call, and one fixed sentence about an AI
+  // contradicts the trace line directly above it.
+  const disclaimer = typeof configured === "function" ? configured(message.servedBy ?? "") : configured
 
   if (message.role === "user") {
     return (

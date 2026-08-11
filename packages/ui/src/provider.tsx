@@ -35,8 +35,18 @@ export type RuleKitConfig = {
    * will be served from. Nothing renders a card image until a host app says.
    */
   cardImageUrl?: (path: string) => string
-  /** Shown under every answer. Pass null to show nothing. */
-  disclaimer?: ReactNode
+  /**
+   * Shown under every answer. Pass null to show nothing.
+   *
+   * PASS A FUNCTION WHEN THE TRUTH CHANGES WITH THE ANSWER. Most answers come
+   * from the free stages, where no model runs at all, so one fixed sentence
+   * saying "Written by an AI" states the opposite of what happened, directly
+   * under a trace line that says the answer was read from the rules data. The
+   * function receives the name of whatever served the answer — `static`,
+   * `glossary`, `cache`, `agent` — and `answerSource` in
+   * `@rulekitai/ui/message` turns that name into "rules" or "model" for you.
+   */
+  disclaimer?: ReactNode | ((servedBy: string) => ReactNode)
   /** Shown at the foot of the conversation. A host app's own notice goes here. */
   legalNote?: ReactNode
   /** Questions offered on an empty screen. */

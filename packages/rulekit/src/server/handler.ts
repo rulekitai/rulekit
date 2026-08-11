@@ -26,6 +26,21 @@ export const MAX_QUESTION_CHARS = 2000
 export const MAX_HISTORY_TURNS = 20
 export const MAX_TURN_CHARS = 4000
 
+/**
+ * What a reader sees when the model fails.
+ *
+ * The provider's own message is written for whoever holds the account. It has
+ * named the hosting company, linked an account page, and told the reader to run
+ * commands on a machine they do not have. Worse, a spent budget reads as
+ * "Current spend: $10.00, limit: $10.00. Please contact your administrator",
+ * which shows the operator's billing state to a person who asked a rules
+ * question and cannot act on any of it.
+ *
+ * So the reader gets one plain sentence and the operator gets the detail, in
+ * the server log where they can read it.
+ */
+export const AGENT_UNAVAILABLE = "The assistant is unavailable right now. Please try again shortly."
+
 export type AskHandlerOptions = {
   pipeline: Pipeline
   /** The agent, for the streaming path once the earlier stages have missed. */
@@ -36,6 +51,13 @@ export type AskHandlerOptions = {
   identify?: (request: Request) => Promise<CallerIdentity | undefined> | CallerIdentity | undefined
   /** Stream the agent's answer as it is written. On by default. */
   stream?: boolean
+  /**
+   * The sentence a reader sees when the model fails. Defaults to
+   * `AGENT_UNAVAILABLE`. An internal tool where every reader is an operator can
+   * pass the provider's own message through by setting this to a function that
+   * returns its argument.
+   */
+  unavailableMessage?: string | ((detail: string) => string)
 }
 
 const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
@@ -118,6 +140,18 @@ export function createAskHandler(options: AskHandlerOptions) {
   const record = (ctx: AskContext, answer: Answer) =>
     gate.record(ctx, answer).catch((err) => console.error("[rulekit] gate record failed:", err))
 
+  /**
+   * Log what actually failed, and return what the reader is told.
+   *
+   * Every failure of the model goes through here, whichever path served the
+   * request, so no provider text can reach a browser by another door.
+   */
+  const readerMessage = (detail: string): string => {
+    console.error("[rulekit] the agent failed:", detail)
+    const chosen = options.unavailableMessage ?? AGENT_UNAVAILABLE
+    return typeof chosen === "function" ? chosen(detail) : chosen
+  }
+
   return async function handle(request: Request): Promise<Response> {
     if (request.method !== "POST") return json({ error: "Use POST." }, 405, { allow: "POST" })
     if (isCrossSite(request)) return json({ error: "This endpoint does not answer another site." }, 403)
@@ -189,14 +223,14 @@ export function createAskHandler(options: AskHandlerOptions) {
         for await (const event of streamAgent(options.agent, agentCtx)) {
           if (event.type === "text") text = event.text
           else if (event.type === "done") done = event
-          else if (event.type === "error") error = event.error
+          else if (event.type === "error") error = readerMessage(event.error)
         }
       } catch (err) {
         // A turn that threw still spent whatever it spent before it threw, and
         // it may already have written text. Letting the throw leave this
         // function would skip the gate below, which is the same accounting hole
         // as a turn that wrote nothing, reached from the other side.
-        error = err instanceof Error ? err.message : String(err)
+        error = readerMessage(err instanceof Error ? err.message : String(err))
       }
       const answer: Answer = {
         text: done?.text || text,
@@ -215,7 +249,7 @@ export function createAskHandler(options: AskHandlerOptions) {
       // turns that produced text, which is a budget an asker can spend without
       // it ever counting.
       await record(agentCtx, answer)
-      if (!answer.text) return json({ error: error ?? "The agent produced no answer." }, 502)
+      if (!answer.text) return json({ error: error ?? readerMessage("the agent produced no answer") }, 502)
       await writeBack(agentCtx, answer)
       return json(clientAnswer(answer))
     }
@@ -253,10 +287,21 @@ export function createAskHandler(options: AskHandlerOptions) {
               )
               continue
             }
+            if (event.type === "error") {
+              // The provider wrote this for the account holder, not for the
+              // person waiting on a rules answer.
+              write(encodeEvent({ type: "error", error: readerMessage(event.error) }))
+              continue
+            }
             write(encodeEvent(event))
           }
         } catch (err) {
-          write(encodeEvent({ type: "error", error: err instanceof Error ? err.message : String(err) }))
+          write(
+            encodeEvent({
+              type: "error",
+              error: readerMessage(err instanceof Error ? err.message : String(err)),
+            }),
+          )
         } finally {
           // Bookkeeping runs after the reader has been served, and none of it
           // may throw the answer away: it is already on their screen and the
