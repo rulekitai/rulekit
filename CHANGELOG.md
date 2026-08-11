@@ -13,6 +13,10 @@ would mean inventing one.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.4.0] - 2026-08-11
+
 Somebody built a Riftbound rules bot with Vite and React, from the published
 0.2.0 packages and nothing else, and wrote down every place the project failed
 them. This release is that list, worked through. Most of it has one cause: the

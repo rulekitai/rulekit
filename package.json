@@ -1,6 +1,6 @@
 {
   "name": "rulekit-monorepo",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "A grounded, citable rules assistant you can run over your own rulebook.",
   "license": "Apache-2.0",
