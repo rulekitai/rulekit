@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto"
 import { type AgentEvent, deriveLabel, encodeEvent, type TraceStep } from "@rulekitai/rulekit/agent/events"
 import {
   addStepUsage,
@@ -39,12 +40,26 @@ function isLocalDevProcess(env = process.env): boolean {
   return env.NODE_ENV !== "production" && !env.VERCEL
 }
 
+/**
+ * Compare two credentials in a time that does not depend on how much matched.
+ *
+ * `===` on two strings stops at the first character that differs, so how long
+ * it takes reports how much of the secret was right, one character at a time.
+ * Both sides are hashed first so the two buffers are always the same 32 bytes:
+ * `timingSafeEqual` throws on a length mismatch, and a length mismatch is
+ * itself something a caller could measure.
+ */
+function credentialsMatch(offered: string, expected: string): boolean {
+  const digest = (value: string) => createHash("sha256").update(value).digest()
+  return timingSafeEqual(digest(offered), digest(expected))
+}
+
 function isAuthorized(authorization: string | null, secret: string | undefined, localDev: boolean): boolean {
   // Fails closed. The shape `if (secret && ...)` would mean an UNSET secret
   // disables the check and serves everybody, which is the opposite of what an
   // unset credential should do.
   if (!secret) return localDev
-  return authorization === `Bearer ${secret}`
+  return authorization !== null && credentialsMatch(authorization, `Bearer ${secret}`)
 }
 
 function rejectUnauthorized(req: Request): Response | null {

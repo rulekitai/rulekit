@@ -118,7 +118,7 @@ export function staticAnswersStage(store: RuleStore, options: StaticStageOptions
       // are still work, and a popular question repeats a great deal.
       await ctx.cache
         .set(
-          answerKey(ctx.question),
+          answerKey(ctx.question, ctx.cacheVersion),
           { text: answer.text, citations: answer.citations, source: answer.source },
           DEFAULT_TTL_SECONDS,
         )

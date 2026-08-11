@@ -65,6 +65,47 @@ function fakeAgent(text: string): AgentLike {
   }
 }
 
+/**
+ * A turn that spends model calls and writes nothing.
+ *
+ * This is what a provider failure looks like after several tool lookups, and
+ * what a step cap looks like when it lands before the first word of the answer.
+ * Every one of those calls was charged.
+ */
+function silentAgent(): AgentLike {
+  return {
+    async *stream(): AsyncGenerator<AgentEvent> {
+      yield {
+        type: "step",
+        step: {
+          id: "1",
+          tool: "search_all",
+          label: "Searched the rules",
+          kind: "searched",
+          status: "running",
+        },
+      }
+      yield { type: "error", error: "the provider refused" }
+      yield {
+        type: "done",
+        text: "",
+        source: "agent",
+        complete: false,
+        model: "test/model",
+        latencyMs: 9,
+        usage: {
+          agent_steps: 5,
+          prompt_tokens: 4000,
+          completion_tokens: 0,
+          cost_usd: 0.02,
+          cache_read_input_tokens: null,
+          cache_creation_input_tokens: null,
+        },
+      }
+    },
+  }
+}
+
 const post = (body: unknown, headers: Record<string, string> = {}) =>
   new Request("https://example.test/api/ask", {
     method: "POST",
@@ -199,6 +240,66 @@ describe("the handler", () => {
     assert.equal(res.status, 200)
     assert.equal(seen.length, 1)
     assert.equal(seen[0]?.usage?.prompt_tokens, 100, "the gate sees what the browser does not")
+  })
+
+  test("records what a turn spent even when the turn wrote nothing", async () => {
+    // A turn that spends its model calls on tool lookups and then fails has
+    // already been charged for every one of them. A gate that counts only the
+    // turns which produced text is a budget an asker can spend without it ever
+    // counting, so this must record on both paths.
+    const seen: Answer[] = []
+    const recorder: Gate = {
+      async allow() {
+        return { allow: true }
+      },
+      async record(_ctx: AskContext, answer: Answer) {
+        seen.push(answer)
+      },
+    }
+
+    const streamed = await build({ agent: silentAgent(), gate: recorder })(
+      post({ question: "how do Guard and Swift interact" }),
+    )
+    assert.ok(streamed.body)
+    for await (const _event of decodeEvents(streamed.body)) {
+      // Drain the stream. The bookkeeping runs once the reader has been served.
+    }
+    assert.equal(seen.length, 1, "the streaming path must record a turn that wrote nothing")
+    assert.equal(seen[0]?.usage?.cost_usd, 0.02)
+
+    const json = await build({ agent: silentAgent(), gate: recorder, stream: false })(
+      post({ question: "how do Guard and Swift interact" }),
+    )
+    assert.equal(json.status, 502)
+    assert.equal(seen.length, 2, "the JSON path must record it too")
+    assert.equal(seen[1]?.usage?.cost_usd, 0.02)
+  })
+
+  test("never caches a turn that wrote nothing", async () => {
+    const handler = build({ agent: silentAgent(), stream: false })
+    const first = await handler(post({ question: "how do Guard and Swift interact" }))
+    assert.equal(first.status, 502)
+    const second = await handler(post({ question: "how do Guard and Swift interact" }))
+    assert.equal(second.status, 502, "a failure must not be served from the cache as an answer")
+  })
+
+  test("refuses a request another site sent, which is the only way one reaches here", async () => {
+    // A browser will not send a cross-site JSON post without asking this
+    // handler for permission first, and this handler answers no such question.
+    // An HTML form needs no permission, so without this check a page a reader
+    // merely visits can spend their quota here. Page script cannot set this
+    // header, so a browser's own word is what decides.
+    const res = await build()(
+      post({ question: "what does rule 300.2.a say" }, { "sec-fetch-site": "cross-site" }),
+    )
+    assert.equal(res.status, 403)
+  })
+
+  test("allows every request a browser reports as its own site", async () => {
+    for (const site of ["same-origin", "same-site", "none"]) {
+      const res = await build()(post({ question: "what does rule 300.2.a say" }, { "sec-fetch-site": site }))
+      assert.equal(res.status, 200, site)
+    }
   })
 
   test("a refusing gate costs nothing, because it runs before every stage", async () => {

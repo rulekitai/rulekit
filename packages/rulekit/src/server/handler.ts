@@ -55,6 +55,28 @@ function clientAnswer(answer: Answer) {
 
 type AskBody = { question?: unknown; history?: unknown }
 
+/**
+ * Did another site send this request?
+ *
+ * A browser sends `Sec-Fetch-Site` on every request and page script cannot set
+ * it, so it is the browser's own word about where a request came from. Anything
+ * that is not a browser sends nothing, and is allowed.
+ *
+ * This closes one hole. A browser refuses to send a cross-site request carrying
+ * a JSON content type until the server has answered a permission request, and
+ * this handler answers only POST, so that request never arrives. An HTML form
+ * needs no permission and can post a JSON body as plain text. Without this
+ * check, a page a reader merely visits can spend that reader's quota here,
+ * because the browser attaches their cookies.
+ *
+ * Nothing legitimate is lost. Reading this endpoint from another origin already
+ * needs permission headers that this handler does not send, so a cross-site
+ * caller cannot have been working before.
+ */
+function isCrossSite(request: Request): boolean {
+  return request.headers.get("sec-fetch-site") === "cross-site"
+}
+
 /** Read and check the request body, or say exactly what is wrong with it. */
 export function parseAskBody(
   body: AskBody,
@@ -86,6 +108,7 @@ export function createAskHandler(options: AskHandlerOptions) {
 
   return async function handle(request: Request): Promise<Response> {
     if (request.method !== "POST") return json({ error: "Use POST." }, 405, { allow: "POST" })
+    if (isCrossSite(request)) return json({ error: "This endpoint does not answer another site." }, 403)
 
     let body: AskBody
     try {
@@ -155,19 +178,24 @@ export function createAskHandler(options: AskHandlerOptions) {
         else if (event.type === "done") done = event
         else if (event.type === "error") error = event.error
       }
-      if (!done?.text) return json({ error: error ?? "The agent produced no answer." }, 502)
       const answer: Answer = {
-        text: done.text || text,
+        text: done?.text || text,
         citations: [],
         source: "agent",
         servedBy: "agent",
-        latencyMs: done.latencyMs ?? 0,
-        model: done.model ?? null,
-        usage: (done.usage as Record<string, number | null> | null) ?? null,
-        complete: done.complete,
+        latencyMs: done?.latencyMs ?? 0,
+        model: done?.model ?? null,
+        usage: (done?.usage as Record<string, number | null> | null) ?? null,
+        complete: done?.complete ?? false,
         ...(result.degraded.length ? { degraded: result.degraded } : {}),
       }
+      // RECORDED BEFORE THE ANSWER IS JUDGED. A turn that spent its model calls
+      // on tool lookups and then failed has already been charged for every one
+      // of them. Returning the failure first would mean a gate counts only the
+      // turns that produced text, which is a budget an asker can spend without
+      // it ever counting.
       await gate.record(agentCtx, answer)
+      if (!answer.text) return json({ error: error ?? "The agent produced no answer." }, 502)
       await writeBack(agentCtx, answer)
       return json(clientAnswer(answer))
     }
@@ -224,12 +252,14 @@ export function createAskHandler(options: AskHandlerOptions) {
             complete,
             ...(result.degraded.length ? { degraded: result.degraded } : {}),
           }
-          if (text) {
-            await gate
-              .record(agentCtx, answer)
-              .catch((err) => console.error("[rulekit] gate record failed:", err))
-            await writeBack(agentCtx, answer)
-          }
+          // RECORDED EVEN WHEN THE TURN WROTE NOTHING, for the reason the JSON
+          // path above states: those model calls were made and charged.
+          // `writeBack` drops an empty or incomplete answer by itself, so a
+          // failure is counted and never cached.
+          await gate
+            .record(agentCtx, answer)
+            .catch((err) => console.error("[rulekit] gate record failed:", err))
+          await writeBack(agentCtx, answer)
           controller.close()
         }
       },

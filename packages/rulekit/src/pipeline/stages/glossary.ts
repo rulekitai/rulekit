@@ -103,7 +103,7 @@ export function glossaryStage(store: RuleStore): Stage {
       }
       await ctx.cache
         .set(
-          answerKey(ctx.question),
+          answerKey(ctx.question, ctx.cacheVersion),
           { text, citations: answer.citations, source: answer.source },
           DEFAULT_TTL_SECONDS,
         )

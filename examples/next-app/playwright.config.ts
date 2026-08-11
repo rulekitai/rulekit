@@ -15,6 +15,9 @@ import { defineConfig, devices } from "@playwright/test"
 
 const PORT = Number(process.env.PLAYWRIGHT_PORT ?? 3211)
 
+/** The corpus this app serves. It must name the same directory as `app/lib/rulekit.ts`. */
+const CORPUS = process.env.RULEKIT_CORPUS ?? "data/riftbound"
+
 export default defineConfig({
   testDir: "./e2e",
   // A streaming answer from a model takes tens of seconds. The free stages take
@@ -35,10 +38,20 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    // Production mode, because that is what the streaming path behaves like.
-    // `next dev` re-compiles on the first request and the extra seconds land
-    // inside the assertions that time how fast a free answer arrives.
-    command: `pnpm build && pnpm exec next start --port ${PORT}`,
+    // THE CORPUS DATABASE IS BUILT FIRST, on every run.
+    //
+    // `corpus.db` is a build artefact and is not in version control, so a fresh
+    // clone holds none. Without it `next build` fails while it reads the ask
+    // route, and Next reports "Failed to collect page data for /api/ask". That
+    // message names neither the file that is missing nor the command that
+    // writes it, and the store's own clear error never reaches the screen.
+    // Building it here takes about a second and removes a setup step that
+    // nobody can guess.
+    //
+    // Then production mode, because that is what the streaming path behaves
+    // like. `next dev` re-compiles on the first request and the extra seconds
+    // land inside the assertions that time how fast a free answer arrives.
+    command: `pnpm -w rulekit build ${CORPUS} && pnpm build && pnpm exec next start --port ${PORT}`,
     port: PORT,
     reuseExistingServer: !process.env.CI,
     timeout: 300_000,

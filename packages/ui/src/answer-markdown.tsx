@@ -1,8 +1,9 @@
 "use client"
 
-import { type ReactNode, useMemo } from "react"
+import { type ReactNode, useCallback, useMemo } from "react"
 import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { cardUrlTransform, isCardPath } from "./card-url.ts"
 import { useRuleKit } from "./provider.tsx"
 import { TokenText } from "./token-text.tsx"
 
@@ -16,7 +17,8 @@ import { TokenText } from "./token-text.tsx"
  *
  * WHAT IS ALLOWED THROUGH IS A CLOSED LIST. A model writes this text, and a
  * corpus supplies the paths inside it. Neither is trusted input, so a link is
- * rendered only when its scheme is one this file recognises.
+ * rendered only when its scheme is one this file recognises, and a card link
+ * only when its path is a plain relative one. See `card-url.ts` for both checks.
  */
 
 /** Schemes a link may use. Everything else renders as plain text. */
@@ -81,7 +83,10 @@ export function AnswerMarkdown(props: { children: string }): ReactNode {
         // URL builder gets the card's name as plain text.
         if (cardScheme && raw.startsWith(`${cardScheme}:`)) {
           const path = raw.slice(cardScheme.length + 1)
-          if (!path) return <>{withTokens(children)}</>
+          // A path that is not a plain relative one is not a card. See
+          // `isCardPath`: the host app's builder is handed this, and a host that
+          // returns it unchanged would build whatever the path says.
+          if (!isCardPath(path)) return <>{withTokens(children)}</>
           if (renderers.card) return <>{renderers.card({ name, path, inline: false })}</>
           if (!cardImageUrl) return <>{withTokens(children)}</>
           return (
@@ -107,7 +112,7 @@ export function AnswerMarkdown(props: { children: string }): ReactNode {
         const name = alt ?? ""
         if (cardScheme && raw.startsWith(`${cardScheme}:`)) {
           const path = raw.slice(cardScheme.length + 1)
-          if (!path) return null
+          if (!isCardPath(path)) return null
           if (renderers.card) return <>{renderers.card({ name, path, inline: true })}</>
           if (!cardImageUrl) return null
           // A plain <img>, deliberately. A framework's image component would
@@ -122,9 +127,14 @@ export function AnswerMarkdown(props: { children: string }): ReactNode {
     [renderers, cardScheme, cardImageUrl],
   )
 
+  // Without this the card branch above is unreachable. react-markdown blanks a
+  // URL whose scheme it does not know before a component ever sees it, and
+  // `card:` is not a scheme it knows.
+  const urlTransform = useCallback((url: string) => cardUrlTransform(url, cardScheme), [cardScheme])
+
   return (
     <div className="rk-answer">
-      <Markdown remarkPlugins={[remarkGfm]} components={components}>
+      <Markdown remarkPlugins={[remarkGfm]} components={components} urlTransform={urlTransform}>
         {props.children}
       </Markdown>
     </div>

@@ -9,6 +9,14 @@ export type PipelineOptions = {
   profile: Profile
   stages: Stage[]
   cache?: Cache
+  /**
+   * Scopes every cache key. Bump it when the corpus changes, and every stale
+   * answer becomes unreachable at once with no keys to enumerate and delete.
+   *
+   * It is set HERE and nowhere else, because a reader and a writer that
+   * disagree about the version never share an entry again.
+   */
+  cacheVersion?: string
 }
 
 export type RunInput = {
@@ -40,6 +48,7 @@ export type RunResult = {
  */
 export function createPipeline(options: PipelineOptions) {
   const cache = options.cache ?? new MemoryCache()
+  const cacheVersion = options.cacheVersion ?? "1"
 
   async function run(input: RunInput): Promise<RunResult> {
     const startedAt = Date.now()
@@ -51,6 +60,7 @@ export function createPipeline(options: PipelineOptions) {
       store: options.store,
       profile: options.profile,
       cache,
+      cacheVersion,
       retrieved: [],
       caller: input.caller,
       signal: input.signal,
@@ -112,6 +122,7 @@ export function createPipeline(options: PipelineOptions) {
       store: options.store,
       profile: options.profile,
       cache,
+      cacheVersion,
       retrieved: [],
       caller: input.caller,
       signal: input.signal,

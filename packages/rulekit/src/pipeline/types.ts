@@ -42,6 +42,16 @@ export type AskContext = {
   store: RuleStore
   profile: Profile
   cache: Cache
+  /**
+   * Scopes every cache key.
+   *
+   * It belongs to the request rather than to one stage, because more than one
+   * place writes an answer: the cache stage reads, and the handler and two
+   * cheap stages write. A version held by the reader alone is read at the new
+   * number and written at the old one, so bumping it empties the cache for good
+   * instead of once.
+   */
+  cacheVersion: string
   /** Rules an earlier stage found. A later stage passes them on to save a search. */
   retrieved: RetrievedRule[]
   /** Who is asking, when the host app knows. Opaque here. */

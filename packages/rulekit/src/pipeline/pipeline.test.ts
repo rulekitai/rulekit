@@ -370,6 +370,44 @@ describe("the pipeline", () => {
     assert.equal(second.answer?.text, "expensive answer")
   })
 
+  test("a bumped version reaches every writer, not only the reader", async () => {
+    // Reads and writes must agree on the version. While only the reading stage
+    // knew it, a bump emptied the cache for good rather than once: every answer
+    // was written under the old version and looked for under the new one, so
+    // nothing hit again and every question went to the model.
+    const pipeline = createPipeline({
+      store,
+      profile,
+      cache: new MemoryCache(),
+      cacheVersion: "7",
+      stages: [exactCacheStage(), agentStage(fakeAgent("expensive answer"))],
+    })
+    const first = await pipeline.run({ question: "a hard question" })
+    assert.equal(first.answer?.servedBy, "agent")
+    await writeBack(pipeline.contextFor({ question: "a hard question" }), first.answer as Answer)
+
+    assert.ok(await pipeline.cache.get(answerKey("a hard question", "7")), "written under the new version")
+    const second = await pipeline.run({ question: "a hard question" })
+    assert.equal(second.answer?.servedBy, "cache")
+  })
+
+  test("a bumped version reaches the stages that write their own answers", async () => {
+    const pipeline = createPipeline({
+      store,
+      profile,
+      cache: new MemoryCache(),
+      cacheVersion: "7",
+      stages: [exactCacheStage(), staticAnswersStage(store), glossaryStage(store)],
+    })
+    const banned = await pipeline.run({ question: "is Borrowed Hour banned" })
+    assert.equal(banned.answer?.servedBy, "static")
+    const defined = await pipeline.run({ question: "what is Guard" })
+    assert.equal(defined.answer?.servedBy, "glossary")
+
+    assert.ok(await pipeline.cache.get(answerKey("is Borrowed Hour banned", "7")), "the static stage")
+    assert.ok(await pipeline.cache.get(answerKey("what is Guard", "7")), "the glossary stage")
+  })
+
   test("never caches a follow-up", async () => {
     // The same words mean different things after different questions. Caching
     // "shorter" would serve one reader's answer to the next.

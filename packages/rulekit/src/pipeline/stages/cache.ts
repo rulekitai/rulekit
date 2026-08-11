@@ -4,12 +4,15 @@ import type { Answer, AskContext, Stage } from "../types.ts"
 /** The part of an answer worth keeping. Request-scoped fields are not cached. */
 type CachedAnswer = { text: string; citations: Record<string, unknown>[]; source: string }
 
+/**
+ * What `writeBack` may be told.
+ *
+ * The cache VERSION is deliberately absent. It lives on the request, set once by
+ * `createPipeline`, because the reading stage and the three writers must all use
+ * the same number: a version set on one of them alone is read at the new number
+ * and written at the old one, which empties the cache for good instead of once.
+ */
 export type CacheStageOptions = {
-  /**
-   * Scopes every key. Change it when the corpus changes, and every stale answer
-   * becomes unreachable at once with no keys to enumerate and delete.
-   */
-  version?: string
   ttlSeconds?: number
 }
 
@@ -24,13 +27,15 @@ export type CacheStageOptions = {
  * one reader's shortened answer to the next reader who typed the same word about
  * something else entirely.
  */
-export function exactCacheStage(options: CacheStageOptions = {}): Stage {
-  const version = options.version ?? "1"
+export function exactCacheStage(): Stage {
   return {
     name: "cache",
     when: (ctx: AskContext) => !ctx.isFollowUp,
     async run(ctx: AskContext): Promise<Answer | null> {
-      const cached = await ctx.cache.get<CachedAnswer>(answerKey(ctx.question, version))
+      // The version comes from the request, never from this stage. See
+      // `cacheVersion` on `AskContext`: a reader and a writer that disagree
+      // about it never share an entry again.
+      const cached = await ctx.cache.get<CachedAnswer>(answerKey(ctx.question, ctx.cacheVersion))
       if (!cached?.text) return null
       return {
         text: cached.text,
@@ -65,7 +70,7 @@ export async function writeBack(
   if (answer.servedBy === "cache") return
   try {
     await ctx.cache.set<CachedAnswer>(
-      answerKey(ctx.question, options.version ?? "1"),
+      answerKey(ctx.question, ctx.cacheVersion),
       { text: answer.text, citations: answer.citations, source: answer.source },
       options.ttlSeconds ?? DEFAULT_TTL_SECONDS,
     )
