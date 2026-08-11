@@ -13,6 +13,19 @@ would mean inventing one.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.3.0] - 2026-08-11
+
+This release fixes a way for somebody to spend a host's model budget without
+the count seeing it, and closes three smaller holes. It also makes card links
+work at all, which they never had.
+
+**One thing to change when you upgrade.** `exactCacheStage` no longer takes a
+`version`. Move it to `createPipeline({ cacheVersion: "..." })`. Passing it to
+the stage now raises an error that says so, rather than being ignored. If you
+never set a cache version, you have nothing to change.
+
 ### Security
 
 - **A failed question is now counted.** `Gate` is the one place a fork adds
