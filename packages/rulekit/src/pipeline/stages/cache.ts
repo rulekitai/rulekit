@@ -26,8 +26,22 @@ export type CacheStageOptions = {
  * same words mean different things to two readers. Caching "shorter" would serve
  * one reader's shortened answer to the next reader who typed the same word about
  * something else entirely.
+ *
+ * It takes no options. This stage once took a `version`, and that is why the
+ * check below exists rather than nothing: a caller writing plain JavaScript
+ * still passing one would have it ignored, fall back to version "1", and serve
+ * the very answers the bump was meant to put out of reach.
  */
-export function exactCacheStage(): Stage {
+export function exactCacheStage(...legacy: never[]): Stage {
+  // `never[]` refuses an argument at the type level and still collects one a
+  // JavaScript caller passes, which is the caller this check is for.
+  const passed = legacy[0] as { version?: unknown } | undefined
+  if (passed && "version" in passed) {
+    throw new Error(
+      "exactCacheStage no longer takes a `version`. Pass it to createPipeline as `cacheVersion` " +
+        "instead, so the reading stage and every writer use the same one.",
+    )
+  }
   return {
     name: "cache",
     when: (ctx: AskContext) => !ctx.isFollowUp,

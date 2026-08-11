@@ -370,6 +370,18 @@ describe("the pipeline", () => {
     assert.equal(second.answer?.text, "expensive answer")
   })
 
+  test("says where the version went, rather than ignoring one it is handed", () => {
+    // The option moved to createPipeline. Ignoring it here would serve exactly
+    // the stale answers the bump was meant to hide, and a caller writing plain
+    // JavaScript gets no warning from a type.
+    assert.throws(
+      () => (exactCacheStage as (options: unknown) => Stage)({ version: "3" }),
+      /cacheVersion/,
+      "the message must name the replacement",
+    )
+    assert.doesNotThrow(() => exactCacheStage())
+  })
+
   test("a bumped version reaches every writer, not only the reader", async () => {
     // Reads and writes must agree on the version. While only the reading stage
     // knew it, a bump emptied the cache for good rather than once: every answer

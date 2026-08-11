@@ -275,6 +275,57 @@ describe("the handler", () => {
     assert.equal(seen[1]?.usage?.cost_usd, 0.02)
   })
 
+  test("still answers when the gate cannot record", async () => {
+    // The model has already been paid for and the answer is already written.
+    // Losing it because the bookkeeping failed costs the reader the thing they
+    // waited for and saves nobody anything. The streaming path has always said
+    // so; this is the same rule on the JSON path.
+    const broken: Gate = {
+      async allow() {
+        return { allow: true }
+      },
+      async record() {
+        throw new Error("quota store unavailable")
+      },
+    }
+    const answered = await build({ gate: broken, stream: false })(
+      post({ question: "how do Guard and Swift interact" }),
+    )
+    assert.equal(answered.status, 200)
+    assert.equal((await answered.json()).text, "a reasoned answer")
+
+    const failed = await build({ agent: silentAgent(), gate: broken, stream: false })(
+      post({ question: "how do Guard and Swift interact" }),
+    )
+    assert.equal(failed.status, 502)
+  })
+
+  test("records a turn whose agent threw part way through", async () => {
+    // A turn that threw spent whatever it spent before it threw. This is the
+    // same accounting hole as a turn that wrote nothing, reached the other way.
+    const thrower: AgentLike = {
+      // biome-ignore lint/correctness/useYield: it throws before it yields
+      async *stream(): AsyncGenerator<AgentEvent> {
+        throw new Error("the agent stopped mid-turn")
+      },
+    }
+    const seen: Answer[] = []
+    const recorder: Gate = {
+      async allow() {
+        return { allow: true }
+      },
+      async record(_ctx: AskContext, answer: Answer) {
+        seen.push(answer)
+      },
+    }
+    const res = await build({ agent: thrower, gate: recorder, stream: false })(
+      post({ question: "how do Guard and Swift interact" }),
+    )
+    assert.equal(res.status, 502)
+    assert.match((await res.json()).error, /stopped mid-turn/)
+    assert.equal(seen.length, 1, "a turn that threw must still reach the gate")
+  })
+
   test("never caches a turn that wrote nothing", async () => {
     const handler = build({ agent: silentAgent(), stream: false })
     const first = await handler(post({ question: "how do Guard and Swift interact" }))

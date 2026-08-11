@@ -106,6 +106,18 @@ export function createAskHandler(options: AskHandlerOptions) {
   const gate = options.gate ?? openGate
   const shouldStream = options.stream !== false
 
+  /**
+   * Record one answer, and never let the recording cost the answer.
+   *
+   * A gate that cannot reach its counter is a broken counter, not a broken
+   * answer: the model has already been paid for, and on the streaming path the
+   * text is already on the reader's screen. Throwing here would turn a served
+   * answer into a 500 and a plain 502 into an unhandled error, so every path
+   * uses this and none awaits `gate.record` directly.
+   */
+  const record = (ctx: AskContext, answer: Answer) =>
+    gate.record(ctx, answer).catch((err) => console.error("[rulekit] gate record failed:", err))
+
   return async function handle(request: Request): Promise<Response> {
     if (request.method !== "POST") return json({ error: "Use POST." }, 405, { allow: "POST" })
     if (isCrossSite(request)) return json({ error: "This endpoint does not answer another site." }, 403)
@@ -152,7 +164,7 @@ export function createAskHandler(options: AskHandlerOptions) {
 
     if (result.answer) {
       const answer = result.answer
-      await gate.record(ctx, answer)
+      await record(ctx, answer)
       await writeBack(ctx, answer)
       return json(clientAnswer(answer))
     }
@@ -173,10 +185,18 @@ export function createAskHandler(options: AskHandlerOptions) {
         latencyMs?: number
       } | null = null
       let error: string | null = null
-      for await (const event of streamAgent(options.agent, agentCtx)) {
-        if (event.type === "text") text = event.text
-        else if (event.type === "done") done = event
-        else if (event.type === "error") error = event.error
+      try {
+        for await (const event of streamAgent(options.agent, agentCtx)) {
+          if (event.type === "text") text = event.text
+          else if (event.type === "done") done = event
+          else if (event.type === "error") error = event.error
+        }
+      } catch (err) {
+        // A turn that threw still spent whatever it spent before it threw, and
+        // it may already have written text. Letting the throw leave this
+        // function would skip the gate below, which is the same accounting hole
+        // as a turn that wrote nothing, reached from the other side.
+        error = err instanceof Error ? err.message : String(err)
       }
       const answer: Answer = {
         text: done?.text || text,
@@ -194,7 +214,7 @@ export function createAskHandler(options: AskHandlerOptions) {
       // of them. Returning the failure first would mean a gate counts only the
       // turns that produced text, which is a budget an asker can spend without
       // it ever counting.
-      await gate.record(agentCtx, answer)
+      await record(agentCtx, answer)
       if (!answer.text) return json({ error: error ?? "The agent produced no answer." }, 502)
       await writeBack(agentCtx, answer)
       return json(clientAnswer(answer))
@@ -256,9 +276,7 @@ export function createAskHandler(options: AskHandlerOptions) {
           // path above states: those model calls were made and charged.
           // `writeBack` drops an empty or incomplete answer by itself, so a
           // failure is counted and never cached.
-          await gate
-            .record(agentCtx, answer)
-            .catch((err) => console.error("[rulekit] gate record failed:", err))
+          await record(agentCtx, answer)
           await writeBack(agentCtx, answer)
           controller.close()
         }

@@ -189,6 +189,21 @@ You choose the order of the stages:
 stages: [exactCacheStage(), staticAnswersStage(store), glossaryStage(store)]
 ```
 
+### Clear every cached answer at once
+
+An answer stays in the cache for a week. When you change the corpus, the answers
+already cached still quote the old rules. Bump the cache version to put all of
+them out of reach in one step:
+
+```ts
+createPipeline({ store, profile, stages, cacheVersion: "2" })
+```
+
+The version is part of every cache key, so nothing has to be enumerated and
+deleted. Set it in this one place. The reading stage and every writer take it
+from here, and a version set anywhere else would be read at the new number and
+written at the old one, which empties the cache for good rather than once.
+
 You can configure the patterns of the static stage. Different games number their
 rules in different ways, and they ask about legality with different words:
 

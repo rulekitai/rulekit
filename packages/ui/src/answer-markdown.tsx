@@ -4,6 +4,7 @@ import { type ReactNode, useCallback, useMemo } from "react"
 import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { cardUrlTransform, isCardPath } from "./card-url.ts"
+import { textOf } from "./children-text.ts"
 import { useRuleKit } from "./provider.tsx"
 import { TokenText } from "./token-text.tsx"
 
@@ -76,7 +77,10 @@ export function AnswerMarkdown(props: { children: string }): ReactNode {
 
       a: ({ href, children }: { href?: string; children?: ReactNode }) => {
         const raw = href ?? ""
-        const name = typeof children === "string" ? children : String(children ?? "")
+        // The printed name, read through any emphasis the model wrote around
+        // it. A host app looks a card up by this, so `[object Object]` finds
+        // nothing. See `textOf`.
+        const name = textOf(children)
 
         // A card link. The path is relative and means nothing until a host app
         // says where images live, so an app that supplied no renderer and no
