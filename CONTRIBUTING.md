@@ -132,9 +132,21 @@ one publish before you can configure one. To add a package to this workspace:
 
 Every later release then runs from the tag, with no token.
 
-**Read the `packageManager` field before you change the pnpm version.** pnpm 10
-exchanges the OIDC token correctly. pnpm 11.0.8 did not, and the registry
-answered 404. That field pins the version the workflow installs.
+**The npm version does the work, not the pnpm version.** `pnpm publish` packs
+each package itself, which is what turns a `workspace:*` dependency into a real
+version number, and then hands the tarball to `npm publish` to upload. Trusted
+publishing lives in npm, and npm gained it in the 11 line. Node 22 still ships
+npm 10, which has none of that code, so it uploaded with no credential at all.
+The workflow therefore installs a pinned npm of its own and prints the version.
+
+**A publish that answers `404 Not Found - PUT` is one of two things**, and the
+printed npm version tells you which. npm answers a write it does not permit with
+404 rather than 403, so the message reads as "no such package" when the package
+is plainly there:
+
+1. The npm doing the upload is older than the 11 line, so no credential was ever
+   requested.
+2. The trusted publisher is not configured for that package on npmjs.com.
 
 ## The licence of your contribution
 

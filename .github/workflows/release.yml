@@ -13,11 +13,20 @@ name: release
 #  1. **npm cannot publish the FIRST version of a package this way.** The npm
 #     settings page for a trusted publisher only exists after a package exists.
 #     Publish v0.1.0 by hand once, configure the trusted publisher for each of
-#     the seven packages, and every later release runs here. See CONTRIBUTING.md.
-#  2. **The pnpm version matters.** pnpm 10 exchanges the OIDC token correctly.
-#     pnpm 11.0.8 did not, and returned 404 from the registry. The
-#     `packageManager` field in the root package.json pins the version that
-#     pnpm/action-setup installs, so read that field before you change it.
+#     both packages, and every later release runs here. See CONTRIBUTING.md.
+#
+#  2. **The npm version does the work, not the pnpm version.** `pnpm publish`
+#     packs each package itself, which is what rewrites a `workspace:*`
+#     dependency into a real version number, and then hands the tarball to
+#     `npm publish` to upload. Trusted publishing lives in npm, and npm gained
+#     it in the 11 line. Node 22 still ships npm 10, which has no such code at
+#     all: it uploaded with no credential, and the registry refused the write.
+#     So this job installs its own npm below.
+#
+# **A publish that answers `404 Not Found - PUT` is one of those two.** npm
+# answers a write it does not permit with 404 rather than 403, so the message
+# reads as "no such package" when the package is plainly there. Read the printed
+# npm version first, then the trusted publisher setting.
 on:
   push:
     tags: ["v*"]
@@ -42,6 +51,20 @@ jobs:
           cache: pnpm
           # Writes an .npmrc that points at the registry. No token goes in it.
           registry-url: https://registry.npmjs.org
+
+      # The npm that uploads, since `pnpm publish` hands its tarball to npm.
+      #
+      # Node 22 ships npm 10, which predates trusted publishing entirely, so it
+      # sent the tarball with no credential and the registry answered 404.
+      #
+      # PINNED, for the same reason the pnpm version is pinned: a release must
+      # not change because something upstream shipped this morning. npm 12 needs
+      # a newer Node than this job runs, so the 11 line is the one to bump
+      # within. The version is printed so that a future failure names it in the
+      # first place anybody looks.
+      - run: |
+          npm install -g npm@11.19.0
+          npm --version
 
       - run: pnpm install --frozen-lockfile
 
