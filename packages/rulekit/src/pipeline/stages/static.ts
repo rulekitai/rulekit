@@ -36,17 +36,23 @@ function createDataLoader(store: RuleStore, ttlSeconds: number) {
   async function build(): Promise<StaticData> {
     // Each list is read independently, because losing one must not cost the
     // answers the others can still give.
-    const [cardNames, banlist, errata] = await Promise.all([
+    const [cardNames, banlist, errata, rulings] = await Promise.all([
       store.allCardNames().catch(() => null),
       store.listBanlist({ limit: 200 }).catch(() => null),
       store.listErrata({ limit: 200 }).catch(() => null),
+      // A store written before rulings existed has no such method. That reads
+      // as "this corpus has none", which withholds the answer rather than
+      // failing the whole build.
+      store.listRulings ? store.listRulings({ limit: 200 }).catch(() => null) : Promise.resolve([]),
     ])
     const data = indexStaticData({
       cardNames: cardNames ?? [],
       banlist: banlist ?? [],
       errata: errata ?? [],
+      rulings: rulings ?? [],
       banlistLoaded: banlist !== null,
       errataLoaded: errata !== null,
+      rulingsLoaded: rulings !== null,
     })
     if (!cardNames) {
       console.error(

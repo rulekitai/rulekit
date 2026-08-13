@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "rul-001",
+      "kind": "card",
+      "question": "Does Stonewall Sentry's Guard force an attack to be blocked by it?",
+      "answer": "No. Guard makes an attacking unit ELIGIBLE to be blocked by the Sentry, and the defending player still chooses whether to block at all. Guard removes the attacker's choice of which unit blocks it, not the defender's choice to block.",
+      "cards": [
+        {
+          "id": "pk-001",
+          "name": "Stonewall Sentry",
+          "png_uri": "paper-kingdoms/PK-001.webp"
+        }
+      ],
+      "rule_numbers": ["300.2", "300.2.a", "800.1"],
+      "topic": "blocking",
+      "source_name": "Paper Kingdoms Rules Team",
+      "is_official": true,
+      "effective_date": "2026-03-01"
+    },
+    {
+      "id": "rul-002",
+      "kind": "card",
+      "question": "Quickstep Courier has Swift. May I attack with it the turn it enters play?",
+      "answer": "Swift decides WHEN the card may be played, not what it may do afterwards. It says nothing about attacking. Read the card's own text and the battle phase rules for that.",
+      "cards": [
+        {
+          "id": "pk-003",
+          "name": "Quickstep Courier",
+          "png_uri": "paper-kingdoms/PK-003.webp"
+        }
+      ],
+      "rule_numbers": ["800.2", "300.1"],
+      "topic": "keywords",
+      "source_name": "Paper Kingdoms Rules Team",
+      "is_official": true,
+      "effective_date": "2026-03-01"
+    },
+    {
+      "id": "rul-003",
+      "kind": "card",
+      "question": "Emberlight Adept enters play and I control no other unit. Where do the Bolster counters go?",
+      "answer": "They go on Emberlight Adept itself. Bolster normally puts its counters on another unit you control, and with no other unit to choose, the entering unit takes them.",
+      "cards": [
+        {
+          "id": "pk-004",
+          "name": "Emberlight Adept",
+          "png_uri": "paper-kingdoms/PK-004.webp"
+        }
+      ],
+      "rule_numbers": ["800.3", "800.3.a"],
+      "topic": "keywords",
+      "source_name": "Paper Kingdoms Rules Team",
+      "is_official": true,
+      "effective_date": "2026-03-01"
+    },
+    {
+      "id": "rul-004",
+      "kind": "card",
+      "question": "Ironbrand Blade is on Stonewall Sentry. Does the Sentry still have Guard while the Blade is attached?",
+      "answer": "Yes. Attaching a piece of Gear adds to a unit and removes nothing the unit already had, so the Sentry keeps Guard and gains whatever the Blade grants.",
+      "cards": [
+        {
+          "id": "pk-006",
+          "name": "Ironbrand Blade",
+          "png_uri": "paper-kingdoms/PK-006.webp"
+        },
+        {
+          "id": "pk-001",
+          "name": "Stonewall Sentry",
+          "png_uri": "paper-kingdoms/PK-001.webp"
+        }
+      ],
+      "rule_numbers": ["800.1"],
+      "topic": "gear",
+      "source_name": "Kingdoms Judge Circle",
+      "source_url": "https://example.invalid/rulings/ironbrand-blade",
+      "is_official": false,
+      "effective_date": "2026-04-12"
+    },
+    {
+      "id": "rul-005",
+      "kind": "general",
+      "question": "An attacking unit is blocked by two units. In what order does it assign its damage?",
+      "answer": "Each attacking and blocking unit deals damage equal to its Strength at the same time. Read rule 300.3 for how that damage is dealt and rule 300.3.a for when a unit is destroyed by it.",
+      "cards": [],
+      "rule_numbers": ["300.3", "300.3.a"],
+      "topic": "damage",
+      "source_name": "Paper Kingdoms Rules Team",
+      "is_official": true,
+      "effective_date": "2026-03-01"
+    },
+    {
+      "id": "rul-006",
+      "kind": "general",
+      "question": "I have more than seven cards in hand when my end phase begins. When exactly do I discard?",
+      "answer": "During the end phase. The active player discards down to seven cards in hand, and all damage marked on units is removed in the same phase.",
+      "cards": [],
+      "rule_numbers": ["200.1.d"],
+      "topic": "turn structure",
+      "source_name": "Paper Kingdoms Rules Team",
+      "is_official": true,
+      "effective_date": "2026-03-01"
+    },
+    {
+      "id": "rul-007",
+      "kind": "policy",
+      "question": "I noticed an error on my decklist after the first round began. What happens?",
+      "answer": "A decklist must be complete and submitted before the first round begins. Take the error to the event organiser rather than correcting it yourself, because the decklist rule is enforced by the event and not by the game rules.",
+      "cards": [],
+      "rule_numbers": ["100.1"],
+      "topic": "deck registration",
+      "source_name": "Paper Kingdoms Organised Play",
+      "is_official": true,
+      "effective_date": "2026-02-01"
+    },
+    {
+      "id": "rul-008",
+      "kind": "policy",
+      "question": "Our match reached time. How is the winner decided?",
+      "answer": "A round lasts 50 minutes, and a match unfinished at time follows the procedure in rule 100.2 of the tournament rules. This is an event rule, not a game rule, so it does not apply to a game played outside an event.",
+      "cards": [],
+      "rule_numbers": ["100.2"],
+      "topic": "round length",
+      "source_name": "Paper Kingdoms Organised Play",
+      "is_official": true,
+      "effective_date": "2026-02-01"
+    },
+    {
+      "id": "rul-009",
+      "kind": "card",
+      "question": "Does Lanternbearer give my opponent's units Guard as well?",
+      "answer": "It did, as printed, and it no longer does. The card was corrected so that it grants Guard only to units you control. Read the card change for Lanternbearer for the exact wording.",
+      "cards": [
+        {
+          "id": "pk-009",
+          "name": "Lanternbearer",
+          "png_uri": "paper-kingdoms/PK-009.webp"
+        }
+      ],
+      "rule_numbers": ["800.1"],
+      "topic": "keywords",
+      "source_name": "Kingdoms Judge Circle",
+      "is_official": false,
+      "effective_date": "2026-01-15",
+      "is_deprecated": true,
+      "deprecation_note": "Withdrawn on 2026-03-01. The card change of the same date settles this, and the ruling described the printed text rather than the corrected text."
+    }
+  ]
+}

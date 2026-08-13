@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { parseProfile } from "@rulekitai/rulekit/agent/profile"
+import { findSkill } from "@rulekitai/rulekit/agent/skills"
 import { corpusContents, defineRulesTools } from "@rulekitai/rulekit/agent/tools"
+import { defineSkill } from "eve/skills"
 import { defineTool, disableTool } from "eve/tools"
 import { z } from "zod"
 import { CORPUS_DIR, corpusStore } from "./corpus.ts"
@@ -39,6 +41,32 @@ export const TOOL_NAMES = [...byName.keys()]
  * exists and answers nothing is worse than one that is absent, because the
  * model calls it, gets nothing, and reports that nothing exists.
  */
+/**
+ * One procedure, ready for Eve, and switched off when its tool is absent.
+ *
+ * Eve reads every file under `agent/skills/` and offers no way to disable one.
+ * The AI SDK runtime drops a procedure whose tool the corpus cannot offer, so
+ * without this the two runtimes disagree: Eve would hand the model a procedure
+ * that names `list_rulings` for a corpus that holds no ruling, and the model
+ * would call a tool that is not there.
+ *
+ * The procedure states its own requirement, in the `requires-tool` field of its
+ * front matter. This function reads that field, so a procedure that gains a
+ * requirement needs no edit here.
+ */
+export function eveSkill(name: string) {
+  const skill = findSkill(name)
+  if (!skill) throw new Error(`the ${name} skill is missing from @rulekitai/rulekit/agent/skills`)
+  const needs = skill.requiresTool
+  if (needs && !byName.has(needs)) {
+    return defineSkill({
+      description: `Not available. This corpus offers no ${needs}.`,
+      markdown: `This corpus offers no \`${needs}\`, so this procedure does not apply. Answer from the rules.`,
+    })
+  }
+  return defineSkill({ description: skill.description, markdown: skill.body })
+}
+
 export function eveTool(name: string) {
   const tool = byName.get(name)
   if (!tool) return disableTool()

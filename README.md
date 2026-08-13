@@ -1,15 +1,25 @@
 # rulekit
 
-rulekit is a rules assistant. It answers questions from your own rulebook, it
-quotes that rulebook, and it gives the source of each claim.
+rulekit answers a rules question from your own rulebook. It quotes that
+rulebook, and it gives the source of each claim. It invents nothing. When the
+corpus holds no answer, it says so.
 
-You supply a corpus of JSON files. Every answer comes from that corpus. Each
-claim gives its rule number, its card name, or its date. When the corpus has no
-answer, the assistant tells you. It does not invent an answer.
+You supply a **corpus** of JSON files, and each claim carries its rule number,
+its card name, or its date. rulekit holds no game of its own. It works with any
+rulebook, and it needs no particular model provider.
 
-This project contains no game. It works with any rulebook, and it needs no
-particular model provider. The code uses the Apache 2.0 licence. There is no
-price and no account, except one model key.
+A corpus can also hold **rulings**: a question somebody asked, the answer, and
+the rules that answer rests on. One file holds card rulings, rulings about a
+mechanic, and event policy. Each ruling names its publisher, and says whether it
+is official.
+
+When your corpus holds no answer, you can let the assistant read **websites that
+you name**. rulekit ships no list of sites, and endorses none. An answer that
+reads a site names the site, gives its address, and marks the claim as outside
+your rules data.
+
+The code carries the Apache 2.0 licence. rulekit has no price, and it needs no
+account, except one model key.
 
 ## Install
 
@@ -17,25 +27,16 @@ price and no account, except one model key.
 pnpm add @rulekitai/rulekit
 ```
 
-Use Node 22 or a later version.
+Use Node 22.5 or a later version.
 
 ## Ask your first question
 
-No clone, and no model key. `init` gives you a corpus to start from, and the
+You need no clone and no model key. The command `init` copies a corpus, and the
 answer arrives in a few milliseconds.
 
 ```bash
 npx rulekit init my-game
 npx rulekit ask my-game "what is Swift"
-```
-
-Four corpora travel inside the package, and `--corpus` names the one you want:
-`demo` (the default, an invented card game), `chess`, `texas-holdem`, and
-`estate-line`. All four carry a CC0 1.0 dedication, so you may copy one and
-build a product on it.
-
-```bash
-npx rulekit init my-game --corpus chess
 ```
 
 ```
@@ -47,9 +48,18 @@ npx rulekit init my-game --corpus chess
 > player holds priority, including during the opponent's turn.
 ```
 
-The `ask` command runs the free stages only. It does not call the agent. For a
-question of a different type, it tells you that it cannot answer, and it shows
-you a question of each type that it does answer.
+Four corpora travel inside the package, and `--corpus` names the one you want:
+`demo` (the default, an invented card game), `chess`, `texas-holdem`, and
+`estate-line`. All four carry a CC0 1.0 dedication, so you may copy one and
+build a product on it.
+
+```bash
+npx rulekit init my-game --corpus chess
+```
+
+The `ask` command runs the free stages only, and it never calls the agent. For a
+question of another shape, it reports a miss, and it shows one question of each
+shape that it does answer.
 
 ## Put it in your application
 
@@ -80,16 +90,9 @@ database. `createAskHandler` returns a plain function from `Request` to
 `Response`, so the same export works in Next.js, Hono, Bun, Deno, and a
 Cloudflare Worker.
 
-Add the interface with `pnpm add @rulekitai/ui react`:
-
-```tsx
-import { useAskStream } from "@rulekitai/ui/use-ask-stream"
-import { Chat } from "@rulekitai/ui/chat"
-import { RuleKitProvider } from "@rulekitai/ui/provider"
-import "@rulekitai/ui/styles.css"
-
-const { messages, loading, streaming, ask } = useAskStream({ endpoint: "/api/ask" })
-```
+Add a React chat with `pnpm add @rulekitai/ui`. The
+[`@rulekitai/ui` README](packages/ui/README.md) states each hook and each
+component.
 
 [`docs/adding-a-game.md`](docs/adding-a-game.md) covers a corpus of your own,
 from the first JSON file to the finished profile.
@@ -113,19 +116,17 @@ cp .env.example .env                # write one model key in this file
 pnpm dev                            # http://localhost:3210
 ```
 
-A new clone gives you a working chat in 21 seconds. The first build of the
-example application takes 17 of those seconds.
+A new clone gives you a working chat in 21 seconds, and the first build of the
+example application takes 17 of them.
 
-To check the repository, run `pnpm lint && pnpm check-types && pnpm test`. The
-tests use no model and no network.
-[`CONTRIBUTING.md`](CONTRIBUTING.md) states the rest.
+[`CONTRIBUTING.md`](CONTRIBUTING.md) states the checks and how to send a change.
 
 ## The five corpora in this repository
 
-The five corpora are different from each other on purpose, and **no two of them
-use the same attribute name**. A chess piece has a piece value and a notation
-symbol. A poker card has a rank and a suit. A deed has a price and five levels
-of rent. The format is the same for all five, and the code does not change.
+The five corpora differ from each other on purpose, and **no two of them use the
+same attribute name**. A chess piece has a piece value and a notation symbol. A
+deed has a price and five levels of rent. One format holds all five, and the
+code does not change.
 
 | Corpus | The game | Rules | Terms | Its named pieces |
 |---|---|---|---|---|
@@ -135,11 +136,11 @@ of rent. The format is the same for all five, and the code does not change.
 | `data/demo/` | An invented trading card game | 27 | 6 | 12 cards |
 | `data/riftbound/` | Riftbound | 3317 | 25 | 941 cards |
 
-**Four of the five travel inside the npm package**, so `rulekit init my-game
---corpus chess` reaches them with no clone. Riftbound stays here: Riot Games
-owns that data, and their policy permits non-commercial use only. To use it,
-clone this repository and copy `data/riftbound/` into your project. Read
-[`data/README.md`](data/README.md) for the terms of each one.
+Four of the five travel inside the npm package, so `rulekit init my-game
+--corpus chess` reaches them with no clone. Riftbound stays here, because Riot
+Games owns that data, and their policy permits non-commercial use only. To use
+it, clone this repository and copy `data/riftbound/` into your project.
+[`data/README.md`](data/README.md) states the terms of each corpus.
 
 ## How the assistant makes an answer
 
@@ -149,13 +150,12 @@ stage that can answer.
 | Stage | It answers | It costs |
 |---|---|---|
 | Exact cache | A question that somebody asked before | Nothing |
-| Static answers | "What does rule 300.2 say?", "Is X banned?" | Nothing |
+| Static answers | "What does rule 300.2 say?", "Is X banned?", "What are the rulings for X?" | Nothing |
 | Glossary | "What is Shield?" | Nothing |
 | **The agent** | Every other question | One model turn |
 
-If the three free stages give no answer, the agent answers the question. The
-agent searches the corpus with tools, then it writes an answer with its sources.
-[`docs/architecture.md`](docs/architecture.md) shows all four steps as diagrams.
+The agent searches the corpus with tools, then writes an answer with its
+sources. [`docs/architecture.md`](docs/architecture.md) draws all four steps.
 
 ## The packages
 
@@ -170,11 +170,11 @@ React and a Markdown renderer.
 Each part keeps its own subpath, so an import states where it comes from:
 `@rulekitai/rulekit/corpus/*`, `/agent/*`, `/pipeline/*`, and `/server/*`.
 
-The code loads the `ai` package only when you use the agent, so a server that
+The code loads the `ai` package only when you use the agent. A server that
 answers from the free stages alone never needs it.
 
-The directory `templates/eve-agent` contains the same agent on
-[Vercel Eve](https://eve.dev). The directory `examples/next-app` contains a chat
+The directory `templates/eve-agent` holds the same agent on
+[Vercel Eve](https://eve.dev). The directory `examples/next-app` holds a chat
 that you can copy.
 
 ## Where to read more
@@ -182,29 +182,32 @@ that you can copy.
 | Document | What it covers |
 |---|---|
 | [`docs/adding-a-game.md`](docs/adding-a-game.md) | How to write a corpus and a profile for your own game |
-| [`docs/corpus-format.md`](docs/corpus-format.md) | Each field of the eight JSON files |
+| [`docs/corpus-format.md`](docs/corpus-format.md) | Every field of every corpus file, including rulings |
+| [`docs/custom-tools.md`](docs/custom-tools.md) | How to give the agent a tool or a procedure of your own |
+| [`docs/reference-sites.md`](docs/reference-sites.md) | How to let the assistant read a website when your corpus misses |
 | [`docs/architecture.md`](docs/architecture.md) | How the code makes an agent, and how one turn runs |
 | [`docs/verifying-answers.md`](docs/verifying-answers.md) | How to prove that the answers invent nothing |
 | [`docs/design-decisions.md`](docs/design-decisions.md) | Why one file, no data collection, and no price |
 | [`CHANGELOG.md`](CHANGELOG.md) | What changed in each release |
 
-The directory `.claude/skills/` contains six skills. They tell an AI coding
-agent how to add rulekit to an application. Read the `rulekit` skill first. It
-sends the agent to the correct one of the other five.
+The directory `.claude/skills/` holds seven skills. They tell an AI coding agent
+how to add rulekit to an application. Read the `rulekit` skill first. It sends
+the agent to the correct one of the other six.
 
 ## Licence
 
-**The code uses the Apache 2.0 licence.** This covers `packages/`, `templates/`,
-and `examples/`.
+**The code carries the Apache 2.0 licence.** It covers `packages/`,
+`templates/`, and `examples/`.
 
-**Each corpus has its own terms of use.** The Apache licence does not cover
-`data/`. Four of the five corpora use the CC0 1.0 licence, and this project
-wrote them. The corpus `data/riftbound/` is the property of Riot Games, and its
-terms permit non-commercial use only.
+**Each corpus carries its own terms of use.** The Apache licence does not cover
+`data/`. This project wrote four of the five corpora, and dedicated them under
+CC0 1.0. Riot Games owns the corpus `data/riftbound/`, and its terms permit
+non-commercial use only.
 
 To use rulekit in a commercial product, use one of the four public-domain
 corpora, or supply your own. [`data/README.md`](data/README.md) states each term
-in full, and the `NOTICE` file is included with every copy of the code.
+in full. Both published packages carry the `NOTICE` file, as Apache 2.0 section
+4(d) asks.
 
 Riot Games' "Legal Jibber Jabber" policy permitted the creation of rulekit with
 assets that Riot Games owns. Riot Games does not endorse or sponsor this

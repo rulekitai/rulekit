@@ -1,5 +1,5 @@
 import type { Profile } from "./profile.ts"
-import { BASE_INSTRUCTIONS as BASE } from "./prose.ts"
+import { BASE_INSTRUCTIONS as BASE, REFERENCE_INSTRUCTIONS as REFERENCES } from "./prose.ts"
 
 /**
  * The instructions that hold for every rulebook.
@@ -133,6 +133,14 @@ export type BuildInstructionsOptions = {
    * prompt caching makes almost free after the first question.
    */
   skills?: { name: string; body: string }[]
+  /**
+   * Add the reference-site rules. Pass true ONLY when sites are configured.
+   *
+   * The block is not always on because it describes tools that would not exist:
+   * a model told how to weigh an outside source, with no way to read one, learns
+   * that outside sources are in scope and answers from memory instead.
+   */
+  references?: boolean
 }
 
 /**
@@ -148,6 +156,10 @@ export function buildInstructions(profile: Profile, options: BuildInstructionsOp
   return block(
     identitySection(profile),
     BASE,
+    // Directly after the grounding rules, and before anything a profile writes.
+    // The rule it adds — an outside source is labelled as one — is a grounding
+    // rule, and a profile may sharpen it but must not be able to bury it.
+    options.references ? REFERENCES : null,
     vocabularySection(profile),
     cardsSection(profile),
     tokensSection(profile),

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
-import { readFileSync } from "node:fs"
-import { join } from "node:path"
+import { readdirSync, readFileSync } from "node:fs"
+import { join, sep } from "node:path"
 import { test } from "node:test"
 
 /**
@@ -66,4 +66,30 @@ test("every export a build tool reaches is compiled output", () => {
       `${subpath} must fall back to ./dist/, so an install from npm never loads TypeScript.`,
     )
   }
+})
+
+test("every module under src has a subpath, so nothing ships unreachable", () => {
+  // A module with no entry in `exports` compiles, ships, and cannot be
+  // imported. Nothing else notices: the build succeeds and the tests pass,
+  // because the tests reach it by relative path and a reader cannot.
+  const sourced = new Set(
+    Object.values(MANIFEST.exports)
+      .map((entry) => (typeof entry === "string" ? entry : entry["rulekit-source"]))
+      .filter(Boolean),
+  )
+  /** Reached some other way, or on purpose internal. Each one states which. */
+  const INTERNAL: Record<string, string> = {
+    "./src/cli/bin.ts": "the `bin` field publishes it as the rulekit command",
+    "./src/cli/eval.ts": "reached through the command, not imported",
+    "./src/cli/grade.ts": "reached through the command, not imported",
+    "./src/agent/prose.ts": "generated; read through agent/instructions and agent/skills",
+    "./src/corpus/bm25.ts": "the ranking index the JSON store reads. No caller builds one",
+  }
+  const modules = readdirSync(join(import.meta.dirname), { recursive: true, encoding: "utf8" })
+    .filter((file) => file.endsWith(".ts") && !file.endsWith(".test.ts"))
+    .map((file) => `./src/${file.split(sep).join("/")}`)
+    .filter((file) => !INTERNAL[file])
+
+  const missing = modules.filter((file) => !sourced.has(file))
+  assert.deepEqual(missing, [], `these modules ship with no way to import them: ${missing.join(", ")}`)
 })

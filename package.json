@@ -10,7 +10,7 @@
     "node": ">=22.5.0"
   },
   "scripts": {
-    "build": "node packages/rulekit/scripts/copy-corpora.mjs && tsc --build",
+    "build": "node packages/rulekit/scripts/copy-corpora.mjs && node packages/ui/scripts/copy-notice.mjs && tsc --build",
     "check-types": "tsc --build --force",
     "clean": "tsc --build --clean",
     "lint": "biome check .",

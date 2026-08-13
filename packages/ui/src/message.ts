@@ -52,6 +52,28 @@ export function answerSource(servedBy: string | undefined): "rules" | "model" {
   return servedBy === "agent" || servedBy === "cheap" ? "model" : "rules"
 }
 
+/** One site read while answering, named so a disclaimer can list it. */
+export type ReadSource = { name: string; url: string; official: boolean }
+
+/**
+ * The sites outside the rules data that this answer read, if any.
+ *
+ * Read from the trace rather than from the answer's prose. The model writes the
+ * prose, and the model is the thing a reader is checking, so a disclaimer built
+ * from a sentence the model chose to write proves nothing. A step carries its
+ * source because the tool that did the reading put it there.
+ *
+ * One entry per site, not per page: a reader wants to know which sites were
+ * consulted, and three pages of one site is still one site to weigh.
+ */
+export function readSources(steps: TraceStep[] | undefined): ReadSource[] {
+  const bySite = new Map<string, ReadSource>()
+  for (const step of steps ?? []) {
+    if (step.source && !bySite.has(step.source.name)) bySite.set(step.source.name, step.source)
+  }
+  return [...bySite.values()]
+}
+
 /**
  * The messages that count as conversation.
  *

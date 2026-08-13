@@ -27,3 +27,7 @@ test-results/
 playwright-report/
 blob-report/
 packages/rulekit/data/
+# Copied from the root NOTICE at build time, so Apache 2.0 4(d) travels with
+# each published package. The root NOTICE is the original.
+packages/rulekit/NOTICE
+packages/ui/NOTICE

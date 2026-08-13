@@ -36,13 +36,21 @@ function parseFrontMatter(raw) {
 
 export function generate() {
   const base = readFileSync(join(SRC, "instructions", "base.md"), "utf8").trim()
+  const references = readFileSync(join(SRC, "instructions", "references.md"), "utf8").trim()
 
   const skills = readdirSync(join(SRC, "skills"))
     .filter((file) => file.endsWith(".md"))
     .sort()
     .map((file) => {
       const { fields, body } = parseFrontMatter(readFileSync(join(SRC, "skills", file), "utf8"))
-      return { name: fields.name ?? file.replace(/\.md$/, ""), description: fields.description ?? "", body }
+      return {
+        name: fields.name ?? file.replace(/\.md$/, ""),
+        description: fields.description ?? "",
+        body,
+        // `requires-tool` in the front matter, `requiresTool` in the module. The
+        // runtime drops a procedure whose tool the corpus cannot offer.
+        ...(fields["requires-tool"] ? { requiresTool: fields["requires-tool"] } : {}),
+      }
     })
 
   return `// GENERATED FILE. Do not edit.
@@ -57,14 +65,23 @@ export function generate() {
 /** The grounding rules that hold for every rulebook. */
 export const BASE_INSTRUCTIONS = \`${forTemplateLiteral(base)}\`
 
+/**
+ * How to use a site outside the corpus. Added ONLY when an implementer
+ * configured one, because without it a fetched page reads as though it were
+ * the rules.
+ */
+export const REFERENCE_INSTRUCTIONS = \`${forTemplateLiteral(references)}\`
+
 /** A procedure the model reads only when it applies. */
-export type ProseSkill = { name: string; description: string; body: string }
+export type ProseSkill = { name: string; description: string; body: string; requiresTool?: string }
 
 export const SKILLS: ProseSkill[] = [
 ${skills
   .map(
     (skill) =>
-      `  {\n    name: ${JSON.stringify(skill.name)},\n    description: ${JSON.stringify(skill.description)},\n    body: \`${forTemplateLiteral(skill.body)}\`,\n  },`,
+      `  {\n    name: ${JSON.stringify(skill.name)},\n    description: ${JSON.stringify(skill.description)},\n` +
+      (skill.requiresTool ? `    requiresTool: ${JSON.stringify(skill.requiresTool)},\n` : "") +
+      `    body: \`${forTemplateLiteral(skill.body)}\`,\n  },`,
   )
   .join("\n")}
 ]

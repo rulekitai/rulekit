@@ -1,5 +1,7 @@
 import assert from "node:assert/strict"
-import { dirname, resolve } from "node:path"
+import { copyFile, mkdtemp, readdir } from "node:fs/promises"
+import { tmpdir } from "node:os"
+import { dirname, join, resolve } from "node:path"
 import { before, describe, test } from "node:test"
 import { fileURLToPath } from "node:url"
 import { JsonStore } from "./json-store.ts"
@@ -84,12 +86,121 @@ describe("loading the demo corpus", () => {
     assert.ok(corpus.errata.length >= 2)
     assert.ok(corpus.banlist.length >= 3)
     assert.ok(corpus.patchNotes.length >= 2)
+    assert.ok(corpus.rulings.length >= 6)
   })
 
   test("refuses a corpus whose version it does not know", async () => {
     const result = await loadCorpus(resolve(DEMO, "..", "does-not-exist"))
     assert.equal(result.ok, false)
     assert.equal(result.problems[0]?.file, "game.json")
+  })
+})
+
+describe("a corpus written before rulings existed", () => {
+  /** Copy the demo corpus, minus the files a case wants absent. */
+  async function corpusWithout(...omit: string[]): Promise<string> {
+    const dir = await mkdtemp(join(tmpdir(), "rulekit-corpus-"))
+    for (const file of await readdir(DEMO)) {
+      if (!file.endsWith(".json") || omit.includes(file)) continue
+      await copyFile(resolve(DEMO, file), resolve(dir, file))
+    }
+    return dir
+  }
+
+  test("loads with an empty rulings list rather than failing", async () => {
+    // Every corpus on disk predates this collection. Requiring the file would
+    // stop all of them loading, and the reader would blame their corpus.
+    const dir = await corpusWithout("rulings.json")
+    const result = await loadCorpus(dir)
+    assert.ok(result.ok, `an absent rulings.json must load: ${JSON.stringify(result.problems)}`)
+    assert.deepEqual(result.corpus.rulings, [])
+    assert.deepEqual(result.problems, [])
+  })
+
+  test("still fails when a REQUIRED collection is absent", async () => {
+    // The exception is one file wide. A missing cards.json is a broken corpus,
+    // and reading it as "this game has no cards" would answer every card
+    // question with silence.
+    const dir = await corpusWithout("cards.json")
+    const result = await loadCorpus(dir)
+    assert.equal(result.ok, false)
+    assert.ok(result.problems.some((p) => p.file === "cards.json" && p.message.includes("missing")))
+  })
+})
+
+describe("rulings", () => {
+  const ruling = (over: Record<string, unknown> = {}) => ({
+    id: "g1",
+    kind: "card",
+    question: "Does it?",
+    answer: "Yes.",
+    cards: [{ id: "c1", name: "Knight" }],
+    ...over,
+  })
+
+  test("drops a ruling with no answer, because it can answer nothing", () => {
+    assert.equal(COLLECTION_SCHEMAS.rulings.safeParse(ruling({ answer: "" })).success, false)
+    assert.equal(COLLECTION_SCHEMAS.rulings.safeParse(ruling({ question: "" })).success, false)
+  })
+
+  test("reads an absent kind as general, and folds the case of a written one", () => {
+    assert.equal(COLLECTION_SCHEMAS.rulings.safeParse(ruling({ kind: undefined })).data?.kind, "general")
+    assert.equal(COLLECTION_SCHEMAS.rulings.safeParse(ruling({ kind: " Policy " })).data?.kind, "policy")
+  })
+
+  test("REFUSES a kind it does not know rather than filing it as general", () => {
+    // The one place this schema does not guess. A misspelt kind means the writer
+    // said something specific and got it wrong, and quietly filing a card ruling
+    // as general puts it where no card lookup reaches it.
+    const parsed = COLLECTION_SCHEMAS.rulings.safeParse(ruling({ kind: "cards" }))
+    assert.equal(parsed.success, false)
+    assert.match(parsed.error?.issues[0]?.path.join(".") ?? "", /kind/)
+  })
+
+  test("treats a ruling as unofficial unless the corpus says otherwise", () => {
+    assert.equal(COLLECTION_SCHEMAS.rulings.safeParse(ruling()).data?.is_official, false)
+  })
+
+  test("names every broken link a ruling can carry", () => {
+    const base: Corpus = {
+      game: { slug: "g", name: "G" },
+      rulebooks: [],
+      sections: [],
+      rules: [],
+      terms: [],
+      cards: [],
+      errata: [],
+      banlist: [],
+      patchNotes: [],
+      rulings: [],
+    }
+    const parse = (over: Record<string, unknown>) => COLLECTION_SCHEMAS.rulings.parse(ruling(over))
+    const problems = checkIntegrity({
+      ...base,
+      rulings: [
+        parse({ id: "g-card", cards: [{ id: "nope", name: "Knight" }] }),
+        parse({ id: "g-rule", rule_numbers: ["999.9"] }),
+        parse({ id: "g-nocard", kind: "card", cards: [] }),
+        parse({ id: "g-url", source_url: "http://example.com/x" }),
+      ],
+    }).map((p) => p.message)
+
+    assert.ok(
+      problems.some((m) => m.includes('"nope"') && m.includes("names no card")),
+      `expected a dangling card id, got ${JSON.stringify(problems)}`,
+    )
+    assert.ok(
+      problems.some((m) => m.includes('"999.9"') && m.includes("names no rule")),
+      `expected a dangling rule number, got ${JSON.stringify(problems)}`,
+    )
+    assert.ok(
+      problems.some((m) => m.includes("no card is named")),
+      `expected a card ruling with no card, got ${JSON.stringify(problems)}`,
+    )
+    assert.ok(
+      problems.some((m) => m.includes("https:")),
+      `expected an http source_url to be refused, got ${JSON.stringify(problems)}`,
+    )
   })
 })
 
@@ -303,6 +414,55 @@ for (const kind of ["sqlite", "json"] as const) {
       assert.ok(result.terms.some((t) => t.id === "term-bolster"))
       assert.ok(result.rules.some((r) => r.rule_number === "800.3"))
     })
+
+    test("reads rulings by the name of a piece they mention", async () => {
+      const rows = await store.listRulings?.({ cardName: "Stonewall Sentry" })
+      assert.ok(rows?.some((r) => r.id === "rul-001"))
+      // rul-004 names TWO pieces, and must be reachable from either of them.
+      // A one-card-per-row index would file it under the first name only.
+      assert.ok(rows?.some((r) => r.id === "rul-004"))
+      assert.ok((await store.listRulings?.({ cardName: "Ironbrand Blade" }))?.some((r) => r.id === "rul-004"))
+    })
+
+    test("filters rulings by kind and by topic", async () => {
+      const policy = await store.listRulings?.({ kind: "policy" })
+      assert.ok(policy?.length)
+      assert.ok(
+        policy?.every((r) => r.kind === "policy"),
+        "a kind filter must not let another kind through",
+      )
+      const topic = await store.listRulings?.({ topic: "deck registration" })
+      assert.deepEqual(
+        topic?.map((r) => r.id),
+        ["rul-007"],
+      )
+    })
+
+    test("ranks a ruling matched on its question above one matched on its answer", async () => {
+      // The question is what a reader nearly repeats, so it carries the match.
+      // Weighting the answer highly ranks every ruling about a popular mechanic
+      // above the one that answers the question in front of you.
+      const found = (await store.searchRulings?.("discard down to seven cards in hand")) ?? []
+      assert.equal(found[0]?.id, "rul-006")
+    })
+
+    test("leaves a withdrawn ruling out of the search but keeps it reachable", async () => {
+      const found = (await store.searchRulings?.("Lanternbearer opponent units Guard")) ?? []
+      assert.ok(
+        !found.some((r) => r.id === "rul-009"),
+        "a withdrawn ruling must not answer a current question",
+      )
+      const listed = (await store.listRulings?.({ cardName: "Lanternbearer" })) ?? []
+      assert.ok(
+        listed.some((r) => r.id === "rul-009"),
+        "a reader who asks for every ruling on a card is owed the withdrawn one, labelled",
+      )
+    })
+
+    test("reaches rulings from a unified search", async () => {
+      const result = await store.searchAll("Stonewall Sentry")
+      assert.ok(result.rulings?.some((r) => r.id === "rul-001"))
+    })
   })
 }
 
@@ -350,6 +510,7 @@ describe("two terms that answer to one word", () => {
         errata: [],
         banlist: [],
         patchNotes: [],
+        rulings: [],
         terms: [
           {
             id: "t",
@@ -398,6 +559,9 @@ describe("a row that omits a field entirely", () => {
       banlist: { id: "x" },
       "patch-notes": { id: "n" },
       cards: { id: "c", name: "Knight" },
+      // A ruling needs both halves. A row with only an id could answer nothing,
+      // so it is the one collection whose "minimal" row is three fields.
+      rulings: { id: "g", question: "Does it?", answer: "Yes." },
     }
     for (const [name, row] of Object.entries(minimal)) {
       const schema = COLLECTION_SCHEMAS[name as keyof typeof COLLECTION_SCHEMAS]

@@ -43,6 +43,10 @@ export function AnswerTrace(props: { steps: TraceStep[]; running?: boolean }) {
 
   if (!steps.length) return null
   const failed = steps.filter((step) => step.status === "failed" || step.status === "rejected").length
+  // A step that read a site outside the rules data is named in the closed
+  // summary, not only in the open list. A reader who never expands the trace is
+  // exactly the reader who most needs to know an outside source was used.
+  const outside = steps.filter((step) => step.source).length
 
   return (
     <div className="rk-trace" data-running={props.running ? "true" : undefined}>
@@ -59,13 +63,29 @@ export function AnswerTrace(props: { steps: TraceStep[]; running?: boolean }) {
         {/* A failed lookup is named rather than hidden. An answer built on
             fewer sources than it tried for is one a reader should weigh. */}
         {failed > 0 ? <span className="rk-trace-failed"> · {failed} failed</span> : null}
+        {outside > 0 ? (
+          <span className="rk-trace-outside" data-testid="rk-trace-outside">
+            {" "}
+            · read {outside === 1 ? "1 source" : `${outside} sources`} outside the rules data
+          </span>
+        ) : null}
       </button>
       {open ? (
         <ol className="rk-trace-steps">
           {steps.map((step) => (
-            <li key={step.id} data-status={step.status}>
+            <li key={step.id} data-status={step.status} data-outside={step.source ? "true" : undefined}>
               <span className="rk-trace-dot" aria-hidden="true" />
               {step.label}
+              {step.source ? (
+                <span className="rk-trace-source">
+                  {" — "}
+                  <a href={step.source.url} target="_blank" rel="noreferrer noopener">
+                    {step.source.name}
+                  </a>
+                  {step.source.official ? "" : " (unofficial)"}
+                  {", outside the rules data"}
+                </span>
+              ) : null}
             </li>
           ))}
         </ol>

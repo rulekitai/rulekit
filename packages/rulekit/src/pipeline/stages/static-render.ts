@@ -1,5 +1,5 @@
 import { nameStem, normalizeName } from "../../corpus/text.ts"
-import type { BanlistEntry, Erratum, Rule } from "../../corpus/types.ts"
+import type { BanlistEntry, Erratum, Rule, Ruling } from "../../corpus/types.ts"
 import { CLAUSE_BREAK, type Classification, cardKeyCandidates, ERRATA_CUE } from "./static-classify.ts"
 
 /** One printed card the gazetteer proves exists. */
@@ -18,8 +18,11 @@ export type StaticData = {
   cards: Map<string, CardMatch>
   banlist: Map<string, BanlistEntry[]>
   errata: Map<string, Erratum[]>
+  /** Rulings by the folded name of every piece each one names. */
+  rulings: Map<string, Ruling[]>
   banlistOk: boolean
   errataOk: boolean
+  rulingsOk: boolean
   /** The newest date on the banned list, which every verdict is stamped with. */
   asOf: string | null
   errataAsOf: string | null
@@ -109,6 +112,13 @@ export function resolveCards(cardKey: string, data: StaticData): CardMatch[] {
       const name = first?.card?.name
       if (reaches(key) && name) add({ key, card: name, pngUri: first?.card?.png_uri ?? null })
     }
+  }
+  // Rulings name pieces too, and one ruling can name several, so the matching
+  // one is found by key rather than taken from the front of the list.
+  for (const [key, rows] of data.rulings) {
+    if (!reaches(key)) continue
+    const card = rows.flatMap((r) => r.cards).find((c) => c.name && normalizeName(c.name) === key)
+    if (card?.name) add({ key, card: card.name, pngUri: card.png_uri })
   }
   return [...found.values()].filter((match) => filedUnder(match, cardKey))
 }
@@ -399,6 +409,52 @@ export function renderNoErrata(
   )
 }
 
+/**
+ * The published rulings on one card.
+ *
+ * Every ruling states who published it and whether it is official, because a
+ * reader weighs those two facts before the answer itself. `is_official` is false
+ * unless the corpus says otherwise, so an unlabelled ruling reads as unofficial
+ * rather than as the publisher's word.
+ *
+ * The rule numbers come out as a plain list, not as quoted rule text. This stage
+ * reads no rules, and printing a number a reader can look up is honest where
+ * paraphrasing the rule behind it would not be.
+ */
+export function renderRulings(rulings: Ruling[], config: RenderConfig): string {
+  return rulings
+    .map((r) => {
+      const cards = r.cards
+        .map((c) => cardLink(c.name ?? "", c.png_uri, config))
+        .filter(Boolean)
+        .join(", ")
+      const about = cards ? `${cards} — ` : ""
+      const withdrawn = r.is_deprecated
+        ? `\n\n**This ruling was withdrawn.**${r.deprecation_note ? ` ${r.deprecation_note}` : ""}`
+        : ""
+      const rules = r.rule_numbers.length ? `\n\nRests on: ${r.rule_numbers.join(", ")}.` : ""
+      const who = r.source_name
+        ? `\n\n${r.is_official ? "Official ruling" : "Unofficial ruling"}, from ${r.source_name}` +
+          `${r.effective_date ? `, ${r.effective_date}` : ""}.`
+        : `\n\n${r.is_official ? "Official ruling" : "Unofficial ruling"}${r.effective_date ? `, ${r.effective_date}` : ""}.`
+      return `${about}**${r.question}**\n\n${r.answer}${withdrawn}${rules}${who}`
+    })
+    .join("\n\n---\n\n")
+}
+
+export function renderNoRulings(
+  label: string,
+  matches: CardMatch[],
+  names: string[],
+  config: RenderConfig,
+): string {
+  const { head, plural } = verdictHead(label, matches, names, config)
+  return (
+    `${head} ${plural ? "have" : "has"} no published ruling in the rulings data.` +
+    `${checkedBlocks(matches, names, config)}`
+  )
+}
+
 /** The prose name a multi-name answer is headed with. */
 const joinNames = (names: string[]) => names.map(titleCase).join(" and ")
 
@@ -509,6 +565,37 @@ export function renderCardAnswer(
     return half ? { source: "errata", ...half } : null
   }
 
+  if (c.intent === "RULINGS") {
+    const entries = entriesFor(matches, data.rulings)
+    if (entries.length) {
+      return {
+        source: "rulings",
+        citations: entries.map((r) => ({
+          ruling: r.id,
+          card: r.cards.map((card) => card.name).filter(Boolean),
+          ruleNumbers: r.rule_numbers,
+          sourceName: r.source_name,
+          sourceUrl: r.source_url,
+          official: r.is_official,
+        })),
+        text: renderRulings(entries, config),
+      }
+    }
+    // Same gate as the ban verdict, and for the same reason. "No ruling exists"
+    // is a claim, and a name the gazetteer does not know may be misspelled or
+    // from another game. An unproven name falls through to the agent, which can
+    // read the rules and say something useful.
+    const known = matches.filter((m) => data.cards.has(m.key))
+    if (data.rulingsOk && known.length) {
+      return {
+        source: "rulings",
+        citations: [],
+        text: renderNoRulings(namedAs, known, names, config),
+      }
+    }
+    return null
+  }
+
   return null
 }
 
@@ -517,8 +604,10 @@ export function indexStaticData(input: {
   cardNames: { id: string; name: string; png_uri: string | null }[]
   banlist: BanlistEntry[]
   errata: Erratum[]
+  rulings: Ruling[]
   banlistLoaded: boolean
   errataLoaded: boolean
+  rulingsLoaded: boolean
 }): StaticData {
   const cards = new Map<string, CardMatch>()
   for (const row of input.cardNames) {
@@ -547,6 +636,20 @@ export function indexStaticData(input: {
     return out
   }
 
+  // A ruling files under EVERY piece it names, so `group` cannot build this map:
+  // `group` reads one card per row. A ruling about two pieces meeting has to be
+  // found from either of their names.
+  const rulings = new Map<string, Ruling[]>()
+  for (const ruling of input.rulings) {
+    for (const card of ruling.cards) {
+      const key = card.name ? normalizeName(card.name) : ""
+      if (!key) continue
+      const found = rulings.get(key)
+      if (found) found.push(ruling)
+      else rulings.set(key, [ruling])
+    }
+  }
+
   // A list that loaded and holds nothing is the same information state as one
   // that failed: it proves nothing about any card, so it may not license a
   // "no row exists" claim.
@@ -554,8 +657,10 @@ export function indexStaticData(input: {
     cards,
     banlist: group(input.banlist),
     errata: group(input.errata),
+    rulings,
     banlistOk: input.banlistLoaded && input.banlist.length > 0,
     errataOk: input.errataLoaded && input.errata.length > 0,
+    rulingsOk: input.rulingsLoaded && input.rulings.length > 0,
     asOf: newestDate(input.banlist.map((b) => b.effective_date)),
     errataAsOf: newestDate(input.errata.map((e) => e.effective_date)),
   }

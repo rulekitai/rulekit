@@ -3,16 +3,25 @@ import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { before, describe, test } from "node:test"
 import { fileURLToPath } from "node:url"
+import { z } from "zod"
 import { loadCorpus } from "../corpus/load.ts"
 import { SqliteStore } from "../corpus/sqlite-store.ts"
 import type { RuleStore } from "../corpus/store.ts"
+import type { Corpus } from "../corpus/types.ts"
 import { decodeEvents, deriveLabel, encodeEvent } from "./events.ts"
 import { buildInstructions } from "./instructions.ts"
 import { minimalProfile, type Profile, parseProfile } from "./profile.ts"
 import * as proseModule from "./prose.ts"
 import { type AgentAnswer, resolveAnswer } from "./runtime.ts"
 import { builtinSkills, findSkill } from "./skills.ts"
-import { corpusContents, defineRulesTools, findTool, type RuleTool } from "./tools.ts"
+import {
+  assertUniqueToolNames,
+  corpusContents,
+  defineRulesTools,
+  defineTool,
+  findTool,
+  type RuleTool,
+} from "./tools.ts"
 import {
   addStepUsage,
   buildMessage,
@@ -374,6 +383,12 @@ describe("tools over the demo corpus", () => {
     assert.equal(new Set(tools.map((t) => t.name)).size, tools.length)
   })
 
+  test("every built-in name passes the pattern Eve enforces", () => {
+    // Eve names a tool after its file. A name outside this pattern ships fine
+    // on the AI SDK and stops `pnpm eve build` for anybody using the template.
+    for (const tool of tools) assert.match(tool.name, /^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/)
+  })
+
   test("search_all reaches rules, terms, and the banned list at once", async () => {
     const found = await run(findTool(tools, "search_all"), { query: "Borrowed Hour" })
     assert.ok(found.banlist.length > 0)
@@ -538,12 +553,62 @@ describe("tools describe the game they serve", () => {
     // model that these tools return nothing.
     const store = SqliteStore.fromCorpus(EMPTY_CORPUS)
     const contents = await corpusContents(store)
-    assert.deepEqual(contents, { errata: false, banlist: false, patchNotes: false })
+    assert.deepEqual(contents, { errata: false, banlist: false, patchNotes: false, rulings: false })
     const names = defineRulesTools(store, chessLike("piece"), contents).map((t) => t.name)
     assert.ok(!names.includes("list_banlist"))
     assert.ok(!names.includes("list_errata"))
     assert.ok(!names.includes("list_patch_notes"))
+    assert.ok(!names.includes("list_rulings"))
     assert.ok(names.includes("search_rules"), "the rule tools must stay")
+  })
+
+  test("offers no rulings tool to a store that predates rulings", async () => {
+    // A store written against an earlier version of the interface has no
+    // `listRulings`. That reads as "this corpus holds none" rather than
+    // throwing, which is what keeps an older custom store working.
+    const store = SqliteStore.fromCorpus(EMPTY_CORPUS)
+    // A Proxy rather than a spread: the store's reads live on its prototype, so
+    // spreading it copies none of them and would test an empty object instead.
+    const older = new Proxy(store, {
+      get: (target, key) =>
+        key === "listRulings" || key === "searchRulings"
+          ? undefined
+          : Reflect.get(target, key).bind?.(target),
+    }) as unknown as RuleStore
+    const contents = await corpusContents(older)
+    assert.equal(contents.rulings, false)
+    assert.ok(
+      !defineRulesTools(older, chessLike("piece"), contents)
+        .map((t) => t.name)
+        .includes("list_rulings"),
+    )
+  })
+
+  test("offers the rulings tool only when the corpus holds a ruling", async () => {
+    const store = SqliteStore.fromCorpus({
+      ...EMPTY_CORPUS,
+      rulings: [
+        {
+          id: "g1",
+          kind: "card",
+          question: "Does it?",
+          answer: "Yes.",
+          cards: [],
+          rule_numbers: [],
+          topic: null,
+          source_name: null,
+          source_url: null,
+          is_official: false,
+          effective_date: null,
+          is_deprecated: false,
+          deprecation_note: null,
+        },
+      ],
+    })
+    const contents = await corpusContents(store)
+    assert.equal(contents.rulings, true)
+    const names = defineRulesTools(store, chessLike("piece"), contents).map((t) => t.name)
+    assert.ok(names.includes("list_rulings"))
   })
 
   test("offers them when the corpus does hold them", async () => {
@@ -567,7 +632,7 @@ describe("tools describe the game they serve", () => {
   })
 })
 
-const EMPTY_CORPUS = {
+const EMPTY_CORPUS: Corpus = {
   game: { slug: "g", name: "G" },
   rulebooks: [],
   sections: [],
@@ -577,4 +642,112 @@ const EMPTY_CORPUS = {
   errata: [],
   banlist: [],
   patchNotes: [],
+  rulings: [],
 }
+
+/**
+ * Adding a tool of your own.
+ *
+ * These three guards exist because the failure they stop is silent. A repeated
+ * name removed a built-in and reported nothing, and a hand-written input
+ * annotation could disagree with its schema forever.
+ */
+describe("defining a tool", () => {
+  const spec = {
+    name: "check_stock",
+    description: "Read how many copies of a card a shop holds.",
+    inputSchema: z.object({ sku: z.string(), limit: z.number().optional() }),
+    execute: async (input: { sku: string; limit?: number }) => ({ sku: input.sku }),
+  }
+
+  test("returns a tool the runtime can use", async () => {
+    const tool = defineTool(spec)
+    assert.equal(tool.name, "check_stock")
+    assert.ok(tool.inputSchema)
+    assert.deepEqual(await tool.execute({ sku: "abc" } as never), { sku: "abc" })
+  })
+
+  test("refuses a name Eve would reject", () => {
+    // Eve names a tool after its file, and its pattern is the strictest one in
+    // the project. A name that fails it stops `pnpm eve build`.
+    assert.throws(() => defineTool({ ...spec, name: "9lives" }), /not a usable tool name/)
+    assert.throws(() => defineTool({ ...spec, name: "has spaces" }), /not a usable tool name/)
+    assert.throws(() => defineTool({ ...spec, name: "" }), /not a usable tool name/)
+    assert.throws(() => defineTool({ ...spec, name: `a${"b".repeat(64)}` }), /not a usable tool name/)
+  })
+
+  test("accepts a name at the 64-character limit", () => {
+    assert.equal(defineTool({ ...spec, name: `a${"b".repeat(63)}` }).name.length, 64)
+  })
+
+  test("keeps describeResult and replaces off unless they are set", () => {
+    const plain = defineTool(spec)
+    assert.equal(plain.describeResult, undefined)
+    assert.equal(plain.replaces, undefined)
+    assert.equal(defineTool({ ...spec, replaces: true }).replaces, true)
+  })
+})
+
+describe("two tools of one name", () => {
+  const tool = (name: string, replaces?: boolean) =>
+    defineTool({
+      name,
+      description: "d",
+      inputSchema: z.object({}),
+      execute: async () => ({}),
+      ...(replaces ? { replaces: true } : {}),
+    })
+
+  test("throws, and names the tool", () => {
+    // The runtime builds its map with Object.fromEntries, which keeps the LAST
+    // entry. Before this guard, a custom `get_rule` removed the built-in one and
+    // the only symptom was a worse answer.
+    assert.throws(
+      () => assertUniqueToolNames([tool("get_rule"), tool("get_rule")]),
+      /Two tools are named "get_rule"/,
+    )
+  })
+
+  test("tells the reader both ways forward", () => {
+    assert.throws(() => assertUniqueToolNames([tool("a"), tool("a")]), /Rename your tool.*replaces: true/s)
+  })
+
+  test("allows a replacement that says so", () => {
+    assert.doesNotThrow(() => assertUniqueToolNames([tool("search_all"), tool("search_all", true)]))
+  })
+
+  test("passes a list with no repeat", () => {
+    assert.doesNotThrow(() => assertUniqueToolNames([tool("a"), tool("b"), tool("c")]))
+  })
+})
+
+describe("a procedure whose tool is absent", () => {
+  const skill = (name: string, requiresTool?: string) => ({
+    name,
+    description: "d",
+    body: "b",
+    ...(requiresTool ? { requiresTool } : {}),
+  })
+  /** The filter `createRulesAgent` applies, isolated so a test needs no model. */
+  const keep = (skills: ReturnType<typeof skill>[], names: string[]) =>
+    skills.filter((s) => !s.requiresTool || new Set(names).has(s.requiresTool)).map((s) => s.name)
+
+  test("drops the procedure, and keeps one that needs nothing", () => {
+    assert.deepEqual(keep([skill("rulings_lookup", "list_rulings"), skill("sequence")], ["search_all"]), [
+      "sequence",
+    ])
+  })
+
+  test("keeps the procedure when its tool exists", () => {
+    assert.deepEqual(keep([skill("card_lookup", "search_cards")], ["search_cards"]), ["card_lookup"])
+  })
+
+  test("the shipped procedures name the tool each one needs", () => {
+    // The gate used to be a hard-coded list of two names in runtime.ts. Each
+    // procedure now states its own requirement, so a caller's procedure can too.
+    assert.equal(findSkill("card_lookup")?.requiresTool, "search_cards")
+    assert.equal(findSkill("rulings_lookup")?.requiresTool, "list_rulings")
+    assert.equal(findSkill("sequence")?.requiresTool, undefined)
+    assert.equal(findSkill("interaction")?.requiresTool, undefined)
+  })
+})

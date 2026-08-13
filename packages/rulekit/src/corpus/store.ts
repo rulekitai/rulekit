@@ -9,10 +9,20 @@ import type {
   Rule,
   RuleBook,
   RuleHit,
+  Ruling,
   SearchAllResult,
   Section,
   Term,
 } from "./types.ts"
+
+/** How a caller narrows a rulings read. Every field is a filter, and all combine. */
+export type RulingListOptions = {
+  /** Rulings that name this piece. Matched on the normalized name. */
+  cardName?: string
+  kind?: "card" | "general" | "policy"
+  topic?: string
+  limit?: number
+}
 
 /** Paging and scoping options shared by the list reads. */
 export type ListOptions = {
@@ -77,6 +87,18 @@ export interface RuleStore {
   listBanlist(options?: { cardName?: string; format?: string; limit?: number }): Promise<BanlistEntry[]>
   listPatchNotes(options?: { category?: string; limit?: number }): Promise<PatchNote[]>
   getPatchNote(slugOrId: string): Promise<PatchNote | null>
+
+  /**
+   * Rulings, filtered. Optional, and that is deliberate.
+   *
+   * Rulings arrived after this interface did, so a store somebody wrote against
+   * an earlier version still satisfies it. The absence is also the gate: a store
+   * that cannot answer with rulings is never offered a rulings tool, which is
+   * the same rule that keeps an empty banned list from growing a tool.
+   */
+  listRulings?(options?: RulingListOptions): Promise<Ruling[]>
+  /** Rulings matching a query, best first. Superseded rulings are left out. */
+  searchRulings?(query: string, options?: { limit?: number }): Promise<Ruling[]>
 
   /** Card identities matching a name. Ranked: exact, then prefix, then text. */
   searchCards(query: string, options?: { limit?: number }): Promise<CardSummary[]>

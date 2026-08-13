@@ -107,6 +107,21 @@ export async function commandEval(options: EvalOptions): Promise<number> {
     return 2
   }
 
+  // NO REFERENCE SITES, EVER, and that is structural rather than a setting.
+  //
+  // This command measures one thing: whether an answer is grounded in the
+  // corpus. It proves that by checking every cited rule number and every quoted
+  // passage against the corpus itself. A page fetched from somebody's website
+  // holds neither, so an answer that quoted one would be graded a fabrication
+  // and the run would fail for the wrong reason.
+  //
+  // A live fetch would also make the run non-repeatable. A site edits a page and
+  // the same model, the same corpus, and the same questions score differently.
+  //
+  // There is deliberately no flag to switch this on. Reference sites are
+  // configured in an application, by the person who accepts responsibility for
+  // reading them, so a command-line switch here would need its own way to
+  // declare them and would put that decision in the wrong hands.
   const agent = createRulesAgent({ store, profile, model: options.model, stepCap: options.stepCap })
 
   out(`Evaluating ${questions.length} questions against ${loaded.corpus.game.name}`)

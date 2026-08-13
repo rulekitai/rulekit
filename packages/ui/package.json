@@ -29,7 +29,8 @@
   "type": "module",
   "files": [
     "dist",
-    "src"
+    "src",
+    "NOTICE"
   ],
   "exports": {
     ".": {
@@ -110,7 +111,7 @@
     }
   },
   "scripts": {
-    "build": "tsc --build"
+    "build": "node ./scripts/copy-notice.mjs && tsc --build"
   },
   "dependencies": {
     "@rulekitai/rulekit": "workspace:*",

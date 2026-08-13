@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync, realpathSync } from "node:fs"
-import { cp, mkdir, readFile, stat } from "node:fs/promises"
+import { cp, mkdir, readdir, readFile, stat } from "node:fs/promises"
 import { dirname, join, relative, resolve } from "node:path"
 import { argv, cwd, exit, stderr, stdout } from "node:process"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { type Profile, parseProfile } from "../agent/profile.ts"
 import { buildDatabase } from "../corpus/build.ts"
 import { type CorpusProblem, checkIntegrity, loadCorpus } from "../corpus/load.ts"
+import { KNOWN_CORPUS_FILES } from "../corpus/schema.ts"
 import { SqliteStore } from "../corpus/sqlite-store.ts"
 import type { Corpus } from "../corpus/types.ts"
 import { hideSqliteExperimentalWarning } from "../sqlite-warning.ts"
@@ -203,6 +204,37 @@ export function checkProfileFields(dir: string, corpus: Corpus): Problem[] {
   return problems
 }
 
+/**
+ * Report any JSON file the corpus format does not know.
+ *
+ * One collection may be absent, which means a misspelled file name no longer
+ * stops the load: `rulings.jsonn` reads as "this game has no rulings", and the
+ * writer sees a corpus that validates and answers nothing. Naming the stray file
+ * costs one directory read and turns that silence back into a message.
+ *
+ * It suggests the nearest known name, because the cause is nearly always a typo.
+ */
+export async function checkStrayFiles(dir: string): Promise<Problem[]> {
+  let entries: string[]
+  try {
+    entries = await readdir(dir)
+  } catch {
+    return []
+  }
+  const known = new Set(KNOWN_CORPUS_FILES)
+  const problems: Problem[] = []
+  for (const entry of entries) {
+    if (!entry.endsWith(".json") || known.has(entry)) continue
+    const near = nearestKey(entry, known)
+    problems.push({
+      file: entry,
+      index: null,
+      message: `is not part of the corpus format, so nothing reads it${near ? `. Did you mean "${near}"?` : ""}`,
+    })
+  }
+  return problems
+}
+
 async function commandValidate(dir: string): Promise<number> {
   out(`Validating ${dir}`)
   const result = await loadCorpus(dir)
@@ -224,6 +256,9 @@ async function commandValidate(dir: string): Promise<number> {
   out(`  banlist     ${corpus.banlist.length}`)
   out(`  patch notes ${corpus.patchNotes.length}`)
   out(`  cards       ${corpus.cards.length}`)
+  out(
+    `  rulings     ${corpus.rulings.length}${existsSync(join(dir, "rulings.json")) ? "" : " (no rulings.json)"}`,
+  )
   out("")
 
   if (problems.length) {
@@ -246,6 +281,13 @@ async function commandValidate(dir: string): Promise<number> {
     out("")
   }
 
+  const strays = await checkStrayFiles(dir)
+  if (strays.length) {
+    out(`${strays.length} file${strays.length === 1 ? "" : "s"} nothing reads:`)
+    reportProblems(strays)
+    out("")
+  }
+
   // A corpus with no rules parses fine and answers nothing, which is the one
   // failure a reader will not notice until the assistant is already deployed.
   if (!corpus.rules.length) {
@@ -253,7 +295,7 @@ async function commandValidate(dir: string): Promise<number> {
     return 1
   }
 
-  if (problems.length || integrity.length || profileProblems.length) {
+  if (problems.length || integrity.length || profileProblems.length || strays.length) {
     err("Validation failed.")
     return 1
   }

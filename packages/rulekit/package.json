@@ -34,7 +34,8 @@
   "files": [
     "dist",
     "src",
-    "data"
+    "data",
+    "NOTICE"
   ],
   "bin": {
     "rulekit": "./dist/cli/bin.js"
@@ -94,6 +95,11 @@
       "types": "./dist/agent/tools.d.ts",
       "rulekit-source": "./src/agent/tools.ts",
       "default": "./dist/agent/tools.js"
+    },
+    "./agent/references": {
+      "types": "./dist/agent/references.d.ts",
+      "rulekit-source": "./src/agent/references.ts",
+      "default": "./dist/agent/references.js"
     },
     "./agent/profile": {
       "types": "./dist/agent/profile.d.ts",

@@ -1,6 +1,6 @@
 ---
 name: rulekit-limits
-description: Add quotas, billing, or a caller's own model key to a rulekit endpoint, by writing a Gate and a credential resolver. Covers what an answer costs, why the price can be null, and how to keep the cost off the wire. Use when the user wants to rate-limit rules questions, charge for them, count usage per user, let callers bring their own model key, or asks how to stop one person spending their whole model budget.
+description: Add a quota, billing, or a caller's own model key to a rulekit endpoint. Use when the user wants to limit, count, or charge for rules questions, or to let a caller supply their own model key.
 ---
 
 # Add limits
@@ -43,13 +43,13 @@ const gate: Gate = {
 ```
 
 **`allow` runs before every stage, so a refusal costs nothing.** It runs before
-the cache and before the free stages, not only before the model.
+the cache and before the free stages, and not only before the model.
 
 **`record` runs after, with the full answer.** It sees which stage answered, so
 a free answer need not count against a quota.
 
 **Criterion:** the twenty-first question in a day returns 429 with a reason, and
-the browser never receives a price.
+the browser receives no price.
 
 ## Step 3: read what an answer cost
 
@@ -60,19 +60,19 @@ the browser never receives a price.
   cache_read_input_tokens: 0, agent_steps: 5 }
 ```
 
-**`cost_usd` comes from the provider, never from a table here.** A gateway that
-already priced the call reports it. A provider that reports nothing leaves it
-null.
+**`cost_usd` comes from the provider.** A gateway that already priced the call
+reports it. A provider that reports nothing leaves it null.
 
-**Null is not zero.** A zero reads as a genuinely free answer and pulls any
-average you compute downwards. If the provider reports no price, price the
-tokens in `record`. This project ships no price table, because a table of
-per-model prices goes stale in silence.
+**Null is not zero.** A zero reads as a free answer and pulls any average you
+compute downwards. When the provider reports no price, price the tokens in
+`record`. This project ships no price table, because a table of per-model prices
+goes stale without warning.
 
 ## Step 4: let callers bring their own key
 
 Four resolvers ship. `fromEnv`, `fromHeader`, and `firstOf` are in
-`@rulekitai/rulekit/pipeline/gate`. `fromDeviceLogin` is in `@rulekitai/rulekit/pipeline/oauth`.
+`@rulekitai/rulekit/pipeline/gate`. `fromDeviceLogin` is in
+`@rulekitai/rulekit/pipeline/oauth`.
 
 | Resolver | Reads the key from |
 |---|---|
@@ -85,16 +85,14 @@ Four resolvers ship. `fromEnv`, `fromHeader`, and `firstOf` are in
 firstOf(fromHeader(), fromEnv())   // the caller's key, else the server's
 ```
 
-With `fromHeader`, the caller pays their own provider. The quota question then
-becomes rate limiting, and not cost control.
+With `fromHeader`, the caller pays their own provider, so your quota controls
+the request rate rather than your cost.
 
-## Cheapest first
+## Charge for the model turns
 
-Most questions never reach a model. Rule lookups, ban checks, and glossary
-definitions read from the corpus in a few milliseconds.
-
-**Charge for what the model answers, not for what the corpus answers.** Read
-which stage produced the answer in `record`, and count only the model turns.
+**Read in `record` which stage produced the answer, and count only the model
+turns.** The free stages answer most questions from the corpus, at no cost to
+you.
 
 ## Completion criterion
 

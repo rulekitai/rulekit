@@ -17,6 +17,18 @@ export type Skill = {
   description: string
   /** The instructions, without the front matter. */
   body: string
+  /**
+   * Drop this procedure when the agent offers no tool of this name.
+   *
+   * A procedure that names a tool the corpus cannot offer teaches the model to
+   * call something that is not there. `card_lookup` needs `search_cards`, and
+   * `rulings_lookup` needs `list_rulings`, so each states that here rather than
+   * relying on a list of names held somewhere else.
+   *
+   * Set it on your own procedure too. Leave it unset for a procedure that
+   * applies whatever the corpus holds.
+   */
+  requiresTool?: string
 }
 
 /** Every skill that ships with this package. */

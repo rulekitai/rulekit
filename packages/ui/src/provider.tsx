@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, type ReactNode, useContext, useMemo } from "react"
+import type { ReadSource } from "./message.ts"
 
 /**
  * The slots that make this interface work for a game it was not written for.
@@ -45,8 +46,14 @@ export type RuleKitConfig = {
    * function receives the name of whatever served the answer — `static`,
    * `glossary`, `cache`, `agent` — and `answerSource` in
    * `@rulekitai/ui/message` turns that name into "rules" or "model" for you.
+   *
+   * The second argument names any site OUTSIDE the rules data that this answer
+   * read, and is empty for almost every answer. When it is not empty, say so:
+   * a reader weighs a claim from somebody's website differently from a rule,
+   * and this is the only place a host app can tell them without trusting a
+   * sentence the model chose to write.
    */
-  disclaimer?: ReactNode | ((servedBy: string) => ReactNode)
+  disclaimer?: ReactNode | ((servedBy: string, sources: ReadSource[]) => ReactNode)
   /** Shown at the foot of the conversation. A host app's own notice goes here. */
   legalNote?: ReactNode
   /** Questions offered on an empty screen. */

@@ -61,7 +61,7 @@ body:
     id: node
     attributes:
       label: Your Node version
-      description: Run `node --version`. This project needs Node 22 or later.
+      description: Run `node --version`. This project needs Node 22.5 or later.
     validations:
       required: true
 

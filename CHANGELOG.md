@@ -7,13 +7,130 @@ this project follows [semantic versioning](https://semver.org/spec/v2.0.0.html).
 Both packages, `@rulekitai/rulekit` and `@rulekitai/ui`, ship from this
 repository and carry one version between them, so one file records both.
 
-This file starts at the entry below. Everything before it went out untagged,
-while the packages were still being arranged, and writing a history for it now
-would mean inventing one.
+The record starts at the first tagged entry below. Everything before it went out
+untagged, while this project still arranged the packages. A history written now
+would be an invented one.
 
 ## [Unreleased]
 
-Nothing yet.
+A player asked whether rulekit answers the harder questions, and named a
+community rulings site. Two parts were missing. A corpus held no place for a
+ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
+
+### Added
+
+- **Rulings are a collection.** A new `rulings.json` holds a question, an
+  answer, the rule numbers the answer rests on, who published it, and whether it
+  is official. A rule is the published text, and an erratum changes that text. A
+  ruling reads the unchanged text and says what it means in one case. That shape
+  differs from the other two, so it needs its own file. One `kind` field
+  separates the three uses: `card` for named pieces, `general` for a mechanic or
+  a timing, and `policy` for running an event rather than playing a game.
+- **`rulings.json` may be absent.** It is the ONE collection file a corpus can
+  leave out, because every corpus written before it holds no such file. Every
+  other missing file still fails the load.
+- **`rulekit validate` names any JSON file the format does not know.** This
+  check pays for the exception above: the command now reports `rulingz.json`,
+  rather than reading the corpus as "this game has no rulings". It also checks a
+  ruling's card ids, its rule numbers, that a `card` ruling names a card, and
+  that a `source_url` is an `https` address.
+- **A `list_rulings` tool**, offered only when the corpus holds a ruling, and a
+  `rulings_lookup` procedure. The procedure tells the model to read the rules a
+  ruling cites before it quotes the ruling, and to report whether the ruling is
+  official.
+- **The free stages answer "rulings for X"**, with no model call. The stage
+  refuses to report "no rulings" for a name that no card carries, exactly as the
+  ban verdict refuses to call an unknown name legal.
+- **Reference sites**: `createRulesAgent({ references })` lets an implementer
+  name websites the agent may read when the corpus misses. **rulekit ships no
+  sites and endorses none.** It is a runtime option and never a corpus field,
+  because a copied corpus must not grant a server outbound network access. The
+  option adds an instruction block as well as the tools. Without that block, the
+  model cites a fetched page as though it were the rules.
+- **Nine rules on every fetch**, and each rule has a test that needs no network:
+  `https` only; a host allowlist that accepts subdomains and refuses
+  look-alikes; a redirect checked, and followed at most once; no credentials; a
+  timeout; a byte cap applied while reading; a content-type check; a count for
+  each question; and a cache by address.
+- **An outside claim is marked outside the model's prose.** The tool writes the
+  site, the address, and whether it is official onto its trace step. The trace
+  says so in its closed summary, and `readSources` in `@rulekitai/ui/message`
+  gives a host app the list for its disclaimer. The model writes the answer, and
+  the model is what a reader checks, so a marker carried in prose proves
+  nothing.
+- **`data/demo` and `data/chess` ship rulings**, covering all three kinds.
+  `data/riftbound` ships an empty list: the community site that prompted this
+  work belongs to a third party, and this project copied nothing from it.
+- **The Eve template offers `list_rulings` too.** Eve names a tool after its
+  file and reads the directory rather than a list, so the template needed
+  `agent/tools/list_rulings.ts`. Without it, the two runtimes offered different
+  tools: the chess corpus got 10 on the AI SDK and 9 on Eve.
+- **`eveSkill` in the Eve template drops a procedure whose tool is absent.** Eve
+  reads every file under `agent/skills/` and cannot leave one out, so a corpus
+  with no ruling still received a procedure naming `list_rulings`, and the model
+  called a tool that was not there. `card_lookup` carried the same fault for a
+  profile with no cards, and now uses the same guard.
+- **`templates/eve-agent/.env.example` exists.** The template README told a
+  reader to copy that file, and no such file was in the repository.
+- **Both published packages now carry the `NOTICE` file.** npm adds `LICENSE`
+  by itself and adds no `NOTICE`, and `files` reads paths inside the package
+  directory only, so the file at the root of the repository never travelled.
+  Apache 2.0 section 4(d) asks that it does, and the README already said it did.
+  The build copies it into each package.
+
+- **`defineTool` writes a tool with its input type inferred.** `RuleTool.execute`
+  takes `never`, so one shared shape accepts every concrete input type. A plain
+  object therefore gave `input` no type at all: every tool wrote its input shape
+  by hand beside the Zod schema, and nothing compared the two. The 13 built-in
+  tools and the 2 reference tools now use the factory, and 13 hand-written
+  annotations are gone.
+- **A custom tool that takes a built-in's name now throws.** The runtime builds
+  its tool map with `Object.fromEntries`, which keeps the LAST entry for a
+  repeated key. So a tool named `get_rule` passed through `extraTools` silently
+  removed the built-in `get_rule`: 14 tools went in, 13 came out, and the agent
+  lost its most-used lookup with no error. `assertUniqueToolNames` now names both
+  tools. Set `replaces: true` to take a name on purpose.
+- **`defineTool` checks the name** against `/^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/`.
+  That is Eve's pattern, and the AI SDK enforces nothing, so a bad name used to
+  ship fine and stop `pnpm eve build` for somebody else.
+- **A procedure states the tool it needs**, in `Skill.requiresTool`. The runtime
+  held a hard-coded list of two names, which no caller could reach. A custom
+  procedure can now say the same thing, and the Eve template reads the field
+  rather than taking a second argument.
+- **`docs/custom-tools.md` and the `rulekit-extend` skill** cover the whole step,
+  including the extra file the Eve template needs for each tool.
+
+### Changed
+
+- **`RuleStore` gained two OPTIONAL methods**, `listRulings` and
+  `searchRulings`. A custom store written against an earlier version still
+  satisfies the interface, and a store that cannot answer with rulings never
+  gets the rulings tool.
+- **`SearchAllResult.rulings` is optional**, for the same reason.
+- **`RuleKitConfig.disclaimer` takes a second argument**: the sites this answer
+  read outside the rules data. An existing one-argument function still works.
+- `RuleTool` gained an optional `describeResult`, which lets any tool add detail
+  to its trace step. `extraTools` authors can use it too.
+- **`rulekit eval` reads no reference site, and has no flag to enable one.** Its
+  two checks compare an answer against the corpus, so it would grade a quotation
+  from a website as a fabrication. A live page would also make one run score
+  differently from the next.
+- `CLAUDE.md` said seven packages were published. Two are.
+- **The documents now follow ASD-STE100 Simplified Technical English.** Every
+  Markdown file carries one idea per sentence, the active voice, and no idiom.
+  The pass also corrected wrong facts: three files said this project needs Node
+  22, and `package.json` requires 22.5; `SECURITY.md` said the assistant opens
+  no network connection of its own, which `fetch_reference` made untrue; and
+  `data/README.md` said both rulings files mark their rulings unofficial, while
+  `data/demo` marks 7 of 9 official.
+
+### Breaking
+
+- **`createRulesAgent(...).instructions` is now a function that returns a
+  promise**, and `.tools` returns the reference tools as well. Both depend on
+  reading which collections the corpus holds, which decides whether the rulings
+  procedure is included, and that read is asynchronous. Nothing in this
+  repository consumed either one.
 
 ## [0.4.0] - 2026-08-11
 
