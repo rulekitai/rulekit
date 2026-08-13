@@ -2,8 +2,10 @@ import assert from "node:assert/strict"
 import { copyFile, mkdtemp, readdir } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
+import { DatabaseSync } from "node:sqlite"
 import { before, describe, test } from "node:test"
 import { fileURLToPath } from "node:url"
+import { buildDatabase } from "./build.ts"
 import { JsonStore } from "./json-store.ts"
 import { checkIntegrity, loadCorpus } from "./load.ts"
 import { COLLECTION_SCHEMAS } from "./schema.ts"
@@ -568,5 +570,49 @@ describe("a row that omits a field entirely", () => {
       const parsed = schema.safeParse(row)
       assert.ok(parsed.success, `${name} rejected a minimal row: ${parsed.error?.message}`)
     }
+  })
+})
+
+describe("a database an older rulekit built", () => {
+  /** Build a current database, then strip it back to what version 1 wrote. */
+  async function staleDatabase(): Promise<string> {
+    const result = await loadCorpus(DEMO)
+    assert.ok(result.ok)
+    const dir = await mkdtemp(join(tmpdir(), "rulekit-stale-"))
+    const path = join(dir, "corpus.db")
+    buildDatabase(result.corpus, { path }).close()
+    const db = new DatabaseSync(path)
+    db.exec("DELETE FROM meta WHERE key = 'db_schema_version'")
+    db.exec("DROP TABLE rulings")
+    db.close()
+    return path
+  }
+
+  test("is refused at open, and the message names the command that fixes it", async () => {
+    // `corpus.db` is a build artefact and is not in version control, so an
+    // upgraded package meets an old file often. Without this check the first
+    // question failed with `no such table: rulings`, which names no cause and
+    // no cure, and it failed at run time rather than at start up.
+    const path = await staleDatabase()
+    assert.throws(
+      () => SqliteStore.open(path),
+      (error: Error) => {
+        assert.match(error.message, /built by an older version of rulekit/)
+        assert.match(error.message, /rulekit build/)
+        assert.match(error.message, /needs no change/)
+        return true
+      },
+    )
+  })
+
+  test("a current database opens, and reports its version", async () => {
+    const result = await loadCorpus(DEMO)
+    assert.ok(result.ok)
+    const dir = await mkdtemp(join(tmpdir(), "rulekit-fresh-"))
+    const path = join(dir, "corpus.db")
+    buildDatabase(result.corpus, { path }).close()
+    const store = SqliteStore.open(path)
+    assert.equal((await store.game()).slug, "paper-kingdoms")
+    await store.close()
   })
 })

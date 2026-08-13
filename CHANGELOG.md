@@ -100,6 +100,14 @@ ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
 - **`docs/custom-tools.md` and the `rulekit-extend` skill** cover the whole step,
   including the extra file the Eve template needs for each tool.
 
+- **`SqliteStore.open` refuses a database an older rulekit built**, and names
+  the command that rebuilds it. `corpus.db` is a build artefact and is not in
+  version control, so an upgraded package meets an old file often. The rulings
+  tables are new, so the first question failed with `no such table: rulings`,
+  which names neither the cause nor the cure, and it failed at run time rather
+  than at start up. The database now carries a version, and the reader compares
+  it. The JSON beside it needs no change.
+
 ### Changed
 
 - **`RuleStore` gained two OPTIONAL methods**, `listRulings` and

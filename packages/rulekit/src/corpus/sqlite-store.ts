@@ -1,7 +1,14 @@
 import { existsSync } from "node:fs"
 import { dirname } from "node:path"
 import { DatabaseSync } from "node:sqlite"
-import { buildDatabase, CARD_WEIGHTS, RULE_WEIGHTS, RULING_WEIGHTS, TERM_WEIGHTS } from "./build.ts"
+import {
+  buildDatabase,
+  CARD_WEIGHTS,
+  DB_SCHEMA_VERSION,
+  RULE_WEIGHTS,
+  RULING_WEIGHTS,
+  TERM_WEIGHTS,
+} from "./build.ts"
 import type { ListOptions, RuleStore, RulingListOptions, SearchOptions } from "./store.ts"
 import { ftsQuery, nameStem, normalizeName, normalizeRuleNumber } from "./text.ts"
 import type {
@@ -238,7 +245,34 @@ export class SqliteStore implements RuleStore {
           `The database is built from the JSON in ${dir}, and it is not in version control.`,
       )
     }
-    return new SqliteStore(new DatabaseSync(path, { readOnly: true }))
+    const db = new DatabaseSync(path, { readOnly: true })
+
+    // A database an older package wrote holds fewer tables than this reader
+    // reads. `corpus.db` is a build artefact and is not in version control, so
+    // an upgraded package meets an old file often. Without this, the first
+    // question fails with `no such table: rulings`, which names no cause and no
+    // cure, and it fails at run time rather than at start up.
+    let built = 0
+    try {
+      const row = db.prepare("SELECT value FROM meta WHERE key = 'db_schema_version'").get() as
+        | { value?: string }
+        | undefined
+      built = Number(row?.value ?? 0) || 0
+    } catch {
+      // A file with no `meta` table at all is not a corpus this reader knows.
+      built = 0
+    }
+    if (built < DB_SCHEMA_VERSION) {
+      const dir = dirname(path)
+      db.close()
+      throw new Error(
+        `The corpus database at ${path} was built by an older version of rulekit. Rebuild it:\n\n` +
+          `  rulekit build ${dir}\n\n` +
+          `It holds database version ${built || "none"}, and this reader reads ${DB_SCHEMA_VERSION}. ` +
+          "The JSON beside it needs no change.",
+      )
+    }
+    return new SqliteStore(db)
   }
 
   /** Build a database in memory from a corpus. This is what the tests use. */

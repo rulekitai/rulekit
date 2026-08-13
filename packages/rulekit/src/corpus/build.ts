@@ -14,6 +14,23 @@ import type { Corpus } from "./types.ts"
  * leaves no file a reader could mistake for a complete one.
  */
 
+/**
+ * The shape of the compiled database, as a number the reader can compare.
+ *
+ * `corpus.db` is a build artefact and is not in version control, so an upgraded
+ * package meets a database an older package wrote. Version 1 held no rulings
+ * table, and the first question then failed with `no such table: rulings`, which
+ * names neither the cause nor the cure.
+ *
+ * Bump this whenever a table, an index, or a column changes. `SqliteStore.open`
+ * refuses an older number and says which command rebuilds the file.
+ *
+ * This is NOT `SCHEMA_VERSION` in `schema.ts`. That one versions the JSON a
+ * corpus author writes, and the two move for different reasons: rulings arrived
+ * as an optional file, so the JSON format stayed at 2 while this went to 2.
+ */
+export const DB_SCHEMA_VERSION = 2
+
 /** Column weights for rule ranking, highest first. */
 const RULE_WEIGHTS = { number: 8.0, title: 3.0, content: 1.0, example: 0.5 }
 const CARD_WEIGHTS = { name: 8.0, type: 1.0, text: 2.0 }
@@ -207,6 +224,7 @@ function populate(db: DatabaseSync, corpus: Corpus): void {
   const meta = db.prepare("INSERT INTO meta (key, value) VALUES (?, ?)")
   meta.run("game_slug", corpus.game.slug)
   meta.run("game_name", corpus.game.name)
+  meta.run("db_schema_version", String(DB_SCHEMA_VERSION))
 
   const book = db.prepare(
     "INSERT INTO rulebooks (id, name, slug, version, effective_date, is_active, position) VALUES (?,?,?,?,?,?,?)",
