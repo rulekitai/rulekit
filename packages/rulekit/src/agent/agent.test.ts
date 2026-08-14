@@ -754,6 +754,18 @@ describe("a tool on a subject the assistant declines", () => {
     )
   })
 
+  test("stays silent on the example the documents say it misses", () => {
+    // The README and `docs/custom-tools.md` both say, in capitals, that the net
+    // does not catch `find_shop_hours`. That sentence is the honest one: a
+    // subject can be declined without using any of the thirteen words, and a
+    // reader who trusts the net instead of the question test ships a tool the
+    // model never calls. Adding `hours` here would make both documents wrong.
+    const said = warnings(() =>
+      warnAboutDeclinedSubjects([tool("find_shop_hours", "Read the opening hours of a shop.")], []),
+    )
+    assert.deepEqual(said, [], "the documents promise no warning here; keep that promise true")
+  })
+
   test("warns while the agent is built, and not on the first question", () => {
     // The whole value of this warning is catching the mistake while somebody is
     // wiring the tool up. It once sat inside the lazy setup, so it printed after

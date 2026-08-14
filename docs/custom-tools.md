@@ -63,8 +63,14 @@ and does not.
 name and description for thirteen words, and warns while the agent is built. The
 word list deliberately omits `shop`, `store`, `trade`, `order`, and `grading`:
 each is an ordinary word in some game, and a warning that fired on `check_stock`
-would be false. The warning therefore catches the plain cases and misses the
-subtle ones. Apply the question test yourself; do not wait to be warned.
+would be false. The warning stops once a procedure names the tool.
+
+**THE NET DOES NOT CATCH `find_shop_hours`.** Nothing warns you about the
+example directly above, because `hours` is not one of the thirteen words and
+`shop` is left out on purpose. That is the shape of the whole problem: the net
+is cheap and catches the plain cases, and a subject can be declined without
+using any of its words. Apply the question test yourself; do not wait to be
+warned.
 
 **Write a procedure when your subject is on the list.** See "Write a procedure
 for it" below. That is what tells the model the subject is now in scope, and it

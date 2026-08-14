@@ -13,15 +13,18 @@ would be an invented one.
 
 ## [Unreleased]
 
-## [0.5.0] - 2026-08-14
+Nothing yet. The newest release is below.
 
-The same reader took this build, deleted every workaround they had written, and
-reported again. Fifteen of their seventeen issues were closed; the entries below
-close the rest, and the five things they found on the way.
+## [0.5.0] - 2026-08-14
 
 A player asked whether rulekit answers the harder questions, and named a
 community rulings site. Two parts were missing. A corpus held no place for a
 ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
+
+Then the person who wrote `ISSUES.md` for 0.4.0 read all of it back, twice, and
+deleted every workaround they had written. This release is that work and their
+two reports: rulings, reference sites, tools of your own, and the twenty-four
+points those reports raised.
 
 ### Added
 
@@ -156,6 +159,14 @@ ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
   decline the QUESTION from a reader holding no tool. The word list behind the
   warning is a separate, cruder net, and the README now says which words it
   deliberately omits and why.
+- **The documents say which example the declined-subject warning misses.** The
+  section teaching that failure used `find_shop_hours` as its example, two
+  paragraphs above a warning that does not catch it, and the natural reading was
+  that the warning covered the case just described. Both documents now name that
+  example as one the net misses, and a test keeps the sentence true.
+- **The rulings table labels the kind on each row.** Its heading said two shapes
+  answer free while the table showed three free rows, because a lookup has two
+  forms. A reader had to read the heading twice.
 - **`@rulekitai/rulekit` is a PEER dependency of `@rulekitai/ui`.** It was an
   ordinary dependency written `workspace:*`, which npm publishes as an exact
   version. An application on any other version of the rules package therefore

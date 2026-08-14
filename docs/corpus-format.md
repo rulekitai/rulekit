@@ -318,18 +318,19 @@ alone leaves the obligation impossible to meet.
 
 ### Which questions a ruling answers free
 
-Two shapes reach the rows in a few milliseconds, with no model call:
+Two KINDS of question reach the rows in a few milliseconds, with no model call.
+A lookup has two forms, so three rows below cost nothing:
 
-| The reader asks | What answers |
-|---|---|
-| `rulings for Stonewall Sentry` | The free stage |
-| `Stonewall Sentry faq` | The free stage |
-| The `question` field, word for word | The free stage |
-| `Can Stonewall Sentry block two attackers?` | The agent. It costs a model call |
+| The reader asks | Which kind | What answers |
+|---|---|---|
+| `rulings for Stonewall Sentry` | Lookup | The free stage |
+| `Stonewall Sentry faq` | Lookup | The free stage |
+| The `question` field, word for word | Exact match | The free stage |
+| `Can Stonewall Sentry block two attackers?` | Neither | The agent. It costs a model call |
 
-The first two are a **lookup**: the word "rulings" or "faq", plus a piece this
-corpus knows. The third is an **exact match** on the question the ruling itself
-asks, folded for case, spacing, accents, and a final question mark.
+A **lookup** is the word "rulings" or "faq", plus a piece this corpus knows. An
+**exact match** is the question the ruling itself asks, folded for case, spacing, accents, apostrophes, and a final question mark,
+full stop, or exclamation mark.
 
 Nothing else matches, and that is deliberate. A ruling that merely resembles the
 question is the wrong answer, and presenting it as the right one is worse than

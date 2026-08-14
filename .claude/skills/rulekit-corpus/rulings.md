@@ -47,17 +47,20 @@ downstream notices.
 
 ## Which questions answer with no model call
 
-| The reader asks | What answers |
-|---|---|
-| `rulings for Stonewall Sentry` | The free stage |
-| `Stonewall Sentry faq` | The free stage |
-| The `question` field, word for word | The free stage |
-| Any other phrasing | The agent. It costs a model call |
+Two KINDS answer free. A lookup has two forms, so three rows here cost nothing:
 
-The first two are a lookup: the word "rulings" or "faq", plus a piece the corpus
-knows. The third is an exact match, folded for case, spacing, accents, and a
-final question mark. Nothing else matches, because a ruling that merely
-resembles the question is the wrong answer.
+| The reader asks | Which kind | What answers |
+|---|---|---|
+| `rulings for Stonewall Sentry` | Lookup | The free stage |
+| `Stonewall Sentry faq` | Lookup | The free stage |
+| The `question` field, word for word | Exact match | The free stage |
+| Any other phrasing | Neither | The agent. It costs a model call |
+
+A lookup is the word "rulings" or "faq", plus a piece the corpus knows. An exact
+match is the question the ruling itself asks, folded for case, spacing, accents,
+apostrophes, and a final question mark, full stop, or exclamation mark. Nothing
+else matches, because a ruling that merely resembles the question is the wrong
+answer.
 
 **Write `question` as the reader would type it.** It is the phrasing they read
 on the publisher's page, and the one phrasing that costs nothing.

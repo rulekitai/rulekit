@@ -116,21 +116,21 @@ Once the file holds a row, two things switch on by themselves. A free stage
 answers from these rows with no model call, and the agent gains a `list_rulings`
 tool. Both stay off while the file is absent or empty.
 
-**Two shapes of question answer free, and no other shape does.**
+**Two kinds of question answer free. A lookup has two forms, so three rows
+below cost nothing.**
 
-| You ask | What answers |
-|---|---|
-| `rulings for Stonewall Sentry` | The free stage, in a few milliseconds |
-| `Stonewall Sentry faq` | The free stage |
-| The `question` field of a ruling, word for word | The free stage |
-| `Can Stonewall Sentry block two attackers?` | The agent, which costs a model call |
+| You ask | Which kind | What answers |
+|---|---|---|
+| `rulings for Stonewall Sentry` | Lookup | The free stage, in a few milliseconds |
+| `Stonewall Sentry faq` | Lookup | The free stage |
+| The `question` field of a ruling, word for word | Exact match | The free stage |
+| `Can Stonewall Sentry block two attackers?` | Neither | The agent, which costs a model call |
 
-The first two are a **lookup**: the words "rulings" or "faq", plus a piece this
-corpus knows. The third is an **exact match** on the question a ruling itself
-asks, folded for case, spacing, accents, and a final question mark. Nothing
-else matches, and that is on purpose: a ruling that merely resembles the
-question is the wrong answer, and presenting it as the right one is worse than
-paying for a model call.
+A **lookup** is the word "rulings" or "faq", plus a piece this corpus knows. An
+**exact match** is the question a ruling itself asks, folded for case, spacing, accents, apostrophes, and a final question mark,
+full stop, or exclamation mark. Nothing else matches, and that
+is on purpose: a ruling that merely resembles the question is the wrong answer,
+and presenting it as the right one is worse than paying for a model call.
 
 Write the `question` field as the reader would type it. It is the phrasing they
 read on the publisher's page, and it is the one phrasing that costs nothing.
@@ -355,12 +355,17 @@ Both tools have a shop in them. Only one has a declined SUBJECT. A tool called
 is the second and does not.
 
 **A separate, cruder net also warns you.** `createRulesAgent` searches a tool's
-name and description for thirteen words, and warns when it finds one. The word
-list deliberately omits `shop`, `store`, `trade`, `order`, and `grading`: each
-is an ordinary word in some game, and a warning that fires on `check_stock`
-would be false. So the warning catches the plain cases and misses the subtle
-ones. **Apply the question test yourself; do not wait to be warned.** The
-warning stops once a procedure names the tool.
+name and description for thirteen words, and warns while the agent is built. The
+word list deliberately omits `shop`, `store`, `trade`, `order`, and `grading`:
+each is an ordinary word in some game, and a warning that fired on `check_stock`
+would be false. The warning stops once a procedure names the tool.
+
+**THE NET DOES NOT CATCH `find_shop_hours`.** Nothing warns you about the very
+example two paragraphs above, because `hours` is not one of the thirteen words
+and `shop` is left out on purpose. That is the shape of the whole problem: the
+net is cheap and catches the plain cases, and a subject can be declined without
+using any of its words. **Apply the question test yourself; do not wait to be
+warned.**
 
 **Write a procedure to grant the subject.** A procedure is a short document the
 assistant reads when a question matches its description. It is what tells the
