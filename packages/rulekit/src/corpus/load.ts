@@ -7,9 +7,10 @@ import {
   type CollectionName,
   collectionFileSchema,
   gameFileSchema,
+  OPTIONAL_COLLECTIONS,
   SCHEMA_VERSION,
 } from "./schema.ts"
-import { normalizeName } from "./text.ts"
+import { normalizeName, normalizeRuleNumber } from "./text.ts"
 import type { Corpus } from "./types.ts"
 
 /** One thing wrong with a corpus, named precisely enough to fix. */
@@ -18,25 +19,44 @@ export type CorpusProblem = {
   /** The row index inside `items`, or null for a whole-file problem. */
   index: number | null
   message: string
+  /**
+   * The row's own id, when it has one.
+   *
+   * An index is a counting exercise in a file of four hundred rows, and the id
+   * is already in the row. The command prints this in place of the index.
+   */
+  id?: string
 }
 
 export type LoadResult =
   | { ok: true; corpus: Corpus; problems: CorpusProblem[] }
   | { ok: false; corpus: null; problems: CorpusProblem[] }
 
-/** Read and parse one JSON file, or report why it could not be read. */
-async function readJson(dir: string, name: string): Promise<{ data?: unknown; problem?: CorpusProblem }> {
+/**
+ * Read and parse one JSON file, or report why it could not be read.
+ *
+ * `missing` is a separate flag rather than something a caller reads back out of
+ * the message, because one collection is allowed to be absent and no other read
+ * failure is. A caller deciding that from prose would also accept a permission
+ * error as "absent" and load a corpus with a silently empty collection.
+ */
+async function readJson(
+  dir: string,
+  name: string,
+): Promise<{ data?: unknown; problem?: CorpusProblem; missing?: boolean }> {
   const file = `${name}.json`
   let raw: string
   try {
     raw = await readFile(join(dir, file), "utf8")
   } catch (err) {
     const code = (err as NodeJS.ErrnoException)?.code
+    const missing = code === "ENOENT"
     return {
+      missing,
       problem: {
         file,
         index: null,
-        message: code === "ENOENT" ? "file is missing" : `could not be read: ${String(err)}`,
+        message: missing ? "file is missing" : `could not be read: ${String(err)}`,
       },
     }
   }
@@ -96,6 +116,9 @@ export async function loadCorpus(dir: string): Promise<LoadResult> {
     collections[name] = []
     const file = await readJson(dir, name)
     if (file.problem) {
+      // An optional collection that is simply absent is a corpus written before
+      // the collection existed, not a broken one. Leave it empty and say nothing.
+      if (file.missing && OPTIONAL_COLLECTIONS.has(name)) continue
       problems.push(file.problem)
       fatal = true
       continue
@@ -143,6 +166,7 @@ export async function loadCorpus(dir: string): Promise<LoadResult> {
     banlist: collections.banlist as Corpus["banlist"],
     patchNotes: collections["patch-notes"] as Corpus["patchNotes"],
     cards: collections.cards as Corpus["cards"],
+    rulings: collections.rulings as Corpus["rulings"],
   }
 
   return { ok: true, corpus, problems }
@@ -163,7 +187,8 @@ export function checkIntegrity(corpus: Corpus): CorpusProblem[] {
   const ruleIds = new Set(corpus.rules.map((r) => r.id))
   const cardIds = new Set(corpus.cards.map((c) => c.id))
 
-  const report = (file: string, index: number, message: string) => problems.push({ file, index, message })
+  const report = (file: string, index: number, message: string, id?: string) =>
+    problems.push({ file, index, message, ...(id ? { id } : {}) })
 
   corpus.sections.forEach((section, index) => {
     if (!bookIds.has(section.rule_book_id))
@@ -212,6 +237,64 @@ export function checkIntegrity(corpus: Corpus): CorpusProblem[] {
     for (const id of note.affected_card_ids)
       if (!cardIds.has(id))
         report("patch-notes.json", index, `affected_card_ids holds "${id}", which names no card`)
+  })
+
+  // A ruling points outward at two things it does not own: the pieces it is
+  // about, and the rules it rests on. Both links are how a reader gets from the
+  // ruling to the evidence, so a broken one turns a cited answer into a bare
+  // assertion that still looks cited.
+  const ruleNumberKeys = new Set(corpus.rules.map((r) => normalizeRuleNumber(r.rule_number)).filter(Boolean))
+  const cardNameById = new Map(corpus.cards.map((c) => [c.id, c.name]))
+  // An id is what a citation carries, so two rulings sharing one leave a reader
+  // who follows that citation unable to tell which row answered.
+  const rulingIds = new Set<string>()
+  corpus.rulings.forEach((ruling, index) => {
+    if (rulingIds.has(ruling.id))
+      report("rulings.json", index, `id "${ruling.id}" is already used by an earlier ruling`, ruling.id)
+    rulingIds.add(ruling.id)
+
+    for (const card of ruling.cards) {
+      if (card.id && !cardIds.has(card.id)) {
+        report("rulings.json", index, `cards holds id "${card.id}", which names no card`, ruling.id)
+        continue
+      }
+      // The id resolves and the NAME is what an answer prints. A row whose two
+      // halves disagree passes every other check and shows a reader the wrong
+      // card, which is the failure this collection exists to prevent.
+      const real = card.id ? cardNameById.get(card.id) : undefined
+      if (real && card.name && real !== card.name)
+        report(
+          "rulings.json",
+          index,
+          `cards names "${card.name}", and the id "${card.id}" is "${real}". An answer prints the name.`,
+          ruling.id,
+        )
+    }
+
+    for (const number of ruling.rule_numbers)
+      if (!ruleNumberKeys.has(normalizeRuleNumber(number)))
+        report("rulings.json", index, `rule_numbers holds "${number}", which names no rule`, ruling.id)
+
+    // A card ruling is found by card name. One that names no card is reachable
+    // only by a text search, which is exactly the lookup a reader does not do.
+    if (ruling.kind === "card" && ruling.cards.length === 0)
+      report(
+        "rulings.json",
+        index,
+        'kind is "card" but no card is named, so no card lookup can find it',
+        ruling.id,
+      )
+
+    if (ruling.source_url) {
+      let scheme = ""
+      try {
+        scheme = new URL(ruling.source_url).protocol
+      } catch {
+        report("rulings.json", index, `source_url "${ruling.source_url}" is not a URL`, ruling.id)
+      }
+      if (scheme && scheme !== "https:")
+        report("rulings.json", index, `source_url uses "${scheme}", and only https: is allowed`, ruling.id)
+    }
   })
 
   // A cycle in the parent chain hangs every tool that walks upward. Finding it

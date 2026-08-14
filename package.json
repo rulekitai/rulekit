@@ -1,6 +1,6 @@
 {
   "name": "rulekit-monorepo",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "description": "A grounded, citable rules assistant you can run over your own rulebook.",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
     "node": ">=22.5.0"
   },
   "scripts": {
-    "build": "node packages/rulekit/scripts/copy-corpora.mjs && tsc --build",
+    "build": "node packages/rulekit/scripts/copy-shipped-files.mjs && node packages/ui/scripts/copy-notice.mjs && tsc --build",
     "check-types": "tsc --build --force",
     "clean": "tsc --build --clean",
     "lint": "biome check .",

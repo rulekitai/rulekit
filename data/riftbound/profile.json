@@ -112,5 +112,10 @@
   "extraGuidance": [
     "A gear card's `card_text` often holds only its EQUIP line. What the equipped unit gains is in `effect_text`, and the Might it grants is in `might_bonus`. Read all three before you say what a gear card does, and never conclude from `card_text` alone that a card has no such text.",
     "A banned-and-restricted entry and a card-change entry each carry the card's image path, so you can link the card from them without a separate card lookup."
-  ]
+  ],
+  "attribution": {
+    "text": "Riot Games, Inc. owns the Riftbound rules data. This is an unofficial community project, and Riot Games does not endorse it.",
+    "url": "https://www.riotgames.com/en/legal",
+    "official": false
+  }
 }

@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync, realpathSync } from "node:fs"
-import { cp, mkdir, readFile, stat } from "node:fs/promises"
+import { cp, mkdir, readdir, readFile, stat } from "node:fs/promises"
 import { dirname, join, relative, resolve } from "node:path"
 import { argv, cwd, exit, stderr, stdout } from "node:process"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { type Profile, parseProfile } from "../agent/profile.ts"
 import { buildDatabase } from "../corpus/build.ts"
 import { type CorpusProblem, checkIntegrity, loadCorpus } from "../corpus/load.ts"
+import { KNOWN_CORPUS_FILES } from "../corpus/schema.ts"
 import { SqliteStore } from "../corpus/sqlite-store.ts"
 import type { Corpus } from "../corpus/types.ts"
+import { DEFAULT_CREDENTIAL_VARIABLE } from "../pipeline/gate.ts"
 import { hideSqliteExperimentalWarning } from "../sqlite-warning.ts"
 
 /**
@@ -21,8 +23,23 @@ import { hideSqliteExperimentalWarning } from "../sqlite-warning.ts"
 
 type Problem = CorpusProblem
 
-const out = (line = "") => stdout.write(`${line}\n`)
-const err = (line: string) => stderr.write(`${line}\n`)
+/**
+ * Where this command writes, as one object a test can replace.
+ *
+ * A TEST MUST NOT REPLACE `process.stdout.write` TO READ WHAT A COMMAND PRINTS.
+ * The test runner reports its own results through that same function, so a
+ * replacement swallows them: the run prints fewer results than it ran, and the
+ * summary counts fewer than it ran. Fifteen tests in `bin.test.ts` were
+ * invisible that way, and a deliberately broken one still printed "fail 0".
+ * Only the exit code stayed honest.
+ */
+export const output = {
+  write: (text: string) => void stdout.write(text),
+  writeError: (text: string) => void stderr.write(text),
+}
+
+const out = (line = "") => output.write(`${line}\n`)
+const err = (line: string) => output.writeError(`${line}\n`)
 
 // A command is a program, so it decides which warnings it prints. See the
 // module for why this is not the library's decision to make.
@@ -122,7 +139,7 @@ function reportProblems(problems: CorpusProblem[], limit = 25): void {
   for (const [file, rows] of byFile) {
     out(`  ${file}  (${rows.length} problem${rows.length === 1 ? "" : "s"})`)
     for (const row of rows.slice(0, limit)) {
-      const where = row.index === null ? "" : ` [item ${row.index}]`
+      const where = row.id ? ` [${row.id}]` : row.index === null ? "" : ` [item ${row.index}]`
       out(`    ${where} ${row.message}`)
     }
     if (rows.length > limit) out(`    ... and ${rows.length - limit} more`)
@@ -203,6 +220,57 @@ export function checkProfileFields(dir: string, corpus: Corpus): Problem[] {
   return problems
 }
 
+/**
+ * True when a corpus states terms for a developer and none for a reader.
+ *
+ * `NOTICE.txt` is the developer's file: it says what you may build and sell.
+ * The person asking whether a unit can block needs one sentence saying who owns
+ * these rules, and `profile.attribution` is where a corpus author writes it.
+ *
+ * This is a note and never a failure. A corpus in the public domain carries no
+ * notice, and one may still choose to say nothing to a reader.
+ */
+export function missingReaderCredit(dir: string): boolean {
+  if (!existsSync(join(dir, "NOTICE.txt"))) return false
+  try {
+    return !parseProfile(JSON.parse(readFileSync(resolve(dir, "profile.json"), "utf8"))).attribution
+  } catch {
+    // No profile, or one this version cannot read. Other checks report that.
+    return false
+  }
+}
+
+/**
+ * Report any JSON file the corpus format does not know.
+ *
+ * One collection may be absent, which means a misspelled file name no longer
+ * stops the load: `rulings.jsonn` reads as "this game has no rulings", and the
+ * writer sees a corpus that validates and answers nothing. Naming the stray file
+ * costs one directory read and turns that silence back into a message.
+ *
+ * It suggests the nearest known name, because the cause is nearly always a typo.
+ */
+export async function checkStrayFiles(dir: string): Promise<Problem[]> {
+  let entries: string[]
+  try {
+    entries = await readdir(dir)
+  } catch {
+    return []
+  }
+  const known = new Set(KNOWN_CORPUS_FILES)
+  const problems: Problem[] = []
+  for (const entry of entries) {
+    if (!entry.endsWith(".json") || known.has(entry)) continue
+    const near = nearestKey(entry, known)
+    problems.push({
+      file: entry,
+      index: null,
+      message: `is not part of the corpus format, so nothing reads it${near ? `. Did you mean "${near}"?` : ""}`,
+    })
+  }
+  return problems
+}
+
 async function commandValidate(dir: string): Promise<number> {
   out(`Validating ${dir}`)
   const result = await loadCorpus(dir)
@@ -224,6 +292,9 @@ async function commandValidate(dir: string): Promise<number> {
   out(`  banlist     ${corpus.banlist.length}`)
   out(`  patch notes ${corpus.patchNotes.length}`)
   out(`  cards       ${corpus.cards.length}`)
+  out(
+    `  rulings     ${corpus.rulings.length}${existsSync(join(dir, "rulings.json")) ? "" : " (no rulings.json)"}`,
+  )
   out("")
 
   if (problems.length) {
@@ -233,7 +304,7 @@ async function commandValidate(dir: string): Promise<number> {
   }
   if (integrity.length) {
     out(
-      `${integrity.length} link${integrity.length === 1 ? "" : "s"} point at something that does not exist:`,
+      `${integrity.length} link${integrity.length === 1 ? " points" : "s point"} at something that does not exist:`,
     )
     reportProblems(integrity)
     out("")
@@ -246,6 +317,22 @@ async function commandValidate(dir: string): Promise<number> {
     out("")
   }
 
+  const strays = await checkStrayFiles(dir)
+  if (strays.length) {
+    out(`${strays.length} file${strays.length === 1 ? "" : "s"} nothing reads:`)
+    reportProblems(strays)
+    out("")
+  }
+
+  if (missingReaderCredit(dir)) {
+    out("Note: this corpus carries NOTICE.txt, and its profile sets no `attribution`.")
+    out("      NOTICE.txt is written for a developer choosing a corpus. It names")
+    out("      licences and directories, which the person asking a rules question")
+    out("      has no use for. Set `attribution` in profile.json to give every")
+    out("      application one sentence to show that person under an answer.")
+    out("")
+  }
+
   // A corpus with no rules parses fine and answers nothing, which is the one
   // failure a reader will not notice until the assistant is already deployed.
   if (!corpus.rules.length) {
@@ -253,7 +340,7 @@ async function commandValidate(dir: string): Promise<number> {
     return 1
   }
 
-  if (problems.length || integrity.length || profileProblems.length) {
+  if (problems.length || integrity.length || profileProblems.length || strays.length) {
     err("Validation failed.")
     return 1
   }
@@ -363,15 +450,37 @@ async function commandAsk(dir: string, question: string, asJson = false): Promis
     }
 
     if (missingRule) out(`This corpus holds no rule ${missingRule}.`)
-    else out(`No free stage could answer this. It would go to the agent, and the agent needs a model key.`)
+    else {
+      // Name the variable. "The agent needs a model key" is true and leaves a
+      // reader standing exactly where they cannot act: they know they need a
+      // credential and not which name this package reads.
+      out("No free stage could answer this. It would go to the agent, and the agent needs a model")
+      out(`credential. A server reads ${DEFAULT_CREDENTIAL_VARIABLE} from its environment by default.`)
+      out("This command never calls the agent, whatever you set.")
+    }
     out(`Stages tried: ${trace.map((t) => `${t.stage}=${t.outcome}`).join(", ")}`)
 
+    // Name the SHAPE beside the example. A reader whose question missed cannot
+    // tell which part of an example was load-bearing, and a message that names
+    // fewer shapes than the corpus answers reads as a complete list: one that
+    // omitted rulings sent a reader away from the feature they had just added.
     const where = relative(cwd(), dir) || dir
     const rule = result.corpus.rules.find((r) => r.rule_type !== "section_header" && r.content.trim() !== "")
     const term = result.corpus.terms[0]
-    out(`\nThe free stages answer two shapes of question:`)
-    if (rule) out(`  rulekit ask ${where} "what does rule ${rule.rule_number} say"`)
-    if (term) out(`  rulekit ask ${where} "what is ${term.term}"`)
+    const banned = result.corpus.banlist.find((b) => b.card?.name)?.card?.name
+    const ruled = result.corpus.rulings.flatMap((r) => r.cards).find((c) => c.name)?.name
+    const published = result.corpus.rulings.find((r) => r.question.trim())?.question.trim()
+
+    const shapes: [string, string][] = []
+    if (rule) shapes.push(["a rule number", `what does rule ${rule.rule_number} say`])
+    if (banned) shapes.push(["a legality question", `is ${banned} banned`])
+    if (ruled) shapes.push(["a rulings lookup", `rulings for ${ruled}`])
+    if (published) shapes.push(["a ruling's own question", published])
+    if (term) shapes.push(["a keyword", `what is ${term.term}`])
+
+    const count = ["no", "one", "two", "three", "four", "five"][shapes.length] ?? String(shapes.length)
+    out(`\nThe free stages answer ${count} shape${shapes.length === 1 ? "" : "s"} of question here:`)
+    for (const [shape, example] of shapes) out(`  ${shape.padEnd(24)} rulekit ask ${where} "${example}"`)
     out(`\nThe agent answers every other question. The README section "${AGENT_README_SECTION}" starts one:`)
     out(`  ${AGENT_README_URL}`)
     return 0

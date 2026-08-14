@@ -2,7 +2,7 @@
 
 import { AnswerMarkdown } from "./answer-markdown.tsx"
 import { AnswerTrace } from "./answer-trace.tsx"
-import type { ChatMessage } from "./message.ts"
+import { type ChatMessage, readSources } from "./message.ts"
 import { useRuleKit } from "./provider.tsx"
 
 /** How a stage is named to a reader. An internal name means nothing to them. */
@@ -36,7 +36,10 @@ export function MessageRow(props: { message: ChatMessage; streaming?: boolean })
   // A host app that passes a function gets to say something true of THIS
   // answer. Most answers cost no model call, and one fixed sentence about an AI
   // contradicts the trace line directly above it.
-  const disclaimer = typeof configured === "function" ? configured(message.servedBy ?? "") : configured
+  const disclaimer =
+    typeof configured === "function"
+      ? configured(message.servedBy ?? "", readSources(message.steps), message.source)
+      : configured
 
   if (message.role === "user") {
     return (

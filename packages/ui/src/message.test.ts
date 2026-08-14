@@ -1,6 +1,14 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
-import { answerSource, type ChatMessage, classifyTurn, toHistory, toServedBy } from "./message.ts"
+import type { TraceStep } from "@rulekitai/rulekit/agent/events"
+import {
+  answerSource,
+  type ChatMessage,
+  classifyTurn,
+  readSources,
+  toHistory,
+  toServedBy,
+} from "./message.ts"
 import { LocalChatStorage, NoChatStorage, titleFrom } from "./storage.ts"
 
 const message = (over: Partial<ChatMessage>): ChatMessage => ({
@@ -84,6 +92,67 @@ describe("narrowing a value off the wire", () => {
     assert.equal(toServedBy("static"), "static")
     assert.equal(toServedBy("something-else"), undefined)
     assert.equal(toServedBy(42), undefined)
+  })
+})
+
+describe("who wrote a cached answer", () => {
+  test("a cached model answer still reads as a model answer", () => {
+    // The server keeps the origin across the cache: `servedBy` becomes "cache"
+    // and `source` stays "agent". Reading only the stage labelled a model's own
+    // words as read from the rules data, on every repeat question.
+    assert.equal(answerSource("cache", "agent"), "model")
+  })
+
+  test("a cached free answer still reads as the rules data", () => {
+    assert.equal(answerSource("cache", "static"), "rules")
+    assert.equal(answerSource("cache", "glossary"), "rules")
+  })
+
+  test("the origin wins over the stage", () => {
+    assert.equal(answerSource("static", "agent"), "model")
+  })
+
+  test("falls back to the stage for a caller that has no origin", () => {
+    assert.equal(answerSource("agent"), "model")
+    assert.equal(answerSource("static"), "rules")
+    assert.equal(answerSource(undefined), "rules")
+  })
+})
+
+describe("the sources an answer read outside the rules data", () => {
+  const step = (over: Partial<TraceStep>): TraceStep => ({
+    id: crypto.randomUUID(),
+    tool: "search_all",
+    label: "Searched the rules",
+    kind: "searched",
+    status: "completed",
+    ...over,
+  })
+  const site = (name: string, url: string) => ({ name, url, official: false })
+
+  test("finds nothing for an ordinary answer", () => {
+    assert.deepEqual(readSources([step({}), step({})]), [])
+    assert.deepEqual(readSources(undefined), [])
+  })
+
+  test("names a site a step read", () => {
+    const source = site("Example FAQ", "https://faq.example.com/a")
+    assert.deepEqual(readSources([step({}), step({ tool: "fetch_reference", source })]), [source])
+  })
+
+  test("names one site once, however many of its pages were read", () => {
+    // A reader wants to know which sites were consulted. Three pages of one
+    // site is still one source to weigh, and listing it three times reads as
+    // three independent sources agreeing.
+    const found = readSources([
+      step({ source: site("Example FAQ", "https://faq.example.com/a") }),
+      step({ source: site("Example FAQ", "https://faq.example.com/b") }),
+      step({ source: site("Other FAQ", "https://other.example.com/c") }),
+    ])
+    assert.deepEqual(
+      found.map((s) => s.name),
+      ["Example FAQ", "Other FAQ"],
+    )
   })
 })
 

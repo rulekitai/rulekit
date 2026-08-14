@@ -1,6 +1,6 @@
 import { rmSync } from "node:fs"
 import { DatabaseSync } from "node:sqlite"
-import { nameStem, normalizeName } from "./text.ts"
+import { nameStem, normalizeName, normalizeQuestion } from "./text.ts"
 import type { Corpus } from "./types.ts"
 
 /**
@@ -14,10 +14,36 @@ import type { Corpus } from "./types.ts"
  * leaves no file a reader could mistake for a complete one.
  */
 
+/**
+ * The shape of the compiled database, as a number the reader can compare.
+ *
+ * `corpus.db` is a build artefact and is not in version control, so an upgraded
+ * package meets a database an older package wrote. Version 1 held no rulings
+ * table, and the first question then failed with `no such table: rulings`, which
+ * names neither the cause nor the cure.
+ *
+ * Bump this whenever a table, an index, or a column changes. `SqliteStore.open`
+ * refuses an older number and says which command rebuilds the file.
+ *
+ * This is NOT `SCHEMA_VERSION` in `schema.ts`. That one versions the JSON a
+ * corpus author writes, and the two move for different reasons: rulings arrived
+ * as an optional file, so the JSON format stayed at 2 while this went to 3.
+ */
+export const DB_SCHEMA_VERSION = 3
+
 /** Column weights for rule ranking, highest first. */
 const RULE_WEIGHTS = { number: 8.0, title: 3.0, content: 1.0, example: 0.5 }
 const CARD_WEIGHTS = { name: 8.0, type: 1.0, text: 2.0 }
 const TERM_WEIGHTS = { term: 8.0, aliases: 4.0, definition: 1.0 }
+/**
+ * A ruling is found by its question far more often than by its answer.
+ *
+ * A reader asks nearly the words somebody already asked, so the question column
+ * carries the match. The answer is long and repeats common rules vocabulary, so
+ * weighting it highly would rank every ruling about a popular mechanic above the
+ * one ruling that answers the question in front of you.
+ */
+const RULING_WEIGHTS = { question: 8.0, cards: 4.0, topic: 3.0, answer: 1.0 }
 
 const SCHEMA_SQL = `
 PRAGMA journal_mode = WAL;
@@ -93,6 +119,31 @@ CREATE TABLE cards (
 CREATE INDEX cards_name_key ON cards(name_key);
 CREATE INDEX cards_name_stem ON cards(name_stem);
 
+CREATE TABLE rulings (
+  id TEXT PRIMARY KEY, kind TEXT NOT NULL, question TEXT NOT NULL, answer TEXT NOT NULL,
+  question_key TEXT NOT NULL DEFAULT '',
+  rule_numbers TEXT NOT NULL DEFAULT '[]', topic TEXT, topic_key TEXT,
+  source_name TEXT, source_url TEXT, is_official INTEGER NOT NULL DEFAULT 0,
+  effective_date TEXT, is_deprecated INTEGER NOT NULL DEFAULT 0, deprecation_note TEXT,
+  position INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX rulings_kind ON rulings(kind, position);
+CREATE INDEX rulings_topic ON rulings(topic_key);
+-- A ruling holds the question it answers, folded the same way a reader's own
+-- question is folded for the cache. A reader who types that question, or taps
+-- it in a list of suggestions, is then answered from this row and pays for no
+-- model call.
+CREATE INDEX rulings_question ON rulings(question_key);
+
+-- A ruling can be about more than one piece, which is why this is a join table
+-- and errata is not: an erratum changes one card's text, and a ruling routinely
+-- explains what happens when two of them meet.
+CREATE TABLE ruling_cards (
+  ruling_id TEXT NOT NULL, card_id TEXT, card_name TEXT, card_key TEXT, card_png_uri TEXT
+);
+CREATE INDEX ruling_cards_key ON ruling_cards(card_key);
+CREATE INDEX ruling_cards_ruling ON ruling_cards(ruling_id);
+
 CREATE VIRTUAL TABLE rules_fts USING fts5(
   rule_number, title, content, example, rule_id UNINDEXED, tokenize = 'porter unicode61'
 );
@@ -104,6 +155,9 @@ CREATE VIRTUAL TABLE cards_fts USING fts5(
 );
 CREATE VIRTUAL TABLE notes_fts USING fts5(
   title, summary, body, note_id UNINDEXED, tokenize = 'porter unicode61'
+);
+CREATE VIRTUAL TABLE rulings_fts USING fts5(
+  question, cards, topic, answer, ruling_id UNINDEXED, tokenize = 'porter unicode61'
 );
 `
 
@@ -176,6 +230,7 @@ function populate(db: DatabaseSync, corpus: Corpus): void {
   const meta = db.prepare("INSERT INTO meta (key, value) VALUES (?, ?)")
   meta.run("game_slug", corpus.game.slug)
   meta.run("game_name", corpus.game.name)
+  meta.run("db_schema_version", String(DB_SCHEMA_VERSION))
 
   const book = db.prepare(
     "INSERT INTO rulebooks (id, name, slug, version, effective_date, is_active, position) VALUES (?,?,?,?,?,?,?)",
@@ -339,6 +394,52 @@ function populate(db: DatabaseSync, corpus: Corpus): void {
     // main box makes an equipment card look like it has almost no text.
     cardFts.run(c.name, c.type_line ?? "", Object.values(c.text).join("\n"), c.id)
   }
+
+  const ruling = db.prepare(
+    `INSERT INTO rulings (id, kind, question, answer, question_key, rule_numbers, topic, topic_key,
+      source_name, source_url, is_official, effective_date, is_deprecated, deprecation_note, position)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+  )
+  const rulingCard = db.prepare(
+    "INSERT INTO ruling_cards (ruling_id, card_id, card_name, card_key, card_png_uri) VALUES (?,?,?,?,?)",
+  )
+  const rulingFts = db.prepare(
+    "INSERT INTO rulings_fts (question, cards, topic, answer, ruling_id) VALUES (?,?,?,?,?)",
+  )
+  corpus.rulings.forEach((r, index) => {
+    ruling.run(
+      r.id,
+      r.kind,
+      r.question,
+      r.answer,
+      normalizeQuestion(r.question),
+      json(r.rule_numbers),
+      r.topic,
+      r.topic ? normalizeName(r.topic) : null,
+      r.source_name,
+      r.source_url,
+      r.is_official ? 1 : 0,
+      r.effective_date,
+      r.is_deprecated ? 1 : 0,
+      r.deprecation_note,
+      index,
+    )
+    for (const c of r.cards) {
+      rulingCard.run(r.id, c.id, c.name, c.name ? normalizeName(c.name) : null, c.png_uri)
+    }
+    // Superseded rulings stay out of the index, for the same reason deprecated
+    // rules do: a search must not answer a current question with old guidance.
+    // Reaching one by id still works for anybody who asks for it by name.
+    if (!r.is_deprecated) {
+      // Every named piece goes into one column, so a search for a card name
+      // finds the ruling about it without a join.
+      const cardNames = r.cards
+        .map((c) => c.name)
+        .filter(Boolean)
+        .join(" ")
+      rulingFts.run(r.question, cardNames, r.topic ?? "", r.answer, r.id)
+    }
+  })
 }
 
-export { CARD_WEIGHTS, RULE_WEIGHTS, TERM_WEIGHTS }
+export { CARD_WEIGHTS, RULE_WEIGHTS, RULING_WEIGHTS, TERM_WEIGHTS }

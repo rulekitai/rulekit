@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { type Profile, parseProfile } from "@rulekitai/rulekit/agent/profile"
+import type { ReferenceSite } from "@rulekitai/rulekit/agent/references"
 import { createRulesAgent, type RulesAgent } from "@rulekitai/rulekit/agent/runtime"
 import { SqliteStore } from "@rulekitai/rulekit/corpus/sqlite-store"
 import { MemoryCache } from "@rulekitai/rulekit/pipeline/cache"
@@ -33,6 +34,33 @@ const CORPUS_DIR = resolve(process.cwd(), "..", "..", process.env.RULEKIT_CORPUS
  */
 const MODEL = process.env.RULEKIT_MODEL ?? "anthropic/claude-sonnet-5"
 
+/**
+ * Sites outside the corpus that the agent may read when the corpus misses.
+ *
+ * **EMPTY, AND THAT IS THE DEFAULT THIS EXAMPLE SHIPS.** rulekit names no
+ * reference site, recommends none, and endorses none. An empty list adds no
+ * tools and makes no network call, so cloning this repository starts an
+ * assistant that talks to nobody but its model.
+ *
+ * The sites are yours to choose, and choosing one makes you responsible for its
+ * terms of use and for how often you read it. Confirm the site permits it
+ * before you switch this on.
+ *
+ * One community site, written out as an example and deliberately left off:
+ *
+ *     {
+ *       name: "Riftbound FAQ",
+ *       host: "www.riftboundfaq.com",
+ *       describes: "Community rulings for Riftbound cards, with core-rule citations.",
+ *       official: false,
+ *       cardPath: "/cards/{slug}",
+ *     }
+ *
+ * An answer that reads one of these says so, names the site, and marks the
+ * claim as outside the rules data. See `disclaimerFor` in `app/ask-screen.tsx`.
+ */
+const REFERENCE_SITES: ReferenceSite[] = []
+
 type Wiring = { store: SqliteStore; profile: Profile; pipeline: Pipeline; agent: RulesAgent }
 
 /**
@@ -59,7 +87,14 @@ export function rulekit(): Wiring {
     stages: [exactCacheStage(), staticAnswersStage(store), glossaryStage(store)],
   })
 
-  const agent = createRulesAgent({ store, profile, model: MODEL })
+  const agent = createRulesAgent({
+    store,
+    profile,
+    model: MODEL,
+    // Passing an empty site list adds no tools and no instructions, so this
+    // line changes nothing until somebody fills REFERENCE_SITES in.
+    references: { sites: REFERENCE_SITES, cache: new MemoryCache() },
+  })
 
   cached.__rulekit = { store, profile, pipeline, agent }
   return cached.__rulekit

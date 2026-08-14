@@ -2,7 +2,7 @@
 
 import { Chat } from "@rulekitai/ui/chat"
 import { ChatSessionList } from "@rulekitai/ui/chat-session-list"
-import { answerSource } from "@rulekitai/ui/message"
+import { answerSource, type ReadSource } from "@rulekitai/ui/message"
 import { RuleKitProvider } from "@rulekitai/ui/provider"
 import { useAskStream } from "@rulekitai/ui/use-ask-stream"
 import { useChatSessions } from "@rulekitai/ui/use-chat-sessions"
@@ -41,11 +41,24 @@ function CardChip(card: { name: string; path: string; inline: boolean }) {
  * out of the rules data in a few milliseconds. Saying "Written by an AI" under
  * one of those told the reader the opposite of what happened, and it disagreed
  * with the trace line directly above it.
+ *
+ * THE THIRD ARGUMENT IS WHERE THE FACTS CAME FROM, and `servedBy` is only what
+ * served them. A cache hit serves an answer a model wrote, and `servedBy` then
+ * reads "cache". Reading the stage alone labelled a model's own words "no AI
+ * wrote this", on every repeated question, which is every question the cache
+ * exists for.
  */
-function disclaimerFor(servedBy: string): string {
-  return answerSource(servedBy) === "model"
-    ? "Written by an AI from the rules data. Check anything that decides a game."
-    : "Read from the rules data, with no AI. Check anything that decides a game."
+function disclaimerFor(servedBy: string, sources: ReadSource[], source?: string): string {
+  const base =
+    answerSource(servedBy, source) === "model"
+      ? "Written by an AI from the rules data. Check anything that decides a game."
+      : "Read from the rules data, with no AI. Check anything that decides a game."
+  // An answer that read somebody's website names it. The rules data is what
+  // this project vouches for, and a reader cannot weigh a claim from anywhere
+  // else unless they are told it came from there.
+  if (!sources.length) return base
+  const named = sources.map((s) => `${s.name}${s.official ? "" : " (unofficial)"}`).join(", ")
+  return `${base} This answer also read ${named}, which is outside the rules data.`
 }
 
 export function AskScreen(props: {

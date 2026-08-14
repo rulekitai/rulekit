@@ -1,11 +1,11 @@
 # Contributing to rulekit
 
-Thank you for your interest. This page states how to build the project, what
-the checks expect, and how to send a change.
+This page states how to build the project, what the checks expect, and how to
+send a change.
 
 ## Before you start
 
-Use Node 22 or a later version, and use pnpm. The Eve template in
+Use Node 22.5 or a later version, and use pnpm. The Eve template in
 `templates/eve-agent` needs Node 24.
 
 ```bash
@@ -15,10 +15,9 @@ pnpm install
 pnpm build
 ```
 
-The tests need no model key and no network.
-
 Run `pnpm build` once after the install. The `rulekit` command and the example
 application both read compiled output, and a fresh clone holds none.
+
 
 ### The `rulekit-source` condition
 
@@ -28,17 +27,16 @@ in this repository pass `--conditions=rulekit-source`, so they run the source
 and skip the compile step.
 
 **Never rename that condition to `development` or `production`.** Vite matches
-both of those names with no instruction from anybody. It would then load raw
-TypeScript out of `node_modules` in every application that installs these
-packages, and pnpm stores a package behind a symbolic link, from which the
-package cannot reach its own dependencies. A test in each package fails if the
-name comes back.
+both of those names with no instruction from anybody. Rename the condition, and
+every application that installs these packages loads raw TypeScript out of
+`node_modules`. pnpm stores a package behind a symbolic link, and the package
+cannot reach its own dependencies from there. A test in each package fails if
+the old name comes back.
 
 ## The checks
 
 Run these four commands before you open a pull request. The continuous
-integration workflow runs the same four, so a green run here means a green run
-there.
+integration workflow runs the same four.
 
 ```bash
 pnpm lint                        # Biome
@@ -59,8 +57,7 @@ anything, and it needs a model key. Read
 3. Run the four checks above.
 4. Open a pull request against `main`.
 
-You do not need write access. Every change arrives as a pull request from a
-fork, and a maintainer merges it.
+You need no write access.
 
 ## What a good change looks like
 
@@ -71,8 +68,8 @@ no test invites the same fault again.
 in this repository explain decisions, and not syntax. Match that.
 
 **Keep the free stages before the agent.** A rule lookup, a legality question,
-and a keyword definition are row reads. Each takes a few milliseconds. If you
-move that work to the agent, every question costs one model call.
+and a keyword definition are row reads. Each takes a few milliseconds. Move that
+work to the agent, and every question costs one model call.
 
 **Write a comment that a semi-technical reader understands in one pass.** Name
 what a thing does, in place of the name of a library internal.
@@ -150,24 +147,24 @@ one publish before you can configure one. To add a package to this workspace:
 
 Every later release then runs from the tag, with no token.
 
-**The npm version does the work, not the pnpm version.** `pnpm publish` packs
-each package itself, which is what turns a `workspace:*` dependency into a real
-version number, and then hands the tarball to `npm publish` to upload. Trusted
+**The npm version does the work, and the pnpm version does not.** `pnpm publish`
+packs each package itself, which turns a `workspace:*` dependency into a real
+version number. It then hands the tarball to `npm publish` to upload. Trusted
 publishing lives in npm, and npm gained it in the 11 line. Node 22 still ships
-npm 10, which has none of that code, so it uploaded with no credential at all.
-The workflow therefore installs a pinned npm of its own and prints the version.
+npm 10, which holds none of that code, so it uploaded with no credential at all.
+The workflow therefore installs a pinned npm of its own, and prints the version.
 
 **A publish that answers `404 Not Found - PUT` is one of two things**, and the
 printed npm version tells you which. npm answers a write it does not permit with
 404 rather than 403, so the message reads as "no such package" when the package
 is plainly there:
 
-1. The npm doing the upload is older than the 11 line, so no credential was ever
-   requested.
-2. The trusted publisher is not configured for that package on npmjs.com.
+1. The npm that uploads is older than the 11 line, so it requested no
+   credential.
+2. Nobody configured the trusted publisher for that package on npmjs.com.
 
 ## The licence of your contribution
 
 This project uses the Apache License 2.0. When you send a pull request, you
-agree that your contribution carries that licence. A corpus that you add
-carries the licence that you state in its own directory.
+agree that your contribution carries that licence. A corpus that you add carries
+the licence that you state in its own directory.

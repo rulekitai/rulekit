@@ -339,6 +339,92 @@ describe("the pipeline", () => {
     assert.equal(result.answer, null)
   })
 
+  test("answers a rulings question from the rows, with no model", async () => {
+    const result = await build([staticAnswersStage(store)]).run({
+      question: "rulings for Stonewall Sentry",
+    })
+    assert.equal(result.answer?.servedBy, "static")
+    assert.equal(result.answer?.source, "rulings")
+    assert.match(result.answer?.text ?? "", /Guard makes an attacking unit/)
+  })
+
+  test("says whether a ruling is official, and names who published it", async () => {
+    // A reader weighs these two facts before the answer itself, and an
+    // unofficial ruling reported as official is the one error here they cannot
+    // detect for themselves.
+    const text =
+      (await build([staticAnswersStage(store)]).run({ question: "rulings for Stonewall Sentry" })).answer
+        ?.text ?? ""
+    assert.match(text, /Official ruling, from Paper Kingdoms Rules Team/)
+    // A row carrying `source_url` prints the name as a LINK. A licence such as
+    // CC BY-SA asks for a credit and a link, and the corpus holds both.
+    assert.match(text, /Unofficial ruling, from \[Kingdoms Judge Circle\]\(https:\/\//)
+  })
+
+  test("names the rules a ruling rests on rather than paraphrasing them", async () => {
+    const text =
+      (await build([staticAnswersStage(store)]).run({ question: "rulings for Stonewall Sentry" })).answer
+        ?.text ?? ""
+    assert.match(text, /Rests on: 300\.2, 300\.2\.a, 800\.1\./)
+  })
+
+  test("reaches a ruling that names two cards from either of them", async () => {
+    const result = await build([staticAnswersStage(store)]).run({ question: "rulings for Ironbrand Blade" })
+    assert.match(result.answer?.text ?? "", /Ironbrand Blade is on Stonewall Sentry/)
+  })
+
+  test("says a known card has no ruling, rather than staying silent", async () => {
+    const result = await build([staticAnswersStage(store)]).run({ question: "rulings for Thornwood Warden" })
+    assert.match(result.answer?.text ?? "", /no published ruling/)
+  })
+
+  test("answers a ruling's own question word for word, with no model", async () => {
+    // This is the phrasing a reader is most likely to type, because it is the
+    // phrasing they read on the publisher's page. Sending it to a model to have
+    // the model find and repeat this same pair costs a call and can only be less
+    // faithful than the pair itself.
+    const result = await build([staticAnswersStage(store)]).run({
+      question: "Does Stonewall Sentry's Guard force an attack to be blocked by it?",
+    })
+    assert.equal(result.answer?.servedBy, "static")
+    assert.equal(result.answer?.source, "rulings")
+    assert.match(result.answer?.text ?? "", /Guard makes an attacking unit/)
+    assert.deepEqual(result.answer?.citations?.[0]?.ruling, "rul-001")
+  })
+
+  test("reads that question through case, spacing, and a missing question mark", async () => {
+    const result = await build([staticAnswersStage(store)]).run({
+      question: "does stonewall sentrys  guard force an attack to be blocked by it",
+    })
+    assert.match(result.answer?.text ?? "", /Guard makes an attacking unit/)
+  })
+
+  test("declines a question that merely resembles a ruling's own", async () => {
+    // The match is equality, not a search. A published question and answer
+    // belong to each other, so pairing this publisher's answer with a question
+    // it was not written for would invent a claim. The agent answers instead.
+    const result = await build([staticAnswersStage(store)]).run({
+      question: "Does Stonewall Sentry's Guard force an attack?",
+    })
+    assert.equal(result.answer, null)
+  })
+
+  test("declines rather than claiming an unknown name has no ruling", async () => {
+    // Same gate as the ban verdict. "No ruling exists" is a claim, and a name
+    // the card list does not know may be a misspelling or another game's card.
+    const result = await build([staticAnswersStage(store)]).run({ question: "rulings for Nonexistent Card" })
+    assert.equal(result.answer, null)
+  })
+
+  test("leaves a reasoning question to the agent even though it is about a ruling", async () => {
+    // The cue is the WORD, not the idea. "How does X work" needs the rules
+    // underneath a ruling read and weighed, which no table lookup does.
+    for (const question of ["how does Stonewall Sentry work", "what happens if Stonewall Sentry blocks"]) {
+      const result = await build([staticAnswersStage(store)]).run({ question })
+      assert.equal(result.answer, null, `"${question}" must reach the agent`)
+    }
+  })
+
   test("names every printing when a reader asks about a shared name", async () => {
     // A reader who types a character name means every printing of it. Naming
     // one banned printing alone reads as a verdict on all of them.

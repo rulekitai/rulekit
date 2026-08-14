@@ -8,7 +8,7 @@
 
 ## Checks
 
-<!-- The continuous integration workflow runs the same four commands. -->
+<!-- The continuous integration workflow runs these same four commands. -->
 
 - [ ] `pnpm lint`
 - [ ] `pnpm check-types`

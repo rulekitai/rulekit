@@ -60,5 +60,10 @@
   },
   "extraGuidance": [
     "Paper Kingdoms has two rulebooks: the Core Rules and the Tournament Rules. Both number their sections from 100, so the same rule number can name two different rules. Say which rulebook you are quoting whenever the number appears in both."
-  ]
+  ],
+  "attribution": {
+    "text": "Paper Kingdoms is an invented game, written for this project. The rules data is in the public domain under CC0 1.0.",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "official": false
+  }
 }

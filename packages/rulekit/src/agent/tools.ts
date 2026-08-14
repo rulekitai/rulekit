@@ -1,6 +1,8 @@
 import { z } from "zod"
+import { RULING_KINDS } from "../corpus/schema.ts"
 import type { RuleStore } from "../corpus/store.ts"
-import type { Card, Rule } from "../corpus/types.ts"
+import type { Card, Rule, Ruling } from "../corpus/types.ts"
+import type { TraceStep } from "./events.ts"
 import { type Profile, pieceNoun } from "./profile.ts"
 
 /**
@@ -16,6 +18,198 @@ export type RuleTool = {
   description: string
   inputSchema: z.ZodTypeAny
   execute: (input: never) => Promise<unknown>
+  /**
+   * Extra trace detail, read from the result the call returned.
+   *
+   * The trace is the only structured thing a browser sees from an agent turn:
+   * the answer itself arrives as prose. A tool that did something a reader must
+   * know about, such as a page outside the corpus, says so here. The interface
+   * can then mark it. Returning nothing leaves the step as it was.
+   */
+  describeResult?: (result: unknown) => Partial<TraceStep> | undefined
+  /**
+   * True when this tool deliberately takes the name of another one.
+   *
+   * Two tools of one name would otherwise throw. Set this to replace a built-in
+   * on purpose: a corpus search of your own in place of `search_all`, for one.
+   * The tool that sets it wins, and the one it replaced never reaches the model.
+   */
+  replaces?: boolean
+}
+
+/**
+ * What a tool name may hold.
+ *
+ * This is Eve's `TOOL_SLUG_PATTERN`, from `eve/dist/src/discover/grammar.js`.
+ * Eve names a tool after its file, so a name outside this pattern stops
+ * `pnpm eve build` for anybody who runs the Eve template.
+ *
+ * THE AI SDK CHECKS NOTHING. Its `tool()` is an identity function, and a tool
+ * name reaches it as an object key. So this check is the only one there is, and
+ * removing it moves the failure to somebody else's build.
+ */
+const TOOL_NAME = /^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/
+
+/**
+ * One tool, before `defineTool` widens it.
+ *
+ * `S` is what gives `execute` its input type, and `R` is what `execute` returns.
+ * `R` then types `describeResult`'s only argument, so a trace label is written
+ * against the real result rather than against `unknown`.
+ */
+export type ToolSpec<S extends z.ZodTypeAny, R> = {
+  name: string
+  description: string
+  inputSchema: S
+  /** `input` is inferred from `inputSchema`, so the compiler checks this body. */
+  execute: (input: z.output<S>) => Promise<R>
+  /** `result` is what `execute` resolved to, so the compiler checks this body too. */
+  describeResult?: (result: R) => Partial<TraceStep> | undefined
+  replaces?: boolean
+}
+
+/**
+ * Define one tool, with `execute`'s input inferred from the schema.
+ *
+ * Write a tool this way rather than as a plain object. `RuleTool.execute` takes
+ * `never` so that any concrete input type satisfies it, which means a plain
+ * object gets NO inference: a hand-written `input:` annotation can disagree with
+ * the schema beside it, and nothing reports that. The generic below is what
+ * compares the two.
+ *
+ * It also checks the name, because a name is the one field with an outside
+ * constraint. See `TOOL_NAME`.
+ */
+export function defineTool<S extends z.ZodTypeAny, R>(spec: ToolSpec<S, R>): RuleTool {
+  if (!TOOL_NAME.test(spec.name)) {
+    throw new Error(
+      `"${spec.name}" is not a usable tool name. A name starts with a letter, then holds letters, ` +
+        "digits, underscores, and hyphens, up to 64 characters. Eve names a tool after its file, " +
+        "and rejects anything else.",
+    )
+  }
+  return {
+    name: spec.name,
+    description: spec.description,
+    inputSchema: spec.inputSchema,
+    // The one cast in this file. The generic above already compared the body
+    // against the schema, and `never` is what lets every concrete input type
+    // satisfy the shared `RuleTool` shape.
+    execute: spec.execute as RuleTool["execute"],
+    // The same cast, for the same reason: the runtime hands this function what
+    // `execute` returned, which is exactly `R`, and the shared shape says
+    // `unknown` so that every tool fits one array.
+    ...(spec.describeResult ? { describeResult: spec.describeResult as RuleTool["describeResult"] } : {}),
+    ...(spec.replaces ? { replaces: true } : {}),
+  }
+}
+
+/** The tools `defineReferenceTools` builds. A caller must not pass these by hand. */
+export const REFERENCE_TOOL_NAMES = ["list_references", "fetch_reference"] as const
+
+/**
+ * Refuse reference tools that arrived through `extraTools`.
+ *
+ * `createRulesAgent({ references })` adds two things: these tools, AND the
+ * instruction block that makes the model name the site and mark the claim as
+ * outside the rules data. Building the tools by hand gets the first and not the
+ * second, and the answer then cites somebody's website as though it were the
+ * rules. Nothing downstream can separate the two, which is why this throws
+ * rather than warning.
+ */
+export function assertReferenceToolsAreConfigured(extraTools: RuleTool[], hasReferences: boolean): void {
+  if (hasReferences) return
+  const found = extraTools.find((t) => (REFERENCE_TOOL_NAMES as readonly string[]).includes(t.name))
+  if (found)
+    throw new Error(
+      `"${found.name}" came through \`extraTools\`, and it must come through the \`references\` option. ` +
+        "That option adds the instruction block telling the model to name the site and to mark the " +
+        "claim as outside the rules data. Without it an answer cites a website as though it were " +
+        "your rules. Pass `references: { sites: [...] }` to `createRulesAgent` instead.",
+    )
+}
+
+/**
+ * Subjects the instructions decline, as words to look for in a tool.
+ *
+ * Drawn from `instructions/base.md`. It cannot be read from that file, because
+ * the file is prose written for a model and this needs a list to match against.
+ *
+ * EVERY WORD HERE IS ONE A RULES TOOL WOULD NOT USE. That is the whole design
+ * rule. The broad words from the same bullets are deliberately absent: "shop"
+ * would fire on the documented `check_stock` example, which is on no declined
+ * subject and works; "trade" and "order" are ordinary game words; "grading"
+ * describes a card's condition here and an answer's quality elsewhere. A missed
+ * subject costs one silent tool, and a false warning costs every reader's trust
+ * in the warning.
+ */
+const DECLINED_SUBJECTS = [
+  "event",
+  "tournament",
+  "schedule",
+  "venue",
+  "price",
+  "market value",
+  "investment",
+  "streamer",
+  "refund",
+  "best deck",
+  "deck advice",
+  "ranking",
+  "strategy",
+]
+
+/**
+ * Warn about a tool the model will never call.
+ *
+ * The instructions tell the assistant to decline whole subjects, and REGISTERING
+ * A TOOL DOES NOT AMEND THAT LIST. A tool on a declined subject is wired
+ * correctly, described correctly, and never called once: the model answers that
+ * the subject is outside what it covers, and the tool records no calls. Every
+ * check a caller can run by hand passes, so the cause is close to unfindable.
+ *
+ * A procedure naming the tool is the fix, so a caller who has written one gets
+ * no warning. This warns rather than throwing: the match is a word search, and a
+ * false positive must not stop an application that works.
+ */
+export function warnAboutDeclinedSubjects(tools: RuleTool[], skills: { requiresTool?: string }[]): void {
+  const granted = new Set(skills.map((skill) => skill.requiresTool).filter(Boolean))
+  for (const tool of tools) {
+    if (granted.has(tool.name)) continue
+    const text = `${tool.name} ${tool.description}`.toLowerCase()
+    const subject = DECLINED_SUBJECTS.find((word) => text.includes(word))
+    if (!subject) continue
+    console.warn(
+      `[rulekit] the tool "${tool.name}" describes ${subject}, which the instructions tell the ` +
+        "assistant to decline. Registering a tool does not amend that list, so the model will " +
+        "answer that the subject is outside what it covers and will never call this tool. Pass a " +
+        `procedure through \`extraSkills\` with \`requiresTool: "${tool.name}"\` to say that this ` +
+        "assistant now answers that subject.",
+    )
+  }
+}
+
+/**
+ * Refuse a tool list that holds one name two times.
+ *
+ * The runtime builds its tool map with `Object.fromEntries`, and a repeated key
+ * keeps the LAST entry. So a caller who adds a tool named `get_rule` through
+ * `extraTools` silently removes the built-in `get_rule`, and the agent loses its
+ * most-used lookup. Nothing failed, and the only symptom was a worse answer.
+ *
+ * A tool that sets `replaces` means to do this, and passes.
+ */
+export function assertUniqueToolNames(tools: RuleTool[]): void {
+  const seen = new Set<string>()
+  for (const tool of tools) {
+    if (seen.has(tool.name) && !tool.replaces) {
+      throw new Error(
+        `Two tools are named "${tool.name}", and the second one would silently replace the first. ` +
+          "Rename your tool, or set `replaces: true` on it when you mean to take that name.",
+      )
+    }
+    seen.add(tool.name)
+  }
 }
 
 /**
@@ -95,19 +289,50 @@ export type CorpusContents = {
   errata: boolean
   banlist: boolean
   patchNotes: boolean
+  rulings: boolean
 }
 
 /** Read which collections hold anything. One cheap count each. */
 export async function corpusContents(store: RuleStore): Promise<CorpusContents> {
-  const [errata, banlist, patchNotes] = await Promise.all([
+  const [errata, banlist, patchNotes, rulings] = await Promise.all([
     store.listErrata({ limit: 1 }),
     store.listBanlist({ limit: 1 }),
     store.listPatchNotes({ limit: 1 }),
+    // A store written before rulings existed has no such method, and that is a
+    // corpus with no rulings as far as this is concerned. The same test then
+    // serves twice: it withholds the tool from an empty collection and from a
+    // store that could not read one.
+    store.listRulings ? store.listRulings({ limit: 1 }) : Promise.resolve([]),
   ])
-  return { errata: errata.length > 0, banlist: banlist.length > 0, patchNotes: patchNotes.length > 0 }
+  return {
+    errata: errata.length > 0,
+    banlist: banlist.length > 0,
+    patchNotes: patchNotes.length > 0,
+    rulings: rulings.length > 0,
+  }
 }
 
-const ALL_PRESENT: CorpusContents = { errata: true, banlist: true, patchNotes: true }
+const ALL_PRESENT: CorpusContents = { errata: true, banlist: true, patchNotes: true, rulings: true }
+
+/** Trim a ruling to what an answer can quote and cite. */
+function shapeRuling(ruling: Ruling) {
+  return {
+    id: ruling.id,
+    kind: ruling.kind,
+    question: ruling.question,
+    answer: ruling.answer,
+    /** The rules the ruling rests on. Read each one before you quote the ruling. */
+    rule_numbers: ruling.rule_numbers,
+    cards: ruling.cards.map((c) => c.name).filter(Boolean),
+    topic: ruling.topic,
+    source_name: ruling.source_name,
+    source_url: ruling.source_url,
+    is_official: ruling.is_official,
+    effective_date: ruling.effective_date,
+    is_deprecated: ruling.is_deprecated,
+    ...(ruling.is_deprecated ? { deprecation_note: ruling.deprecation_note } : {}),
+  }
+}
 
 export function defineRulesTools(
   store: RuleStore,
@@ -125,10 +350,11 @@ export function defineRulesTools(
     contents.errata ? `changes to a ${piece}'s text` : null,
     contents.banlist ? "the banned and restricted list" : null,
     contents.patchNotes ? "update notes" : null,
+    contents.rulings ? "published rulings" : null,
   ].filter(Boolean)
 
   const tools: RuleTool[] = [
-    {
+    defineTool({
       name: "search_all",
       description:
         `Search every ${game} collection at once: ${searchable.join(", ")}. This is the right FIRST ` +
@@ -138,7 +364,7 @@ export function defineRulesTools(
         query: z.string().min(1).describe("The reader's question, or the key words from it"),
         limit: limitField(8),
       }),
-      async execute(input: { query: string; limit?: number }) {
+      async execute(input) {
         const found = await store.searchAll(input.query, { limit: input.limit ?? 8 })
         return {
           rules: found.rules.map(shapeRule),
@@ -156,11 +382,12 @@ export function defineRulesTools(
             effective_date: n.effective_date,
             summary: n.summary,
           })),
+          rulings: (found.rulings ?? []).map(shapeRuling),
         }
       },
-    },
+    }),
 
-    {
+    defineTool({
       name: "search_rules",
       description:
         "Search the rule text only. Use it when a question is about the rules and a wider search " +
@@ -169,13 +396,13 @@ export function defineRulesTools(
         query: z.string().min(1).describe("Words to search the rule text for"),
         limit: limitField(8),
       }),
-      async execute(input: { query: string; limit?: number }) {
+      async execute(input) {
         const hits = await store.searchRules(input.query, { limit: input.limit ?? 8 })
         return { rules: hits.map(shapeRule) }
       },
-    },
+    }),
 
-    {
+    defineTool({
       name: "get_rule",
       description:
         'Read one rule by its printed number (for example "300.2.a") or by its slug. Use this ' +
@@ -186,16 +413,16 @@ export function defineRulesTools(
           slug: z.string().optional().describe("The rule's slug, from a link"),
         })
         .refine((v) => Boolean(v.rule_number || v.slug), { message: "Give a rule_number or a slug" }),
-      async execute(input: { rule_number?: string; slug?: string }) {
+      async execute(input) {
         const rule = input.rule_number
           ? await store.getRuleByNumber(input.rule_number)
           : await store.getRuleBySlug(input.slug ?? "")
         if (!rule) return { rule: null, error: "No rule carries that number or slug." }
         return { rule: shapeRule(rule) }
       },
-    },
+    }),
 
-    {
+    defineTool({
       name: "get_rule_context",
       description:
         "Read everything around one rule in a single call: its parent, its sub-rules, its siblings, " +
@@ -204,7 +431,7 @@ export function defineRulesTools(
       inputSchema: z.object({
         rule_id: z.string().min(1).describe("The rule id returned by a search or by get_rule"),
       }),
-      async execute(input: { rule_id: string }) {
+      async execute(input) {
         const [self, parent, children, siblings, related] = await Promise.all([
           store.getRule(input.rule_id),
           store.getParent(input.rule_id),
@@ -225,9 +452,9 @@ export function defineRulesTools(
           related: related.map(shapeRule),
         }
       },
-    },
+    }),
 
-    {
+    defineTool({
       name: "search_terms",
       description:
         `Look up a defined term or keyword in the ${game} glossary. This is the RIGHT tool for ` +
@@ -237,7 +464,7 @@ export function defineRulesTools(
         query: z.string().min(1).describe("The term, keyword, or ability name"),
         limit: limitField(5),
       }),
-      async execute(input: { query: string; limit?: number }) {
+      async execute(input) {
         const terms = await store.searchTerms(input.query, { limit: input.limit ?? 5 })
         return {
           terms: terms.map((t) => ({
@@ -251,9 +478,9 @@ export function defineRulesTools(
           })),
         }
       },
-    },
+    }),
 
-    {
+    defineTool({
       name: "list_rulebooks",
       description:
         "List the rulebooks in this corpus, with their versions and effective dates. Use it when a " +
@@ -262,9 +489,9 @@ export function defineRulesTools(
       async execute() {
         return { rulebooks: await store.listRuleBooks() }
       },
-    },
+    }),
 
-    {
+    defineTool({
       name: "list_sections",
       description:
         "List the sections of a rulebook, which is its table of contents. Use it to find where a topic " +
@@ -272,13 +499,13 @@ export function defineRulesTools(
       inputSchema: z.object({
         rulebook_id: z.string().optional().describe("Limit to one rulebook"),
       }),
-      async execute(input: { rulebook_id?: string }) {
+      async execute(input) {
         const sections = await store.listSections({ ruleBookId: input.rulebook_id })
         return {
           sections: sections.map((s) => ({ section_number: s.section_number, title: s.title, id: s.id })),
         }
       },
-    },
+    }),
   ]
 
   // Card tools exist only when the corpus holds cards. A tool that can only
@@ -287,73 +514,138 @@ export function defineRulesTools(
   // Offered only when the corpus holds one. A tool that can answer nothing
   // costs a step and teaches the model that these tools return nothing.
   if (contents.errata)
-    tools.push({
-      name: "list_errata",
-      description:
-        `Read the published changes to a ${piece}'s printed text. Use it whenever a reader asks ` +
-        `whether a ${piece} was changed, reworded, or corrected. Report the corrected text, the ` +
-        `original text, and the effective date. Call it with no name to read every change.`,
-      inputSchema: z.object({
-        card_name: z.string().optional().describe(`The ${piece}'s printed name. Omit to read them all.`),
-        limit: limitField(20),
+    tools.push(
+      defineTool({
+        name: "list_errata",
+        description:
+          `Read the published changes to a ${piece}'s printed text. Use it whenever a reader asks ` +
+          `whether a ${piece} was changed, reworded, or corrected. Report the corrected text, the ` +
+          `original text, and the effective date. Call it with no name to read every change.`,
+        inputSchema: z.object({
+          card_name: z.string().optional().describe(`The ${piece}'s printed name. Omit to read them all.`),
+          limit: limitField(20),
+        }),
+        async execute(input) {
+          const rows = await store.listErrata({ cardName: input.card_name, limit: input.limit ?? 20 })
+          return { errata: rows, count: rows.length }
+        },
       }),
-      async execute(input: { card_name?: string; limit?: number }) {
-        const rows = await store.listErrata({ cardName: input.card_name, limit: input.limit ?? 20 })
-        return { errata: rows, count: rows.length }
-      },
-    })
+    )
 
   // Offered only when the corpus holds one. A tool that can answer nothing
   // costs a step and teaches the model that these tools return nothing.
   if (contents.banlist)
-    tools.push({
-      name: "list_banlist",
-      description:
-        `Read which ${pieces} are banned or restricted, and in which format. Use it for any question ` +
-        `about whether a ${piece} may be played. Report the entry type and the effective date. An ` +
-        `empty result means the list holds no entry for that ${piece} — say that, and say which list ` +
-        "you read.",
-      inputSchema: z.object({
-        card_name: z
-          .string()
-          .optional()
-          .describe(`The ${piece}'s printed name. Omit to read the whole list.`),
-        format: z.string().optional().describe("Limit to one format, by name or slug"),
-        limit: limitField(20),
+    tools.push(
+      defineTool({
+        name: "list_banlist",
+        description:
+          `Read which ${pieces} are banned or restricted, and in which format. Use it for any question ` +
+          `about whether a ${piece} may be played. Report the entry type and the effective date. An ` +
+          `empty result means the list holds no entry for that ${piece} — say that, and say which list ` +
+          "you read.",
+        inputSchema: z.object({
+          card_name: z
+            .string()
+            .optional()
+            .describe(`The ${piece}'s printed name. Omit to read the whole list.`),
+          format: z.string().optional().describe("Limit to one format, by name or slug"),
+          limit: limitField(20),
+        }),
+        async execute(input) {
+          const rows = await store.listBanlist({
+            cardName: input.card_name,
+            format: input.format,
+            limit: input.limit ?? 20,
+          })
+          return { entries: rows, count: rows.length }
+        },
       }),
-      async execute(input: { card_name?: string; format?: string; limit?: number }) {
-        const rows = await store.listBanlist({
-          cardName: input.card_name,
-          format: input.format,
-          limit: input.limit ?? 20,
-        })
-        return { entries: rows, count: rows.length }
-      },
-    })
+    )
 
   // Offered only when the corpus holds one. A tool that can answer nothing
   // costs a step and teaches the model that these tools return nothing.
   if (contents.patchNotes)
-    tools.push({
-      name: "list_patch_notes",
-      description:
-        `Read the update notes: what changed in the rules or on the ${pieces}, and when. Use it for ` +
-        "a question about recent changes, or to name the source of a change you are reporting.",
-      inputSchema: z.object({
-        slug: z.string().optional().describe("Read one note in full by its slug"),
-        limit: limitField(10),
+    tools.push(
+      defineTool({
+        name: "list_patch_notes",
+        description:
+          `Read the update notes: what changed in the rules or on the ${pieces}, and when. Use it for ` +
+          "a question about recent changes, or to name the source of a change you are reporting.",
+        inputSchema: z.object({
+          slug: z.string().optional().describe("Read one note in full by its slug"),
+          limit: limitField(10),
+        }),
+        async execute(input) {
+          if (input.slug) {
+            const note = await store.getPatchNote(input.slug)
+            return note ? { note } : { note: null, error: "No update note carries that slug." }
+          }
+          const notes = await store.listPatchNotes({ limit: input.limit ?? 10 })
+          // The body of every note at once is a large payload nothing reads. The
+          // summary is enough to choose one, and `slug` fetches that one in full.
+          return { notes: notes.map(({ body: _body, ...rest }) => rest) }
+        },
       }),
-      async execute(input: { slug?: string; limit?: number }) {
-        if (input.slug) {
-          const note = await store.getPatchNote(input.slug)
-          return note ? { note } : { note: null, error: "No update note carries that slug." }
-        }
-        const notes = await store.listPatchNotes({ limit: input.limit ?? 10 })
-        // The body of every note at once is a large payload nothing reads. The
-        // summary is enough to choose one, and `slug` fetches that one in full.
-        return { notes: notes.map(({ body: _body, ...rest }) => rest) }
-      },
-    })
+    )
+
+  // Offered only when the corpus holds one. A tool that can answer nothing
+  // costs a step and teaches the model that these tools return nothing.
+  if (contents.rulings)
+    tools.push(
+      defineTool({
+        name: "list_rulings",
+        description:
+          `Read published rulings: a question somebody already asked about ${game}, the answer, and ` +
+          "the rules that answer rests on. Use it when a reader asks how something works in a specific " +
+          `situation, or names a ${piece} and asks what happens. A ruling is NOT a rule: it reads the ` +
+          "rules and applies them to one case, so read the rule numbers it cites before you quote it. " +
+          "Report whether the ruling is official, and name its source.",
+        inputSchema: z.object({
+          card_name: z.string().optional().describe(`Rulings that name this ${piece}`),
+          kind: z
+            .enum(RULING_KINDS)
+            .optional()
+            .describe(
+              `"card" is about named ${pieces}, "general" is about a mechanic or a timing, ` +
+                '"policy" is about running an event rather than playing a game',
+            ),
+          topic: z.string().optional().describe('The topic a ruling is filed under, e.g. "abilities"'),
+          query: z.string().optional().describe("Words to rank the rulings by. Omit to list them in order."),
+          limit: limitField(8),
+        }),
+        async execute(input) {
+          const limit = input.limit ?? 8
+          // A query RANKS; the other three FILTER, and the two cannot combine
+          // here. Ranking first and filtering after returns fewer rows than were
+          // asked for, and often none, because the filter cuts into a list the
+          // ranking already truncated.
+          const filtered = Boolean(input.card_name || input.kind || input.topic)
+          const rows =
+            input.query && !filtered
+              ? ((await store.searchRulings?.(input.query, { limit })) ?? [])
+              : ((await store.listRulings?.({
+                  cardName: input.card_name,
+                  kind: input.kind,
+                  topic: input.topic,
+                  limit,
+                })) ?? [])
+          return {
+            rulings: rows.map(shapeRuling),
+            count: rows.length,
+            // Say when a field was not used. A model that cannot tell an ignored
+            // input from an applied one reads this list as "the closest rulings
+            // to my query" and reports the first as the best match.
+            ...(input.query && filtered
+              ? {
+                  note:
+                    "These are filtered rulings, in corpus order. Your query ranked nothing, because a " +
+                    "filter was set beside it. Call again with the query alone to rank by it.",
+                }
+              : {}),
+          }
+        },
+      }),
+    )
 
   if (profile.cards.enabled) {
     const textFields = profile.cards.textFields.map((f) => f.field)
@@ -362,7 +654,7 @@ export function defineRulesTools(
       : ""
 
     tools.push(
-      {
+      defineTool({
         name: "search_cards",
         description:
           `Find ${game} ${pieces} by name, and get each one's id. This returns identity only, not ` +
@@ -372,12 +664,12 @@ export function defineRulesTools(
           query: z.string().min(1).describe(`A ${piece} name, part of one, or a description`),
           limit: limitField(8),
         }),
-        async execute(input: { query: string; limit?: number }) {
+        async execute(input) {
           const matches = await store.searchCards(input.query, { limit: input.limit ?? 8 })
           return { matches, count: matches.length }
         },
-      },
-      {
+      }),
+      defineTool({
         name: "get_cards",
         description:
           `Read the full printed detail of one or more ${game} ${pieces}, by id, from search_cards. ` +
@@ -388,7 +680,7 @@ export function defineRulesTools(
         inputSchema: z.object({
           ids: z.array(z.string().min(1)).min(1).max(MAX_CARDS).describe("Card ids returned by search_cards"),
         }),
-        async execute(input: { ids: string[] }) {
+        async execute(input) {
           const found = await store.getCards(input.ids)
           const cards = found.map(flatCard)
           const missing = input.ids.filter((id) => !found.some((c) => c.id === id))
@@ -397,7 +689,7 @@ export function defineRulesTools(
           // forgot to ask" will assert the card does not exist.
           return { cards, ...(missing.length ? { missing } : {}) }
         },
-      },
+      }),
     )
   }
 

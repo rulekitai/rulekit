@@ -1,6 +1,6 @@
 {
   "name": "@rulekitai/ui",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "React hooks and styled chat components for a grounded rules assistant.",
   "keywords": [
     "rules",
@@ -29,7 +29,9 @@
   "type": "module",
   "files": [
     "dist",
-    "src"
+    "src",
+    "NOTICE",
+    "CHANGELOG.md"
   ],
   "exports": {
     ".": {
@@ -110,17 +112,18 @@
     }
   },
   "scripts": {
-    "build": "tsc --build"
+    "build": "node ./scripts/copy-notice.mjs && tsc --build"
   },
   "dependencies": {
-    "@rulekitai/rulekit": "workspace:*",
     "react-markdown": "^10.0.0",
     "remark-gfm": "^4.0.0"
   },
   "peerDependencies": {
+    "@rulekitai/rulekit": "^0.5.0",
     "react": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0"
+    "@types/react": "^19.0.0",
+    "@rulekitai/rulekit": "workspace:*"
   }
 }

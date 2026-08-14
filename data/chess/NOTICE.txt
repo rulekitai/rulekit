@@ -4,7 +4,12 @@ rulekitai wrote every word in this directory and dedicates it to the public
 domain under CC0 1.0 Universal. The file LICENSE beside this one holds the
 full legal code of that dedication.
 
-This corpus holds the rules of chess, its defined terms, its six pieces, and its three items of equipment.
+This corpus holds the rules of chess, its defined terms, its six pieces, its
+three items of equipment, and six rulings written for this project.
+
+The rulings are unofficial. They are this project's own reading of the rules in
+this corpus, and no governing body wrote or approved them. Each one says so, and
+each names the rules it rests on so a reader can check it.
 
 No rulebook, PDF file, or web page was copied to produce it. The rules of a
 game are a system, and nobody owns a system. An author owns a particular set

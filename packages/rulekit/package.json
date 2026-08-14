@@ -1,6 +1,6 @@
 {
   "name": "@rulekitai/rulekit",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A grounded rules assistant: the corpus, the agent, the answer pipeline, the HTTP handler, and the rulekit command.",
   "keywords": [
     "rules",
@@ -34,7 +34,11 @@
   "files": [
     "dist",
     "src",
-    "data"
+    "data",
+    "docs",
+    "skills",
+    "NOTICE",
+    "CHANGELOG.md"
   ],
   "bin": {
     "rulekit": "./dist/cli/bin.js"
@@ -94,6 +98,11 @@
       "types": "./dist/agent/tools.d.ts",
       "rulekit-source": "./src/agent/tools.ts",
       "default": "./dist/agent/tools.js"
+    },
+    "./agent/references": {
+      "types": "./dist/agent/references.d.ts",
+      "rulekit-source": "./src/agent/references.ts",
+      "default": "./dist/agent/references.js"
     },
     "./agent/profile": {
       "types": "./dist/agent/profile.d.ts",
@@ -187,17 +196,21 @@
     }
   },
   "scripts": {
-    "build": "node ./scripts/copy-corpora.mjs && tsc --build",
+    "build": "node ./scripts/copy-shipped-files.mjs && tsc --build",
     "test": "node --test src/**/*.test.ts"
   },
   "dependencies": {
     "zod": "^4.4.0"
   },
   "peerDependencies": {
-    "ai": "^5.0.0 || ^6.0.0 || ^7.0.0"
+    "ai": "^5.0.0 || ^6.0.0 || ^7.0.0",
+    "zod": "^4.4.0"
   },
   "peerDependenciesMeta": {
     "ai": {
+      "optional": true
+    },
+    "zod": {
       "optional": true
     }
   }

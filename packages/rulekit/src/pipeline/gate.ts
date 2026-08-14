@@ -42,12 +42,22 @@ export function allGates(...gates: Gate[]): Gate {
 }
 
 /**
+ * The variable `fromEnv` reads when a caller names none.
+ *
+ * Exported so that a message telling somebody to set a credential can name the
+ * one this package actually reads. The `rulekit ask` miss message said only
+ * "the agent needs a model key", which is the moment a reader most needs the
+ * name, and a second copy of the string would drift from this one.
+ */
+export const DEFAULT_CREDENTIAL_VARIABLE = "AI_GATEWAY_API_KEY"
+
+/**
  * A credential from the process environment.
  *
  * The ordinary way to run this: one key, set once, used for everybody. The
  * variable name is yours; nothing here requires a particular provider.
  */
-export function fromEnv(variable = "AI_GATEWAY_API_KEY"): CredentialResolver {
+export function fromEnv(variable = DEFAULT_CREDENTIAL_VARIABLE): CredentialResolver {
   return {
     async resolve(): Promise<string | null> {
       return process.env[variable]?.trim() || null

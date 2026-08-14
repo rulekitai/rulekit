@@ -174,6 +174,62 @@ export const patchNoteSchema = z.object({
   affected_card_ids: stringList,
 })
 
+/** The three kinds a ruling can be. An unknown value reads as "general". */
+export const RULING_KINDS = ["card", "general", "policy"] as const
+
+/**
+ * One ruling: a question, an answer, and the rules the answer rests on.
+ *
+ * A ruling is not a rule, and it is not an erratum. A rule is the published
+ * text. An erratum changes that text. A ruling reads the unchanged text and
+ * says what it means in one case, so it carries a question and an answer where
+ * the other two carry statements.
+ *
+ * `kind` separates the three uses a ruling gets. A `card` ruling answers a
+ * question about named pieces. A `general` ruling answers one about a mechanic
+ * or a timing, and names no piece. A `policy` ruling covers running a game
+ * rather than playing one: registration, penalties, and conduct. The three
+ * carry different authority, so a reader has to be able to tell them apart.
+ *
+ * `is_official` is false unless a corpus says otherwise, because most rulings
+ * anybody can collect are somebody's careful reading rather than a publisher's
+ * word. Claiming an authority nobody granted is the one failure here that a
+ * reader cannot detect.
+ *
+ * An absent `kind` reads as "general". A `kind` this file does not know DROPS
+ * the row and reports it, and that is the one place this file refuses to guess.
+ * The other fields fall back because an absent one means "this game has none".
+ * A misspelt `kind` means the opposite: the writer said something specific and
+ * got it wrong. Falling back to "general" would file a card ruling where no
+ * card lookup ever reaches it, and nothing downstream could tell.
+ */
+export const rulingSchema = z.object({
+  id: z.string().min(1),
+  kind: z
+    .union([z.string(), z.null(), z.undefined()])
+    .optional()
+    .transform((v) => (typeof v === "string" && v.trim() ? v.trim().toLowerCase() : "general"))
+    .pipe(z.enum(RULING_KINDS)),
+  question: z.string().min(1),
+  answer: z.string().min(1),
+  /** The pieces this ruling concerns. Empty for a general or a policy ruling. */
+  cards: z
+    .union([z.array(cardRefSchema), z.null(), z.undefined()])
+    .optional()
+    .transform((v) => (Array.isArray(v) ? v : [])),
+  /** The rule numbers the answer rests on. `checkIntegrity` resolves each one. */
+  rule_numbers: stringList,
+  /** "abilities", "flow", "deck registration". Groups the general and policy kinds. */
+  topic: nullableText,
+  /** Who published this ruling. A reader needs it to weigh the answer. */
+  source_name: nullableText,
+  source_url: nullableText,
+  is_official: bool(false),
+  effective_date: nullableText,
+  is_deprecated: bool(false),
+  deprecation_note: nullableText,
+})
+
 /** Drop the keys with no value. A key this game does not use must be absent, not empty. */
 const namedValues = <T extends z.ZodType>(value: T) =>
   z
@@ -220,11 +276,35 @@ export const COLLECTION_SCHEMAS = {
   banlist: banlistEntrySchema,
   "patch-notes": patchNoteSchema,
   cards: cardSchema,
+  rulings: rulingSchema,
 } as const
 
 export type CollectionName = keyof typeof COLLECTION_SCHEMAS
 
 export const COLLECTION_NAMES = Object.keys(COLLECTION_SCHEMAS) as CollectionName[]
+
+/**
+ * Collections a directory may leave out entirely.
+ *
+ * Every other file must exist, because a missing one is far more often a typo
+ * than a choice, and an empty `items` list already says "this game has none".
+ * `rulings` is the exception only because it arrived after corpora were already
+ * written: requiring it would stop every existing directory from loading, and
+ * the reader would blame the corpus rather than the upgrade.
+ *
+ * Keep this set at one entry if you can. `rulekit validate` reports any JSON
+ * file it does not recognise, which is what stops an absent file and a
+ * misspelt file from looking the same.
+ */
+export const OPTIONAL_COLLECTIONS: ReadonlySet<CollectionName> = new Set<CollectionName>(["rulings"])
+
+/** Every file name a corpus directory may hold, with the `.json` suffix. */
+export const KNOWN_CORPUS_FILES: readonly string[] = [
+  "game.json",
+  "profile.json",
+  "eval.json",
+  ...COLLECTION_NAMES.map((name) => `${name}.json`),
+]
 
 /**
  * A collection file: a version stamp and the rows.

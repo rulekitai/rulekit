@@ -8,6 +8,7 @@ import type {
   patchNoteSchema,
   ruleBookSchema,
   ruleSchema,
+  rulingSchema,
   sectionSchema,
   termSchema,
 } from "./schema.ts"
@@ -22,6 +23,7 @@ export type Erratum = z.output<typeof erratumSchema>
 export type BanlistEntry = z.output<typeof banlistEntrySchema>
 export type PatchNote = z.output<typeof patchNoteSchema>
 export type Card = z.output<typeof cardSchema>
+export type Ruling = z.output<typeof rulingSchema>
 
 /** Every collection, in memory. This is what a builder writes and a JSON store reads. */
 export type Corpus = {
@@ -34,6 +36,7 @@ export type Corpus = {
   banlist: BanlistEntry[]
   patchNotes: PatchNote[]
   cards: Card[]
+  rulings: Ruling[]
 }
 
 /** A rule with its search score. Higher is a better match. */
@@ -57,4 +60,9 @@ export type SearchAllResult = {
   errata: Erratum[]
   banlist: BanlistEntry[]
   patchNotes: PatchNote[]
+  /**
+   * Optional, so a store written against an earlier version still typechecks.
+   * Read it as an empty list when it is absent.
+   */
+  rulings?: Ruling[]
 }

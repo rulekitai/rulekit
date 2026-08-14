@@ -20,6 +20,23 @@ export type TraceStep = {
   /** A coarse group, so an interface can say "Searched 3 things". */
   kind: "searched" | "looked-up" | "read" | "ran"
   status: "running" | "completed" | "failed" | "rejected"
+  /**
+   * Set when this step read something that is NOT the corpus.
+   *
+   * A reader weighs an answer by where it came from, and prose alone cannot
+   * carry that: the model writes the answer, and the model is the thing being
+   * checked. This field is written by the tool that did the reading, so an
+   * interface can mark the claim as outside the rules data without trusting a
+   * sentence the model chose to write.
+   */
+  source?: {
+    /** What to call the site, e.g. "Riftbound FAQ". */
+    name: string
+    /** The exact page that was read. */
+    url: string
+    /** False for a community site. Show the difference. */
+    official: boolean
+  }
 }
 
 /** A tool call started, or its status changed. */

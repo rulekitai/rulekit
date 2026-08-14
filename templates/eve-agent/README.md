@@ -5,16 +5,16 @@ the AI SDK.
 
 Use this template if you already run Eve, or if you want its durable sessions,
 its sandbox, or its deployment path. If you want none of those, use
-`@rulekitai/rulekit/agent/runtime` instead. That runtime needs one model key and no
-separate process.
+`@rulekitai/rulekit/agent/runtime` instead. That runtime needs one model key and
+no separate process.
 
 **Both runtimes send the same events**, so one interface can drive either one.
-The shared contract in `@rulekitai/rulekit/agent/events` makes this possible.
-
-A command tests this contract. The project does not assume it.
+The shared contract in `@rulekitai/rulekit/agent/events` makes this possible. A
+command tests the contract, and the project does not assume it:
 
 ```bash
-cd templates/eve-agent && pnpm dev     # this needs Node 24
+cd templates/eve-agent && pnpm dev     # this needs Node 24. Leave it running.
+# then, from the root of the repository:
 pnpm compare-runtimes "what is the Shield keyword"
 ```
 
@@ -35,8 +35,13 @@ the Node version is the cause.
 
 ```bash
 pnpm eve build            # this checks the layout
-cp .env.example .env      # write one model credential in this file
 pnpm dev
+```
+
+Write one model credential into `.env` in this directory before `pnpm dev`:
+
+```bash
+cp .env.example .env      # then fill in AI_GATEWAY_API_KEY
 ```
 
 ## The files in this template
@@ -78,8 +83,9 @@ therefore still has the file. The adapter switches that tool off with
 `disableTool()`.
 
 Both runtimes then offer the same set of tools. Measured: the Riftbound corpus
-gets 12 tools, and the chess corpus gets 9 tools. Chess has no errata, no banned
-list, and no update notes.
+gets 12 tools, and the chess corpus gets 10. Chess has no errata, no banned
+list, and no update notes, so it loses three tools. Chess holds six rulings, so
+it keeps `list_rulings`. Riftbound holds none, so it loses that one instead.
 
 ## Why the procedures are skills here, and not part of the prompt
 
@@ -87,14 +93,22 @@ Eve shows the model only the `description` of a skill. It loads the body when a
 question matches that description. The AI SDK has no such mechanism, so that
 runtime puts every procedure in front of every question.
 
-This project ships three procedures. A rules question that carries the card
-procedure and the timing procedure pays for two pages that it does not use. This
-template therefore keeps each procedure in `agent/skills/`, and Eve loads the
-one that applies.
+This project ships four procedures: the card procedure, the rulings procedure,
+the interaction procedure, and the timing procedure. A rules question that
+carries all four pays for three pages that it does not use. This template
+therefore keeps each procedure in `agent/skills/`, and Eve loads the one that
+applies.
 
 Each file in that directory holds only the connection. The procedure itself
-exists one time, in `@rulekitai/rulekit/agent/skills`, and both runtimes read it from
-there.
+exists one time, in `@rulekitai/rulekit/agent/skills`, and both runtimes read it
+from there.
+
+A procedure whose tools this corpus does not offer shrinks to one sentence. Eve
+reads the whole directory and cannot drop a file, so `eveSkill` in
+`lib/rules-tools.ts` does the same job that the AI SDK runtime does by leaving
+the procedure out. Without that, a corpus with no ruling would still receive a
+procedure that names `list_rulings`, and the model would call a tool that is
+not there.
 
 ## Why the built-in tools are off
 

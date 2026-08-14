@@ -1,12 +1,12 @@
 ---
 name: rulekit-corpus
-description: Write a corpus and a profile for a game that does not ship with rulekit. Covers the eight JSON files, the two card maps, the profile fields that decide answer quality, and what validation checks. Use when the user wants rulekit to answer for their own game, mentions writing a corpus, `corpus-format`, `profile.json`, `rulekit init`, or `rulekit validate`, or asks how to get their rules and cards into the assistant.
+description: Write a corpus and a profile for a game that rulekit does not ship. Use when the user wants rulekit to answer for their own game, or names `corpus-format`, `profile.json`, `rulings.json`, `rulekit init`, or `rulekit validate`.
 ---
 
 # Write a corpus
 
-**Check first.** Five corpora already exist. If the game is one of these, this
-skill does not apply: point the app at that corpus instead.
+**Check first.** Five corpora already exist. When the game is one of these, point
+the app at that corpus and stop here.
 
 | Name | The game | Where it is |
 |---|---|---|
@@ -16,9 +16,9 @@ skill does not apply: point the app at that corpus instead.
 | `estate-line` | An invented property trading game | Inside the package |
 | `riftbound` | Riftbound | The repository only. Riot Games owns it. |
 
-**Copy the one whose shape matches the new game.** A game with no cards should
-start from `chess`. A game whose cards carry prices rather than combat values
-should start from `estate-line`. All four that ship are public domain, so a
+**Copy the one whose shape matches the new game.** A game with no cards starts
+from `chess`. A game whose cards carry prices rather than combat values starts
+from `estate-line`. The four that ship carry a CC0 1.0 dedication, so a
 commercial product may build on any of them.
 
 ## Step 1: copy the worked example
@@ -31,10 +31,9 @@ npx rulekit validate my-game             # passes on the copy
 Inside a clone of the rulekit repository, write `pnpm rulekit` instead of `npx
 rulekit`, and the corpora are the directories under `data/`.
 
-`demo` is a small invented game that uses every field. Replace its contents one
-file at a time, and validate after each.
+Replace the contents of `demo` one file at a time, and validate after each.
 
-## Step 2: write the eight files
+## Step 2: write the nine files
 
 Each file is `{ "schemaVersion": 2, "items": [] }`. `game.json` holds `game`
 instead of `items`.
@@ -43,15 +42,31 @@ instead of `items`.
 |---|---|---|
 | `game.json`, `rules.json`, `rulebooks.json`, `sections.json` | Yes | |
 | `terms.json`, `errata.json`, `banlist.json`, `patch-notes.json`, `cards.json` | Yes | May hold an empty list. |
+| `rulings.json` | No | The one file you may leave out entirely. See step 2b. |
 
-A file that must exist may be empty. A missing file fails the load, because
-"empty" and "I forgot this one" must not look the same.
+A missing file fails the load, so a game with no banned cards still ships
+`banlist.json` with an empty list. `rulekit validate` reports any JSON file it
+does not recognise, so it catches a misspelt name rather than reading it as
+"this game has none".
 
 **Start with `rules.json` alone.** The assistant works with everything else
-empty. It answers fewer kinds of question for free.
+empty, and answers fewer kinds of question for free.
 
-<https://github.com/rulekitai/rulekit/blob/main/docs/corpus-format.md> states every
-field.
+<https://github.com/rulekitai/rulekit/blob/main/docs/corpus-format.md> states
+every field.
+
+## Step 2b: write `rulings.json`, when you have rulings
+
+Three things look alike. Tell them apart:
+
+- A **rule** is the published text.
+- An **erratum** changes that text.
+- A **ruling** reads the unchanged text and says what it means in one case, so
+  it carries a `question` and an `answer`.
+
+Read [`rulings.md`](rulings.md) beside this file for the shape, the three kinds,
+and what validation checks. A ruling you cannot copy belongs on somebody else's
+website, and `rulekit-references` covers that.
 
 ## Step 3: three fields decide whether it works
 
@@ -62,10 +77,10 @@ field.
 - **`is_deprecated`** keeps superseded text out of search. The rule stays
   reachable by number. Quoting superseded text as current is a wrong answer.
 
-## Step 4: "cards" means the pieces a player can name
+## Step 4: a card is any **nameable piece**
 
-**Do not skip `cards.json` because the game has no cards.** The name comes from
-trading card games, and the file is for any nameable game object.
+**Fill `cards.json` even when the game has no cards.** The name comes from
+trading card games, and the file holds every nameable piece.
 
 | The game | What goes in `cards.json` |
 |---|---|
@@ -74,9 +89,6 @@ trading card games, and the file is for any nameable game object.
 | Poker | The 52 cards of the pack |
 | A property board game | The deeds and the fortune cards |
 | A sport | The positions, or the equipment |
-
-A reader who asks "what is a knight" gets a real answer when the knight is in
-this file, and gets nothing when it is not.
 
 A card fixes only its identity. Everything else goes in two maps the game names
 itself:
@@ -93,9 +105,7 @@ itself:
   "stats": { "notation_symbol": "N", "piece_value": 3, "count_per_player": 2 } }
 ```
 
-Both are cards. No game carries another game's empty columns.
-
-**A key with no value must be absent.** `null` and `""` are both dropped.
+**A key with no value must be absent.** The loader drops `null` and `""`.
 
 **Put a piece in `terms.json` as well.** The two do different work: a term
 answers "what is a knight" with no model call, and a card gives the assistant
@@ -128,9 +138,8 @@ Then add these, in this order of value:
 
 Set `cards.enabled` to `false` **only when the game has no nameable pieces at
 all**. The card tools are then not registered, which is right for a corpus that
-holds none: a tool that can only answer "nothing found" wastes a turn and
-teaches the model to distrust the result. A game with pieces should list them
-and set this to `true`, even when nobody would call them cards.
+holds none: a tool that answers only "nothing found" wastes a turn. A game with
+pieces lists them and sets this to `true`, even when nobody calls them cards.
 
 **The grounding rules are built in.** Cite everything, quote rather than
 restate, never invent. A profile adds to them and cannot remove them.
@@ -143,11 +152,11 @@ npx rulekit build my-game
 npx rulekit ask my-game "what is <a keyword in the game>"
 ```
 
-`ask` uses no model and no key, so judge a corpus before connecting anything. It
-runs the free stages only. Ask it a rule number or a keyword. A question of any
-other shape reports a miss, because it reaches no agent.
+`ask` uses no model and no key, so judge a corpus before you connect anything.
+It runs the free stages only, so give it a rule number or a keyword. A question
+of any other shape reports a miss, because it reaches no agent.
 
-Watch for three failures:
+Watch for these failures:
 
 - **It invents.** Data is missing. Add it.
 - **It quotes the wrong rule.** `rule_type` or `is_deprecated` is unset.

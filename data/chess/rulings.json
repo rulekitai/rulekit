@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "rul-touch-rook-first",
+      "kind": "card",
+      "question": "I want to castle and I touched the rook first. May I still castle?",
+      "answer": "No. Castling is a king move, so a player who touches the king first can still castle. A player who touches a rook first must move that rook alone.",
+      "cards": [
+        {
+          "id": "piece-rook",
+          "name": "Rook"
+        },
+        {
+          "id": "piece-king",
+          "name": "King"
+        }
+      ],
+      "rule_numbers": ["800.1.d", "800.1", "300.1.e"],
+      "topic": "touch-move",
+      "source_name": "rulekit chess corpus",
+      "is_official": false,
+      "effective_date": "2026-08-13"
+    },
+    {
+      "id": "rul-touch-adjust",
+      "kind": "general",
+      "question": "My piece sits crookedly on its square. May I straighten it without having to move it?",
+      "answer": "Yes, and you must say so before you touch it. A player who wants to place a piece neatly in the centre of its square says so first, and must have the move at that time. A touch with no words said first carries the obligation to move that piece.",
+      "cards": [],
+      "rule_numbers": ["800.1.b", "800.1"],
+      "topic": "touch-move",
+      "source_name": "rulekit chess corpus",
+      "is_official": false,
+      "effective_date": "2026-08-13"
+    },
+    {
+      "id": "rul-castle-through-check",
+      "kind": "card",
+      "question": "My king is not in check, but the square it crosses while castling is attacked. May I castle?",
+      "answer": "No. The king cannot cross a square that an enemy piece attacks, and it cannot land on a square that an enemy piece attacks. A rook that crosses an attacked square does not stop the move, because only the king's squares matter here.",
+      "cards": [
+        {
+          "id": "piece-king",
+          "name": "King"
+        }
+      ],
+      "rule_numbers": ["300.1.d", "300.1"],
+      "topic": "castling",
+      "source_name": "rulekit chess corpus",
+      "is_official": false,
+      "effective_date": "2026-08-13"
+    },
+    {
+      "id": "rul-castle-rook-moved-back",
+      "kind": "card",
+      "question": "My rook moved away and later came back to its starting square. May I castle with it now?",
+      "answer": "No. Once one rook moves, the player can never castle with that rook, and returning it to its square does not restore the right. The other rook keeps its own right, as long as the king has also made no move.",
+      "cards": [
+        {
+          "id": "piece-rook",
+          "name": "Rook"
+        }
+      ],
+      "rule_numbers": ["300.1.f", "300.1.b"],
+      "topic": "castling",
+      "source_name": "rulekit chess corpus",
+      "is_official": false,
+      "effective_date": "2026-08-13"
+    },
+    {
+      "id": "rul-flag-fall-no-mate",
+      "kind": "general",
+      "question": "My opponent's time ran out, but I have only a king left. Do I win?",
+      "answer": "No. A player whose time runs out does not lose when the opponent has no series of legal moves that could produce a checkmate. The game is a draw in that case.",
+      "cards": [
+        {
+          "id": "equipment-clock",
+          "name": "The Clock"
+        }
+      ],
+      "rule_numbers": ["600.3.a", "600.3"],
+      "topic": "clock",
+      "source_name": "rulekit chess corpus",
+      "is_official": false,
+      "effective_date": "2026-08-13"
+    },
+    {
+      "id": "rul-clock-press-hand",
+      "kind": "policy",
+      "question": "Which hand presses the clock, and what happens if I press before I release the piece?",
+      "answer": "A player completes a move and then presses the clock. A move is complete when the hand releases the piece on a legal square, so the press comes after the release and never before it. Take a dispute over the order to the arbiter, because this is an event rule rather than a rule of the game.",
+      "cards": [
+        {
+          "id": "equipment-clock",
+          "name": "The Clock"
+        }
+      ],
+      "rule_numbers": ["600.2", "800.1.c"],
+      "topic": "clock",
+      "source_name": "rulekit chess corpus",
+      "is_official": false,
+      "effective_date": "2026-08-13"
+    }
+  ]
+}

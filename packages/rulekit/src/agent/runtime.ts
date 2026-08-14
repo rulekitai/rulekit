@@ -2,8 +2,16 @@ import type { RuleStore } from "../corpus/store.ts"
 import { type AgentEvent, deriveLabel, encodeEvent, type TraceStep } from "./events.ts"
 import { buildInstructions } from "./instructions.ts"
 import type { Profile } from "./profile.ts"
+import { defineReferenceTools, type ReferenceOptions } from "./references.ts"
 import { builtinSkills, type Skill } from "./skills.ts"
-import { corpusContents, defineRulesTools, type RuleTool } from "./tools.ts"
+import {
+  assertReferenceToolsAreConfigured,
+  assertUniqueToolNames,
+  corpusContents,
+  defineRulesTools,
+  type RuleTool,
+  warnAboutDeclinedSubjects,
+} from "./tools.ts"
 import {
   addStepUsage,
   buildMessage,
@@ -80,10 +88,42 @@ export type RulesAgentOptions = {
   /** Extra tools, merged with the corpus tools. */
   extraTools?: RuleTool[]
   /**
-   * Procedures to inline. Defaults to the skills that ship with this package,
-   * filtered to the ones this profile can use.
+   * Sites outside the corpus that this agent may read when the corpus misses.
+   *
+   * **Off unless you set it, and rulekit ships no sites.** Setting it grants
+   * this agent outbound network access, so it is an option on the runtime rather
+   * than a field in a corpus: copying a corpus must never grant a server a
+   * capability it did not ask for.
+   *
+   * Pass the sites here rather than building the tools yourself and passing them
+   * through `extraTools`. This option also adds the instruction block that makes
+   * the model label an outside claim as one, and the tools without that block
+   * produce answers that cite somebody's website as though it were the rules.
+   *
+   * You are responsible for each site's terms of use.
+   */
+  references?: ReferenceOptions
+  /**
+   * Procedures to inline, REPLACING the ones that ship with this package.
+   *
+   * Prefer `extraSkills`, which adds to them. Setting this drops the card and
+   * rulings procedures unless you spread `builtinSkills()` back in, and dropping
+   * them is silent.
    */
   skills?: Skill[]
+  /**
+   * Procedures of your own, added to the ones that ship.
+   *
+   * **A tool is not enough on its own.** The instructions tell the model to
+   * decline whole subjects, such as shops, events, prices, and real people. A
+   * tool whose subject is on that list is never called, no error appears, and
+   * the model simply declines. A procedure is how you tell the model that this
+   * assistant now answers that subject.
+   *
+   * Set `requiresTool` on the procedure, and it is dropped when its tool is
+   * absent.
+   */
+  extraSkills?: Skill[]
 }
 
 /** The shape of an AI SDK model object, without importing the type. */
@@ -150,29 +190,80 @@ const modelId = (model: string | LanguageModelLike): string =>
  * is.
  */
 export function createRulesAgent(options: RulesAgentOptions) {
+  // HERE, and not inside the lazy setup below. The whole value of this warning
+  // is catching the mistake while somebody is wiring the tool up. Deferred to
+  // the first question, it printed after the server had started and its log had
+  // been read, in the middle of a reader's request, once per process. A
+  // developer wired a tool, read a clean log, and shipped a tool the model
+  // never called.
+  //
+  // It needs no corpus read. A caller's own procedures decide the answer, and
+  // both lists are in `options`. The filter below drops a procedure whose tool
+  // is absent, which cannot matter here: a procedure naming a tool this caller
+  // just passed is a procedure whose tool exists.
+  warnAboutDeclinedSubjects(options.extraTools ?? [], [
+    ...(options.skills ?? builtinSkills()),
+    ...(options.extraSkills ?? []),
+  ])
   // Built on the first turn, not here, because knowing which collections hold
   // anything needs a read and this function is not async. The answer cannot
   // change while a process runs: a corpus is a file, opened read-only.
-  let toolsPromise: Promise<RuleTool[]> | null = null
-  const buildTools = (): Promise<RuleTool[]> => {
-    toolsPromise ??= corpusContents(options.store).then((contents) => [
-      ...defineRulesTools(options.store, options.profile, contents),
-      ...(options.extraTools ?? []),
-    ])
-    return toolsPromise
+  //
+  // The tools and the instructions are built together because they answer to
+  // the same read. A procedure that names a tool the corpus cannot offer teaches
+  // the model to call something that is not there, so the two must never be
+  // decided from different information.
+  let setupPromise: Promise<{ tools: RuleTool[]; instructions: string }> | null = null
+  const setup = (): Promise<{ tools: RuleTool[]; instructions: string }> => {
+    setupPromise ??= corpusContents(options.store).then((contents) => {
+      // Before anything reads them: reference tools built by hand carry no
+      // instruction block, and the answer then cites a website as the rules.
+      assertReferenceToolsAreConfigured(options.extraTools ?? [], Boolean(options.references))
+      const tools = [
+        ...defineRulesTools(options.store, options.profile, contents),
+        ...(options.extraTools ?? []),
+      ]
+      // A procedure is useful only where its tools exist. A procedure that names
+      // a tool the corpus cannot offer teaches the model to call something that
+      // is not there.
+      //
+      // The reference tools are built again for each turn, because their fetch
+      // count lives in a closure. Their NAMES do not change, so building one set
+      // here and discarding it is enough to decide which procedures apply.
+      const referenceNames = options.references
+        ? defineReferenceTools(options.references).map((t) => t.name)
+        : []
+      const names = new Set([...tools.map((t) => t.name), ...referenceNames])
+      // This filter also covers a caller's own procedures, which the old
+      // hard-coded list could not reach.
+      const skills = [...(options.skills ?? builtinSkills()), ...(options.extraSkills ?? [])].filter(
+        (skill) => !skill.requiresTool || names.has(skill.requiresTool),
+      )
+      const instructions =
+        options.instructions ??
+        buildInstructions(options.profile, { skills, references: Boolean(options.references?.sites.length) })
+      return { tools, instructions }
+    })
+    return setupPromise
   }
-  // The card procedure is only useful where card tools exist. Including it for a
-  // corpus with no cards would teach the model to call tools it does not have.
-  const skills =
-    options.skills ??
-    builtinSkills().filter((skill) => skill.name !== "card_lookup" || options.profile.cards.enabled)
-  const instructions = options.instructions ?? buildInstructions(options.profile, { skills })
   const cap = options.stepCap ?? null
 
   async function* stream(input: AskInput): AsyncGenerator<AgentEvent> {
     const startedAt = Date.now()
     const { streamText, tool } = await loadAiSdk()
-    const tools = await buildTools()
+    const { tools: corpusTools, instructions } = await setup()
+    // Built per turn, because the fetch cap lives in their closure. Reusing one
+    // set would spend the whole budget on the first question and refuse every
+    // question after it for the life of the process.
+    const tools = [...corpusTools, ...(options.references ? defineReferenceTools(options.references) : [])]
+    // Before the map below, because `Object.fromEntries` keeps the LAST entry
+    // for a repeated name and reports nothing.
+    assertUniqueToolNames(tools)
+    const describers = new Map(
+      tools
+        .filter((t) => t.describeResult)
+        .map((t) => [t.name, t.describeResult as NonNullable<typeof t.describeResult>]),
+    )
 
     const toolMap = Object.fromEntries(
       tools.map((t) => [
@@ -222,6 +313,16 @@ export function createRulesAgent(options: RulesAgentOptions) {
           const step = steps.get(id)
           if (step) {
             step.status = type === "tool-result" ? "completed" : "failed"
+            if (type === "tool-result") {
+              // The AI SDK has spelled this field two ways across its major
+              // versions, and this package supports three of them. Reading both
+              // costs nothing; reading one loses the marker silently on the
+              // versions that use the other, which is the failure a reader
+              // cannot see.
+              const output = part.output ?? part.result
+              const extra = describers.get(step.tool)?.(output)
+              if (extra) Object.assign(step, extra)
+            }
             yield { type: "step", step: { ...step } }
           }
           continue
@@ -328,7 +429,25 @@ export function createRulesAgent(options: RulesAgentOptions) {
     })
   }
 
-  return { stream, ask, toNdjsonStream, tools: buildTools, instructions }
+  /**
+   * Every tool one turn would be given, for anybody inspecting the agent.
+   *
+   * Async, and `instructions` is too, because both now depend on reading which
+   * collections the corpus holds. A tool for an empty collection and a procedure
+   * naming a tool that does not exist are the same failure, so neither can be
+   * decided before that read happens.
+   */
+  const tools = async (): Promise<RuleTool[]> => {
+    const { tools: corpusTools } = await setup()
+    const all = [...corpusTools, ...(options.references ? defineReferenceTools(options.references) : [])]
+    // The same guard the turn applies, so a caller who inspects the agent meets
+    // the fault here rather than on the first question.
+    assertUniqueToolNames(all)
+    return all
+  }
+  const instructions = async (): Promise<string> => (await setup()).instructions
+
+  return { stream, ask, toNdjsonStream, tools, instructions }
 }
 
 export type RulesAgent = ReturnType<typeof createRulesAgent>

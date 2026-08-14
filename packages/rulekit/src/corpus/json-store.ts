@@ -1,6 +1,6 @@
 import { Bm25Index } from "./bm25.ts"
-import type { ListOptions, RuleStore, SearchOptions } from "./store.ts"
-import { nameStem, normalizeName, normalizeRuleNumber } from "./text.ts"
+import type { ListOptions, RuleStore, RulingListOptions, SearchOptions } from "./store.ts"
+import { nameStem, normalizeName, normalizeQuestion, normalizeRuleNumber } from "./text.ts"
 import type {
   BanlistEntry,
   Card,
@@ -13,6 +13,7 @@ import type {
   Rule,
   RuleBook,
   RuleHit,
+  Ruling,
   SearchAllResult,
   Section,
   Term,
@@ -58,10 +59,13 @@ export class JsonStore implements RuleStore {
   #cardsByStem: Map<string, Card[]>
   #errataByCard: Map<string, Erratum[]>
   #banlistByCard: Map<string, BanlistEntry[]>
+  #rulingsByCard: Map<string, Ruling[]>
+  #rulingsByQuestion: Map<string, Ruling>
   #ruleIndex: Bm25Index<Rule>
   #termIndex: Bm25Index<Term>
   #cardIndex: Bm25Index<Card>
   #noteIndex: Bm25Index<PatchNote>
+  #rulingIndex: Bm25Index<Ruling>
 
   constructor(corpus: Corpus) {
     this.#corpus = corpus
@@ -86,6 +90,33 @@ export class JsonStore implements RuleStore {
     this.#cardsByStem = groupBy(corpus.cards, (c) => nameStem(c.name))
     this.#errataByCard = groupBy(corpus.errata, (e) => (e.card?.name ? normalizeName(e.card.name) : null))
     this.#banlistByCard = groupBy(corpus.banlist, (b) => (b.card?.name ? normalizeName(b.card.name) : null))
+
+    // A ruling files under every piece it names, which is why `groupBy` cannot
+    // build this map: `groupBy` takes one key per row, and a ruling explaining
+    // what happens when two pieces meet has to be found from either of them.
+    this.#rulingsByCard = new Map()
+    for (const ruling of corpus.rulings) {
+      for (const card of ruling.cards) {
+        const key = card.name ? normalizeName(card.name) : null
+        if (!key) continue
+        const found = this.#rulingsByCard.get(key)
+        if (found) found.push(ruling)
+        else this.#rulingsByCard.set(key, [ruling])
+      }
+    }
+
+    // A reader who types the question a ruling asks is answered from that
+    // ruling, so the question is a key of its own. A live ruling wins over a
+    // withdrawn one when two ask the same thing.
+    this.#rulingsByQuestion = new Map()
+    for (const ruling of corpus.rulings) {
+      const key = normalizeQuestion(ruling.question)
+      if (!key) continue
+      const found = this.#rulingsByQuestion.get(key)
+      // The first ruling wins within each of the two groups, which is the order
+      // `ORDER BY is_deprecated, position` gives in the SQLite store.
+      if (!found || (found.is_deprecated && !ruling.is_deprecated)) this.#rulingsByQuestion.set(key, ruling)
+    }
 
     // Deprecated rules and bare section headers stay out of the index, for the
     // same two reasons the SQLite build leaves them out: superseded text must
@@ -112,6 +143,23 @@ export class JsonStore implements RuleStore {
       { text: n.summary ?? "", weight: 2 },
       { text: n.body ?? "", weight: 1 },
     ])
+    // The same four weights the SQLite build uses, so both stores rank a set of
+    // rulings the same way and a caller can swap one for the other.
+    this.#rulingIndex = new Bm25Index(
+      corpus.rulings.filter((r) => !r.is_deprecated),
+      (r) => [
+        { text: r.question, weight: 8 },
+        {
+          text: r.cards
+            .map((c) => c.name)
+            .filter(Boolean)
+            .join(" "),
+          weight: 4,
+        },
+        { text: r.topic ?? "", weight: 3 },
+        { text: r.answer, weight: 1 },
+      ],
+    )
   }
 
   /** Order candidates so the primary rulebook wins a repeated number. */
@@ -260,6 +308,31 @@ export class JsonStore implements RuleStore {
     return this.#corpus.patchNotes.find((n) => n.slug === slugOrId || n.id === slugOrId) ?? null
   }
 
+  async listRulings(options: RulingListOptions = {}): Promise<Ruling[]> {
+    let rows = options.cardName
+      ? (this.#rulingsByCard.get(normalizeName(options.cardName)) ?? [])
+      : this.#corpus.rulings
+    if (options.kind) rows = rows.filter((r) => r.kind === options.kind)
+    if (options.topic) {
+      const key = normalizeName(options.topic)
+      rows = rows.filter((r) => (r.topic ? normalizeName(r.topic) === key : false))
+    }
+    // Superseded rulings sort last rather than vanishing, as in the SQLite store.
+    return [...rows]
+      .sort((a, b) => Number(a.is_deprecated) - Number(b.is_deprecated))
+      .slice(0, clampLimit(options.limit, 200))
+  }
+
+  async searchRulings(query: string, options: { limit?: number } = {}): Promise<Ruling[]> {
+    return this.#rulingIndex.search(query, clampLimit(options.limit, 8)).map(({ item }) => item)
+  }
+
+  async getRulingByQuestion(question: string): Promise<Ruling | null> {
+    const key = normalizeQuestion(question)
+    if (!key) return null
+    return this.#rulingsByQuestion.get(key) ?? null
+  }
+
   async searchCards(query: string, options: { limit?: number } = {}): Promise<CardSummary[]> {
     const limit = clampLimit(options.limit, 8)
     const key = normalizeName(query)
@@ -308,12 +381,25 @@ export class JsonStore implements RuleStore {
   async searchAll(query: string, options: { limit?: number } = {}): Promise<SearchAllResult> {
     const limit = clampLimit(options.limit, 8)
     const keys = [...new Set([normalizeName(query), nameStem(query)].filter(Boolean))]
+
+    // Exact names first, then the ranked questions, as in the SQLite store. A
+    // reader who names a piece wants every ruling about it; a reader who
+    // describes a situation wants the closest question.
+    const named = keys.flatMap((k) => this.#rulingsByCard.get(k) ?? [])
+    const rulings = [...new Map(named.map((r) => [r.id, r])).values()].slice(0, limit)
+    const seen = new Set(rulings.map((r) => r.id))
+    for (const found of await this.searchRulings(query, { limit })) {
+      if (rulings.length >= limit) break
+      if (!seen.has(found.id)) rulings.push(found)
+    }
+
     return {
       rules: await this.searchRules(query, { limit }),
       terms: await this.searchTerms(query, { limit: Math.min(limit, 5) }),
       errata: keys.flatMap((k) => this.#errataByCard.get(k) ?? []).slice(0, limit),
       banlist: keys.flatMap((k) => this.#banlistByCard.get(k) ?? []).slice(0, limit),
       patchNotes: this.#noteIndex.search(query, Math.min(limit, 5)).map(({ item }) => item),
+      rulings,
     }
   }
 

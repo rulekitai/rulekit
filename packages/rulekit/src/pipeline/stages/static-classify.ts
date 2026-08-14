@@ -15,7 +15,7 @@ import { normalizeName } from "../../corpus/text.ts"
  * answers about a card nobody asked about.
  */
 
-export type StaticIntent = "RULE_N" | "BANNED" | "BANLIST" | "ERRATA" | "NONE"
+export type StaticIntent = "RULE_N" | "BANNED" | "BANLIST" | "ERRATA" | "RULINGS" | "NONE"
 
 export type Classification = {
   intent: StaticIntent
@@ -79,6 +79,17 @@ const CLAUSE_BREAK = /\s+(?:and|or|but|then|also)\s+/
  */
 const ERRATA_CUE =
   /\berrat(?:a|um)\b|\btext\b[^.?!]*\bchang|\bchang\w*\b[^.?!]*\btext\b|\brework(?:ed|ing)?\b/
+
+/**
+ * A question asking for the published rulings on something.
+ *
+ * DELIBERATELY NARROW. It wants the word, not the idea. "How does this work"
+ * and "what happens if" are rulings questions in spirit, and both belong to the
+ * agent: answering them needs the rules underneath a ruling read and weighed,
+ * which no table lookup does. Widening this cue would hand a reasoning question
+ * a list of near-miss rulings and present it as the answer.
+ */
+const RULINGS_CUE = /\brulings?\b|\bfaq\b/
 
 /**
  * Words a reader puts between a card name and the legality word, and the words a
@@ -261,6 +272,16 @@ export function classify(question: string, config: ClassifyConfig = DEFAULT_CLAS
     q.match(/\berrat(?:a|um)\s+(?:on|for|to)\s+(.+?)$/) ?? q.match(/^(.+?)\s+errat(?:a|um)\b/)
   if (errataMatch?.[1]) return cardEntity("ERRATA", errataMatch[1], p.trailingFormat)
 
+  // Rulings, and only when the reader used the word. The trailing form can
+  // capture an opener — "what rulings exist" yields "what" — and that is safe
+  // rather than sloppy: the renderer refuses to report "no rulings" for a name
+  // no card carries, so a bad capture falls through to the agent.
+  if (RULINGS_CUE.test(q)) {
+    const rulingsMatch =
+      q.match(/\b(?:rulings?|faq)\s+(?:on|for|about)\s+(.+?)$/) ?? q.match(/^(.+?)\s+(?:rulings?|faq)\b/)
+    if (rulingsMatch?.[1]) return cardEntity("RULINGS", rulingsMatch[1], p.trailingFormat)
+  }
+
   return { intent: "NONE" }
 }
 
@@ -320,4 +341,4 @@ export function cardKeyCandidates(cardKey: string): string[] {
   return out
 }
 
-export { CLAUSE_BREAK, ERRATA_CUE }
+export { CLAUSE_BREAK, ERRATA_CUE, RULINGS_CUE }

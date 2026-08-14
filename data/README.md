@@ -1,13 +1,11 @@
 # data
 
-**rulekit works with any rulebook.** The code contains no knowledge of a
-particular game. It reads the corpus that you give it, and the directories here
-are examples.
+**rulekit works with any rulebook.** The code holds no knowledge of a particular
+game. It reads the corpus that you give it, and the directories here are
+examples.
 
-The five corpora are different from each other on purpose. A card game, an
-abstract board game, a property board game, and a betting card game all use the
-same format. The code does not change between them. This directory exists to
-prove that claim.
+The five corpora differ from each other on purpose, and one format holds them
+all. This directory states the terms of use for each.
 
 | Directory | The game | It has cards | Terms of use |
 |---|---|---|---|
@@ -30,6 +28,21 @@ licence file, because this project grants no rights to that data.
 rulebook, no PDF file, and no web page to make them. The rules of chess and the
 rules of poker are systems, and nobody owns a system. An author owns a
 particular set of words, so this project reuses none.
+
+**The same holds for every ruling in `rulings.json`.** This project wrote the
+rulings in `demo/` and `chess/`.
+
+The two files set `is_official` differently, and each setting is correct for its
+game. `chess/` marks all 6 rulings unofficial: they are this project's own
+reading of a real game's rules, and no governing body approved them. `demo/`
+marks 7 of its 9 official, because Paper Kingdoms is an invented game and this
+project is its publisher. A corpus for a real game follows the `chess/` example.
+
+The file `riftbound/rulings.json` holds an empty list.
+Community rulings sites exist for that game, and their words belong to whoever
+wrote them, so this project copied nothing from one. Read
+[`../docs/reference-sites.md`](../docs/reference-sites.md) to read such a site at
+run time instead.
 
 ## The Apache licence does not cover this directory
 
@@ -58,15 +71,15 @@ them only to state which data it reads.
 
 ## Write your own corpus
 
-A corpus is an input. This project contains no importer, no scraper, and no
-parser, and it fetches nothing. Write the JSON files in the way that you prefer.
-Then run these two commands:
+A corpus is an input. This project holds no importer, no scraper, and no parser,
+and it fetches nothing. Write the JSON files in the way that you prefer. Then
+run these two commands:
 
 ```bash
 pnpm rulekit validate data/<your-game>
 pnpm rulekit build data/<your-game>
 ```
 
-The file `docs/corpus-format.md` states each field. Each of the four
-public-domain corpora is a complete example that you can copy, and its licence
-permits the copy.
+The file [`../docs/corpus-format.md`](../docs/corpus-format.md) states each
+field. Each of the four public-domain corpora is a complete example that you can
+copy, and its licence permits the copy.

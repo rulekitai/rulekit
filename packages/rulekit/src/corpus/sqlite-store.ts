@@ -1,13 +1,21 @@
 import { existsSync } from "node:fs"
 import { dirname } from "node:path"
 import { DatabaseSync } from "node:sqlite"
-import { buildDatabase, CARD_WEIGHTS, RULE_WEIGHTS, TERM_WEIGHTS } from "./build.ts"
-import type { ListOptions, RuleStore, SearchOptions } from "./store.ts"
-import { ftsQuery, nameStem, normalizeName, normalizeRuleNumber } from "./text.ts"
+import {
+  buildDatabase,
+  CARD_WEIGHTS,
+  DB_SCHEMA_VERSION,
+  RULE_WEIGHTS,
+  RULING_WEIGHTS,
+  TERM_WEIGHTS,
+} from "./build.ts"
+import type { ListOptions, RuleStore, RulingListOptions, SearchOptions } from "./store.ts"
+import { ftsQuery, nameStem, normalizeName, normalizeQuestion, normalizeRuleNumber } from "./text.ts"
 import type {
   BanlistEntry,
   Card,
   CardName,
+  CardRef,
   CardSummary,
   Corpus,
   Erratum,
@@ -16,6 +24,7 @@ import type {
   Rule,
   RuleBook,
   RuleHit,
+  Ruling,
   SearchAllResult,
   Section,
   Term,
@@ -154,6 +163,22 @@ const toPatchNote = (row: Row): PatchNote => ({
   affected_card_ids: parseList(row.affected_card_ids),
 })
 
+const toRuling = (row: Row, cards: CardRef[]): Ruling => ({
+  id: str(row.id),
+  kind: (str(row.kind) || "general") as Ruling["kind"],
+  question: str(row.question),
+  answer: str(row.answer),
+  cards,
+  rule_numbers: parseList(row.rule_numbers),
+  topic: nul(row.topic),
+  source_name: nul(row.source_name),
+  source_url: nul(row.source_url),
+  is_official: flag(row.is_official),
+  effective_date: nul(row.effective_date),
+  is_deprecated: flag(row.is_deprecated),
+  deprecation_note: nul(row.deprecation_note),
+})
+
 /** A stored map, back as a map. Anything that is not one reads as empty rather than throwing. */
 const toMap = <T>(v: unknown): Record<string, T> => {
   const decoded = decodeValue(v)
@@ -220,7 +245,34 @@ export class SqliteStore implements RuleStore {
           `The database is built from the JSON in ${dir}, and it is not in version control.`,
       )
     }
-    return new SqliteStore(new DatabaseSync(path, { readOnly: true }))
+    const db = new DatabaseSync(path, { readOnly: true })
+
+    // A database an older package wrote holds fewer tables than this reader
+    // reads. `corpus.db` is a build artefact and is not in version control, so
+    // an upgraded package meets an old file often. Without this, the first
+    // question fails with `no such table: rulings`, which names no cause and no
+    // cure, and it fails at run time rather than at start up.
+    let built = 0
+    try {
+      const row = db.prepare("SELECT value FROM meta WHERE key = 'db_schema_version'").get() as
+        | { value?: string }
+        | undefined
+      built = Number(row?.value ?? 0) || 0
+    } catch {
+      // A file with no `meta` table at all is not a corpus this reader knows.
+      built = 0
+    }
+    if (built < DB_SCHEMA_VERSION) {
+      const dir = dirname(path)
+      db.close()
+      throw new Error(
+        `The corpus database at ${path} was built by an older version of rulekit. Rebuild it:\n\n` +
+          `  rulekit build ${dir}\n\n` +
+          `It holds database version ${built || "none"}, and this reader reads ${DB_SCHEMA_VERSION}. ` +
+          "The JSON beside it needs no change.",
+      )
+    }
+    return new SqliteStore(db)
   }
 
   /** Build a database in memory from a corpus. This is what the tests use. */
@@ -486,6 +538,82 @@ export class SqliteStore implements RuleStore {
     return row ? toPatchNote(row) : null
   }
 
+  /**
+   * Attach the named pieces to each ruling row, in one extra query.
+   *
+   * The pieces live in a join table because a ruling routinely explains what
+   * happens when two of them meet. Reading them per ruling would turn a list of
+   * twenty into twenty-one queries, so this collects every id first.
+   */
+  #withCards(rows: Row[]): Ruling[] {
+    if (!rows.length) return []
+    const ids = rows.map((row) => str(row.id))
+    const byRuling = new Map<string, CardRef[]>()
+    for (const link of this.#all(
+      `SELECT * FROM ruling_cards WHERE ruling_id IN (${placeholders(ids.length)})`,
+      ...ids,
+    )) {
+      const list = byRuling.get(str(link.ruling_id))
+      const card = { id: nul(link.card_id), name: nul(link.card_name), png_uri: nul(link.card_png_uri) }
+      if (list) list.push(card)
+      else byRuling.set(str(link.ruling_id), [card])
+    }
+    return rows.map((row) => toRuling(row, byRuling.get(str(row.id)) ?? []))
+  }
+
+  async listRulings(options: RulingListOptions = {}): Promise<Ruling[]> {
+    const clauses: string[] = []
+    const params: string[] = []
+    if (options.cardName) {
+      // A ruling names its pieces in the join table, so reaching one by name is
+      // a sub-query rather than a column test.
+      clauses.push("r.id IN (SELECT ruling_id FROM ruling_cards WHERE card_key = ?)")
+      params.push(normalizeName(options.cardName))
+    }
+    if (options.kind) {
+      clauses.push("r.kind = ?")
+      params.push(options.kind)
+    }
+    if (options.topic) {
+      clauses.push("r.topic_key = ?")
+      params.push(normalizeName(options.topic))
+    }
+    const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : ""
+    // Superseded rulings sort last rather than vanishing. A reader who asks for
+    // every ruling on one piece is owed the one that was withdrawn, labelled.
+    const rows = this.#all(
+      `SELECT r.* FROM rulings r ${where} ORDER BY r.is_deprecated, r.position LIMIT ?`,
+      ...params,
+      clampLimit(options.limit, 200),
+    )
+    return this.#withCards(rows)
+  }
+
+  async searchRulings(query: string, options: { limit?: number } = {}): Promise<Ruling[]> {
+    const match = ftsQuery(query)
+    if (!match) return []
+    const rows = this.#all(
+      `SELECT r.*, bm25(rulings_fts, ${RULING_WEIGHTS.question}, ${RULING_WEIGHTS.cards}, ${RULING_WEIGHTS.topic}, ${RULING_WEIGHTS.answer}) AS bm
+       FROM rulings_fts JOIN rulings r ON r.id = rulings_fts.ruling_id
+       WHERE rulings_fts MATCH ? ORDER BY bm LIMIT ?`,
+      match,
+      clampLimit(options.limit, 8),
+    )
+    return this.#withCards(rows)
+  }
+
+  async getRulingByQuestion(question: string): Promise<Ruling | null> {
+    const key = normalizeQuestion(question)
+    // An empty key would match every ruling whose own question folds to nothing,
+    // which is what the column holds when a build predates this lookup.
+    if (!key) return null
+    const rows = this.#all(
+      "SELECT * FROM rulings WHERE question_key = ? ORDER BY is_deprecated, position LIMIT 1",
+      key,
+    )
+    return this.#withCards(rows)[0] ?? null
+  }
+
   async searchCards(query: string, options: { limit?: number } = {}): Promise<CardSummary[]> {
     const limit = clampLimit(options.limit, 8)
     const key = normalizeName(query)
@@ -583,7 +711,29 @@ export class SqliteStore implements RuleStore {
         ).map(toPatchNote)
       : []
 
-    return { rules, terms, errata, banlist, patchNotes }
+    // A ruling is reached two ways, and both matter. A reader who names a piece
+    // wants every ruling about it, whatever words the ruling uses; a reader who
+    // describes a situation wants the closest question. Exact names come first,
+    // because a ranked list that puts the right card second reads as a miss.
+    const named = cardKeys.length
+      ? this.#withCards(
+          this.#all(
+            `SELECT r.* FROM rulings r
+             WHERE r.id IN (SELECT ruling_id FROM ruling_cards WHERE card_key IN (${placeholders(cardKeys.length)}))
+             ORDER BY r.is_deprecated, r.position LIMIT ?`,
+            ...cardKeys,
+            limit,
+          ),
+        )
+      : []
+    const rulings = [...named]
+    const seen = new Set(named.map((r) => r.id))
+    for (const found of await this.searchRulings(query, { limit })) {
+      if (rulings.length >= limit) break
+      if (!seen.has(found.id)) rulings.push(found)
+    }
+
+    return { rules, terms, errata, banlist, patchNotes, rulings }
   }
 
   async close(): Promise<void> {

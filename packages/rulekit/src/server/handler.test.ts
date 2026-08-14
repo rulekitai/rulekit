@@ -233,6 +233,37 @@ describe("the handler", () => {
     assert.equal(done.complete, true)
   })
 
+  test("carries a step's outside source through to the browser", async () => {
+    // The trace is the only structured thing a browser gets from an agent turn,
+    // and it is where an outside source is marked. The model writes the prose,
+    // and the model is the thing a reader is checking, so a marker that
+    // travelled in prose would prove nothing.
+    const source = { name: "Example FAQ", url: "https://faq.example.com/x", official: false }
+    const agent: AgentLike = {
+      async *stream(): AsyncGenerator<AgentEvent> {
+        yield {
+          type: "step",
+          step: {
+            id: "1",
+            tool: "fetch_reference",
+            label: "Read Example FAQ",
+            kind: "read",
+            status: "completed",
+            source,
+          },
+        }
+        yield { type: "done", text: "an answer", source: "agent", complete: true, model: null, latencyMs: 1 }
+      },
+    }
+    const res = await build({ agent })(post({ question: "how do Guard and Swift interact" }))
+    assert.ok(res.body)
+    const events: AgentEvent[] = []
+    for await (const event of decodeEvents(res.body)) events.push(event)
+    const step = events.find((e) => e.type === "step")
+    assert.ok(step && step.type === "step")
+    assert.deepEqual(step.step.source, source)
+  })
+
   test("never sends what an answer cost to the browser", async () => {
     // A dollar figure beside an answer is a commercial detail. The gate has
     // already recorded the real one.

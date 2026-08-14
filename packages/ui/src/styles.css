@@ -18,6 +18,9 @@
   --rk-accent: #2f6df6;
   --rk-accent-fg: #ffffff;
   --rk-danger: #b42318;
+  /* Marks a claim read from outside the rules data. Distinct from danger:
+     nothing failed, and the reader is being asked to weigh a source. */
+  --rk-warning: #a15c07;
   --rk-quote-border: #cfd3db;
   --rk-radius: 12px;
   --rk-gap: 16px;
@@ -39,6 +42,7 @@
     --rk-surface: #181b21;
     --rk-quote-border: #343a45;
     --rk-danger: #f97066;
+    --rk-warning: #f0b429;
   }
 }
 
@@ -236,6 +240,22 @@
 .rk-trace-steps li[data-status="failed"] .rk-trace-dot,
 .rk-trace-steps li[data-status="rejected"] .rk-trace-dot {
   background: var(--rk-danger);
+}
+
+/* A step that read something outside the corpus. Marked with the warning
+   colour rather than the muted one: a reader weighs this claim differently,
+   and a difference they have to look for is one most of them will not see. */
+.rk-trace-outside {
+  color: var(--rk-warning, var(--rk-danger));
+}
+.rk-trace-steps li[data-outside="true"] .rk-trace-dot {
+  background: var(--rk-warning, var(--rk-danger));
+}
+.rk-trace-source {
+  color: var(--rk-warning, var(--rk-danger));
+}
+.rk-trace-source a {
+  color: inherit;
 }
 
 /* ---------------------------------------------------------------- waiting */

@@ -3,10 +3,10 @@
 // The procedure itself lives once, in `@rulekitai/rulekit/agent/skills`, and both runtimes
 // read it from there. Eve holds only the wiring, so a change to the procedure
 // reaches this template with no edit here.
-import { findSkill } from "@rulekitai/rulekit/agent/skills"
-import { defineSkill } from "eve/skills"
+//
+// `eveSkill` reads the `requires-tool` field of the procedure and switches it
+// off for a corpus that offers no `search_cards`, because Eve reads this
+// directory and cannot drop a file.
+import { eveSkill } from "../../lib/rules-tools.ts"
 
-const skill = findSkill("card_lookup")
-if (!skill) throw new Error("the card_lookup skill is missing from @rulekitai/rulekit/agent/skills")
-
-export default defineSkill({ description: skill.description, markdown: skill.body })
+export default eveSkill("card_lookup")

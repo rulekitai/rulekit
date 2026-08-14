@@ -12,22 +12,39 @@ pnpm rulekit ask my-game "what is <a keyword in your game>"
 
 The last command needs no model and no key, so you can judge a corpus before you
 connect anything. It runs the free stages only, and it answers a rule number and
-a keyword. For a question of a different type it reports that it cannot answer.
-That report tells you nothing about the corpus, because the agent answers those
+a keyword. For a question of another type it reports that it cannot answer, and
+that report tells you nothing about the corpus: the agent answers those
 questions.
 
 ## 1. The corpus
 
-The file `docs/corpus-format.md` states every field. The directory `data/demo/`
-is a complete example of all of them.
+[The corpus format](corpus-format.md) states every field. The directory
+`data/demo/` is a complete example of all of them.
 
 You can start with `rules.json` alone. The terms, the cards, the errata, and the
-banned list can all be empty lists, and the assistant works without them. It
-answers fewer types of question.
+banned list can all be empty lists. The assistant then works, and it answers
+fewer types of question.
 
-**Put the pieces that a player can name into `cards.json`.** The name comes from
-trading card games, and the file accepts more than trading cards. Chess puts its
-six pieces there, and poker puts the 52 cards of the pack there.
+### Rulings
+
+**`rulings.json` is the one file you may leave out.** Write it when you hold
+answers to questions that your rules text does not settle on its own. A rule is
+the published text. An erratum changes that text. A ruling reads the unchanged
+text and says what it means in one case. See
+[the corpus format](corpus-format.md) for the fields.
+
+Once the file holds a row, two things switch on by themselves. A free stage
+answers from these rows with no model call, and the agent gains a `list_rulings`
+tool. Both stay off while the file is absent or empty.
+
+**Two shapes of question answer free**: a lookup such as "rulings for X", and
+the `question` field of a ruling typed word for word. Every other phrasing
+reaches the agent. Write `question` as the reader would type it.
+[The corpus format](corpus-format.md#which-questions-a-ruling-answers-free)
+gives the table.
+
+**A ruling that you may not copy belongs on somebody else's website.** See
+[reference sites](reference-sites.md) for reading one at run time instead.
 
 ## 2. The profile
 
@@ -42,7 +59,18 @@ This is the shortest profile that works:
 { "game": { "name": "My Game" }, "cards": { "enabled": false } }
 ```
 
-Then make it more exact.
+Then make it more exact. Every field below is optional.
+
+### The sentence that says what this assistant is
+
+```json
+"identity": "You are the rules assistant for My Game, a two-player card game."
+```
+
+**Leave it unset.** The assistant writes this sentence from `game.name` and
+`game.description`, and a generated sentence stays correct when the game is
+renamed. Set it only when the generated one reads wrong, and then remember that
+you now own it.
 
 ### The words of your game
 
@@ -71,26 +99,23 @@ different game stops trusting the answer.
 }
 ```
 
-**"Cards" means the pieces of your game that a player can name.** Chess lists its
-six pieces. Poker lists the 52 cards of the pack. A property game lists its
-deeds.
+"Cards" means the pieces of your game that a player can name. Chess lists its
+six pieces, and poker lists the 52 cards of the pack. See
+[the corpus format](corpus-format.md).
 
 **Set `noun` to the word that your game uses for one of them.** The code builds
 every sentence about the card tools from this word. A chess assistant therefore
-gets a tool to "find Chess pieces", and it never gets a tool for "Chess cards".
-The default is "card". Also set `nounPlural` when an added "s" gives the wrong
-word.
+gets a tool to "find Chess pieces", and never a tool for "Chess cards". The
+default is "card". Also set `nounPlural` when an added "s" gives the wrong word.
 
-Set `enabled` to false only when your game has no pieces that a player can name.
-The code then creates no card tools. A tool that can answer only "nothing found"
+Set `enabled` to false only when your game has no piece that a player can name.
+The code then creates no card tool. A tool that can answer only "nothing found"
 costs one turn, and it teaches the model to distrust the result.
 
 **List every text field that your cards use.** This is the most valuable line in
 a profile. Without it, a model reads the first field, finds an equipment line,
-and reports that the card does nothing.
-
-The key `field` names a key of the `text` map of a card, so these are the names
-that your own game uses.
+and reports that the card does nothing. The key `field` names a key of a card's
+`text` map, so these are the names that your own game uses.
 
 **Describe each printed value whose name does not explain it**, in `statFields`:
 
@@ -113,9 +138,9 @@ value costs prompt text for every card question.
 }
 ```
 
-Omit this section for a game with no symbols, and the answers then use plain
-words. A rulebook also uses square brackets in ordinary sentences, so the code
-rewrites nothing until you ask for it.
+Leave this section out for a game with no symbols, and the answers then use
+plain words. A rulebook also uses square brackets in ordinary sentences, so the
+code rewrites nothing until you ask for it.
 
 ### Scope
 
@@ -128,6 +153,53 @@ rewrites nothing until you ask for it.
 
 The refusals that apply to every game are part of the code: strategy, prices,
 real people, and questions about a different subject. This section adds to them.
+[Custom tools](custom-tools.md) prints the whole list, and explains why a tool
+on one of those subjects is never called.
+
+### Anything else you need to say
+
+```json
+"extraGuidance": [
+  "A question about the digital client is about a different product. Say so, and answer the paper rule.",
+  "Rule numbers in this game carry a letter suffix. Print it."
+]
+```
+
+One paragraph for each entry, added to the end of the instructions. Use it for a
+fact about your game that no other field holds.
+
+**Reach for it last.** Every entry costs context on every question, including
+the questions it has nothing to do with. A fact that fits `vocabulary` or
+`scope` belongs there, where the assistant reads it in a shape it already
+understands.
+
+### The sentence a reader sees
+
+```json
+"attribution": {
+  "text": "Riot Games, Inc. owns the Riftbound rules data. This is an unofficial community project, and Riot Games does not endorse it.",
+  "url": "https://www.riotgames.com/en/legal",
+  "official": false
+}
+```
+
+Most rules data belongs to somebody, and a corpus states the terms in a
+`NOTICE.txt` beside its JSON. **That file is written for you**, the person
+choosing a corpus: it names licences, directories, and what you may sell. The
+person asking whether a unit can block has no use for any of it.
+
+Write the reader's sentence here instead. Every application built on this corpus
+then shows the same one, and `NOTICE.txt` goes back to being your file. Nothing
+sends `attribution` to the model: it is a credit, not an instruction.
+
+Show it under the conversation:
+
+```tsx
+<RuleKitProvider legalNote={profile.attribution?.text}>
+```
+
+`rulekit validate` prints a note when a corpus carries a `NOTICE.txt` and sets
+no `attribution`, and still reports the corpus valid.
 
 ## 3. Connect it
 
@@ -162,10 +234,6 @@ export const POST = createAskHandler({
 })
 ```
 
-The function `createAskHandler` returns a plain function from `Request` to
-`Response`. The same export therefore works in Next.js, Hono, Bun, Deno, and a
-Cloudflare Worker.
-
 ## 4. Judge it
 
 Ask the questions that your players ask. Watch for three failures:
@@ -178,31 +246,38 @@ your `content` fields are probably too short to answer from.
 or `is_deprecated` field. Headings and superseded text then fill the search
 results.
 
-**The assistant reads a card incorrectly.** The usual cause is a missing entry in
-`cards.textFields`.
+**The assistant reads a card incorrectly.** The usual cause is a missing entry
+in `cards.textFields`.
+
+**The assistant says that the corpus holds no answer, and it is right.** The
+assistant is working. You have three moves, in this order:
+
+1. Add the rule text, if the rulebook covers it.
+2. Write a ruling in `rulings.json`, if you hold one.
+3. Let the assistant read a site that you name.
+
+See [reference sites](reference-sites.md) for the third move. It is the only
+move that opens a network connection. It is also the only move that marks the
+answer as coming from outside your rules data.
 
 ## Adjust the free stages
 
-You choose the order of the stages:
-
-```ts
-stages: [exactCacheStage(), staticAnswersStage(store), glossaryStage(store)]
-```
+You choose the order of the `stages` list above.
 
 ### Clear every cached answer at once
 
 An answer stays in the cache for a week. When you change the corpus, the answers
-already cached still quote the old rules. Bump the cache version to put all of
+already cached still quote the old rules. Raise the cache version to put all of
 them out of reach in one step:
 
 ```ts
 createPipeline({ store, profile, stages, cacheVersion: "2" })
 ```
 
-The version is part of every cache key, so nothing has to be enumerated and
-deleted. Set it in this one place. The reading stage and every writer take it
-from here, and a version set anywhere else would be read at the new number and
-written at the old one, which empties the cache for good rather than once.
+The version is part of every cache key, so nothing has to be listed and deleted.
+Set it in this one place, where the reading stage and every writer take it from.
+A version set anywhere else is read at the new number and written at the old
+one. That empties the cache for good, rather than once.
 
 You can configure the patterns of the static stage. Different games number their
 rules in different ways, and they ask about legality with different words:
@@ -262,5 +337,5 @@ is different from zero: a zero reads as a free answer, and it makes any average
 that you calculate too low.
 
 If your provider reports no price, calculate the price of the tokens yourself in
-`record`. This project ships no price table. A table of prices for each model
-becomes wrong without any warning, and it belongs to your fork.
+`record`. This project ships no price table, because a table of prices for each
+model becomes wrong with no warning. That table belongs to your fork.

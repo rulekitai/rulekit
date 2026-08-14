@@ -18,6 +18,8 @@ import { test } from "node:test"
  */
 const MANIFEST = JSON.parse(readFileSync(join(import.meta.dirname, "../package.json"), "utf8")) as {
   exports: Record<string, string | Record<string, string>>
+  dependencies?: Record<string, string>
+  peerDependencies?: Record<string, string>
 }
 
 /** Names a build tool matches with no instruction from anybody. */
@@ -56,4 +58,24 @@ test("every export a build tool reaches is compiled output", () => {
       `${subpath} must fall back to ./dist/, so an install from npm never loads TypeScript.`,
     )
   }
+})
+
+test("the rules package is a peer, and never a pinned dependency", () => {
+  // `workspace:*` in `dependencies` is published as an EXACT version. Two costs
+  // followed. An application on any other version of the rules package got a
+  // SECOND copy of it inside this one, so the reader's answers were decoded by
+  // a different build from the one that produced them. And a local tarball
+  // could not be installed before its version was published: pnpm went to the
+  // registry for the exact version and found nothing.
+  //
+  // A peer says the true thing. This package reads the event stream that the
+  // rules package's server writes, so the two must be the same copy.
+  assert.equal(
+    MANIFEST.dependencies?.["@rulekitai/rulekit"],
+    undefined,
+    "@rulekitai/rulekit must be a peer dependency, so one copy serves both",
+  )
+  const range = MANIFEST.peerDependencies?.["@rulekitai/rulekit"]
+  assert.ok(range, "@rulekitai/rulekit must be declared as a peer dependency")
+  assert.match(range, /^[\^~]/, `the peer range "${range}" pins one version; accept a range`)
 })

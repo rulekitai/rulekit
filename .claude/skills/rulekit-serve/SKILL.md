@@ -1,46 +1,42 @@
 ---
 name: rulekit-serve
-description: Install rulekit and mount its ask endpoint in a server. Covers forking versus copying the packages, wiring the store, the profile, the free stages and the agent, and the runtime settings a tool-calling turn needs. Use when the user wants to add a rules answer endpoint, mount `createAskHandler`, wire `createPipeline` or `createRulesAgent`, or asks how to install rulekit when it is not on npm.
+description: Mount the rulekit ask endpoint in a server, and choose its runtime settings. Use when the user wants a rules answer endpoint, or names `createAskHandler`, `createPipeline`, or `createRulesAgent`.
 ---
 
 # Mount the ask endpoint
 
 ## Step 1: get the packages
 
-Install them from npm, in their own application:
-
 ```bash
 pnpm add @rulekitai/rulekit
 pnpm add ai                          # the agent needs it, so nearly every app does
 ```
 
-Add `@rulekitai/ui` for a React interface. Read the
-`rulekit-interface` skill for the three levels.
+Add `@rulekitai/ui` for a React interface, and read `rulekit-interface`.
 
-**There is no root import.** Every part comes from its own subpath, such as
-`@rulekitai/rulekit/server/handler`. Importing `@rulekitai/rulekit` throws a
-message that lists them.
+**Import a subpath, such as `@rulekitai/rulekit/server/handler`.** Neither
+package has a root export. Importing `@rulekitai/rulekit` throws a message that
+lists the subpaths.
 
-Their application also needs a corpus. Copy one that ships:
+The application also needs a corpus. Copy one that ships:
 
 ```bash
 npx rulekit init rules --corpus chess   # or demo, texas-holdem, estate-line
 npx rulekit build rules                 # writes rules/corpus.db, about 65 ms
 ```
 
-The Riftbound corpus is in the rulekit repository only, because Riot Games owns
-that data. Clone the repository and copy `data/riftbound/` to use it. The
-`rulekit-corpus` skill covers writing a new one.
+Riot Games owns the Riftbound corpus, so it stays in the rulekit repository:
+clone the repository and copy `data/riftbound/` to use it. `rulekit-corpus`
+covers writing a new corpus.
 
 `corpus.db` is not in git. Build it after every clone, and after every change to
 the JSON.
 
 **Criterion:** `npx rulekit ask rules "what does rule 1.1 say"` prints an answer
-and the words `served by static`. Working inside a clone of the rulekit
-repository instead? Then it is `pnpm rulekit ask data/riftbound "is Called Shot
-banned"`.
+and the words `served by static`. Inside a clone of the rulekit repository the
+command is `pnpm rulekit ask data/riftbound "is Called Shot banned"`.
 
-## Step 2: wire it once per process
+## Step 2: build it once per process
 
 ```ts
 const store = SqliteStore.open("rules/corpus.db")
@@ -56,16 +52,13 @@ const pipeline = createPipeline({
 const agent = createRulesAgent({ store, profile, model: "anthropic/claude-sonnet-5" })
 ```
 
-**Build this once and keep it.** A framework that reloads modules will reopen
-the database on every request. Hold it on `globalThis`. The example application
-in the rulekit repository does this in `examples/next-app/app/lib/rulekit.ts`,
-which is worth reading:
+**Hold the store on `globalThis`.** A framework that reloads modules opens the
+database again on every request. Read how the example application does it:
 <https://github.com/rulekitai/rulekit/blob/main/examples/next-app/app/lib/rulekit.ts>
 
-**The three stages are the free ones.** They answer a rule lookup, a legality
-question, and a keyword definition from the corpus, in a few milliseconds, with
-no model and no account. Put them before the agent, or every question costs a
-model call.
+**The three stages are the free ones.** They answer a rule lookup, a ban check,
+and a glossary definition from the corpus in a few milliseconds, with no model
+and no account. Put them before the agent, or every question costs a model call.
 
 ## Step 3: mount the handler
 
@@ -78,13 +71,10 @@ export const runtime = "nodejs"    // the corpus is a file on disk
 `createAskHandler` takes a `Request` and returns a `Response`. The same export
 mounts in Next.js, Hono, Bun, Deno, and a Cloudflare Worker.
 
-**Both settings matter.** A short duration cuts the answer off in the middle. An
-edge runtime has no filesystem, so the corpus cannot open.
+A short duration cuts the answer off in the middle. An edge runtime has no
+filesystem, so the corpus cannot open.
 
 ### The endpoint answers in two shapes. Expect both.
-
-Which shape arrives depends on which layer answered, and a cheap answer is the
-common one.
 
 | The question | Content type | The body |
 |---|---|---|
@@ -92,13 +82,12 @@ common one.
 | Only the agent could answer it | `application/x-ndjson` | One event per line. The last is `{"type":"done", ...}` |
 
 ```jsonc
-// "what is Deflect" — the glossary answers, and no model runs
+// "what is Deflect": the glossary answers, and no model runs
 {"text":"…","citations":[…],"source":"glossary","servedBy":"glossary","latencyMs":9,"model":null}
 ```
 
-`@rulekitai/ui` reads both. Anybody writing their own client must handle both,
-and a client that expects only the lines will fail on the fast, cheap, common
-answer.
+`@rulekitai/ui` reads both. **A client written by hand must read both**, because
+a client that reads lines only fails on the fast, cheap, common answer.
 
 **Criterion, one of the two:**
 
@@ -110,11 +99,10 @@ answer.
 
 ### What a reader sees when the model fails
 
-`createAskHandler` sends one plain sentence and writes the provider's own
-message to the server log. That is deliberate: a provider says things like
-"Current spend: $10.00, limit: $10.00. Contact your administrator", which is
-the operator's billing state and means nothing to somebody asking a rules
-question. Pass `unavailableMessage` to choose the sentence, or
+`createAskHandler` sends the reader one plain sentence and writes the provider's
+own message to the server log. A provider reports things like "Current spend:
+$10.00, limit: $10.00. Contact your administrator", which is the operator's
+billing state. Pass `unavailableMessage` to choose the sentence, or
 `unavailableMessage: (detail) => detail` on an internal tool where every reader
 is an operator.
 
@@ -144,3 +132,5 @@ RULEKIT_MODEL=anthropic/claude-sonnet-5
 
 - The interface: `rulekit-interface`
 - Quotas or billing: `rulekit-limits`
+- Reading a website when the corpus misses: `rulekit-references`
+- A tool of your own: `rulekit-extend`

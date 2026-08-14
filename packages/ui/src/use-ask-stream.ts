@@ -145,6 +145,7 @@ export function useAskStream(options: AskStreamOptions = {}): AskStream {
               text = event.text || text
               meta = {
                 servedBy: toServedBy(event.source === "agent" ? "agent" : event.source),
+                source: event.source,
                 model: event.model ?? null,
                 latencyMs: event.latencyMs,
               }
@@ -195,6 +196,10 @@ export function useAskStream(options: AskStreamOptions = {}): AskStream {
                 role: "assistant",
                 text: body.text ?? "(empty answer)",
                 servedBy: toServedBy(body.servedBy),
+                // The ORIGIN, which survives the cache. Reading only `servedBy`
+                // here labelled every cached model answer as written by nobody,
+                // and a cache hit always takes this path.
+                source: typeof body.source === "string" ? body.source : undefined,
                 citations: body.citations,
                 model: body.model ?? null,
                 latencyMs: typeof body.latencyMs === "number" ? body.latencyMs : undefined,

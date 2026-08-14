@@ -1,8 +1,8 @@
 # Verify that the assistant invents nothing
 
-The design depends on one claim: every answer comes from the corpus. The command
-`rulekit eval` asks a list of test questions. Then it examines each answer for
-two faults. No model judges either fault. Both checks compare text against the
+The design rests on one claim: every answer comes from the corpus. The command
+`rulekit eval` asks a list of test questions, then examines each answer for two
+faults. No model judges either fault. Both checks compare text against the
 corpus.
 
 ```bash
@@ -11,29 +11,45 @@ pnpm rulekit eval data/riftbound
 
 ## The two faults
 
-- **The answer invented a rule number.** Each rule number in an answer must
+- **The answer invented a rule number.** Every rule number in an answer must
   exist in the corpus. A wrong rule number in a confident sentence looks the
   same as a correct one.
-- **The answer invented a quotation.** Each quoted passage must exist in the
-  corpus. Invented words inside a correct rule number are the same untruth, and
+- **The answer invented a quotation.** Every quoted passage must exist in the
+  corpus. Invented words under a correct rule number are the same untruth, and
   they carry a source.
 
 Either fault gives a non-zero exit code, so a script can stop a deployment.
+
+**A run that stops early is a failure.** A question with no answer names no rule
+and quotes nothing, so each check on its content passes. Count those answers as
+clean, and a failed run looks like a perfect score.
 
 The command also reports how many of the expected rules an answer gave. That
 number is information only, and it never fails a run. An answer can give four of
 seven expected rules and still be correct.
 
-**A run that stops early is a failure.** A question with no answer names no rule
-and quotes nothing, so each check on its content passes. If you count those
-answers as clean, a failed run looks like a perfect score.
+## The command reads no reference site
+
+An application may name websites that the agent reads when the corpus holds no
+answer. See [reference sites](reference-sites.md). This command builds an agent
+with none, and it offers no flag to add one. Two reasons, and both concern what
+the two checks measure:
+
+1. Both checks compare an answer against the CORPUS. A page from a website holds
+   no corpus rule number and no corpus text. A correct answer that quoted one
+   would therefore be reported as a fabrication.
+2. A live page makes the run different every time. A site edits a sentence, and
+   the same model, the same corpus, and the same questions then score
+   differently. This command exists to remove that variation.
+
+A clean run says that the corpus grounding holds. It says nothing about the
+assistant with reference sites switched on. Check that by hand.
 
 ## When to run the command
 
 The command needs a model key, and it takes approximately ten minutes. Run it
-before you select a model or change the instructions. Do not run it for each
-push. Add `--regrade <file>` to grade the answers of an earlier run again, with
-no model calls.
+when you select a model, and when you change the instructions. Do not run it for
+each push.
 
 ```
 --model <id>     The model to grade. The default is anthropic/claude-sonnet-5.
@@ -52,5 +68,5 @@ which does not exist. The corpus holds rule `315.1.b`. No answer invented a
 quotation.
 
 The same question invented the same rule against an earlier copy of the corpus.
-This is therefore a repeatable weakness of this model with this rulebook, and
-not a single event. That weakness is the reason for this command.
+This is a repeatable weakness of this model with this rulebook, and not a single
+event. That weakness is the reason for this command.
