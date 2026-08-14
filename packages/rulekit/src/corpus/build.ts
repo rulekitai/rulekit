@@ -1,6 +1,6 @@
 import { rmSync } from "node:fs"
 import { DatabaseSync } from "node:sqlite"
-import { nameStem, normalizeName } from "./text.ts"
+import { nameStem, normalizeName, normalizeQuestion } from "./text.ts"
 import type { Corpus } from "./types.ts"
 
 /**
@@ -27,9 +27,9 @@ import type { Corpus } from "./types.ts"
  *
  * This is NOT `SCHEMA_VERSION` in `schema.ts`. That one versions the JSON a
  * corpus author writes, and the two move for different reasons: rulings arrived
- * as an optional file, so the JSON format stayed at 2 while this went to 2.
+ * as an optional file, so the JSON format stayed at 2 while this went to 3.
  */
-export const DB_SCHEMA_VERSION = 2
+export const DB_SCHEMA_VERSION = 3
 
 /** Column weights for rule ranking, highest first. */
 const RULE_WEIGHTS = { number: 8.0, title: 3.0, content: 1.0, example: 0.5 }
@@ -121,6 +121,7 @@ CREATE INDEX cards_name_stem ON cards(name_stem);
 
 CREATE TABLE rulings (
   id TEXT PRIMARY KEY, kind TEXT NOT NULL, question TEXT NOT NULL, answer TEXT NOT NULL,
+  question_key TEXT NOT NULL DEFAULT '',
   rule_numbers TEXT NOT NULL DEFAULT '[]', topic TEXT, topic_key TEXT,
   source_name TEXT, source_url TEXT, is_official INTEGER NOT NULL DEFAULT 0,
   effective_date TEXT, is_deprecated INTEGER NOT NULL DEFAULT 0, deprecation_note TEXT,
@@ -128,6 +129,11 @@ CREATE TABLE rulings (
 );
 CREATE INDEX rulings_kind ON rulings(kind, position);
 CREATE INDEX rulings_topic ON rulings(topic_key);
+-- A ruling holds the question it answers, folded the same way a reader's own
+-- question is folded for the cache. A reader who types that question, or taps
+-- it in a list of suggestions, is then answered from this row and pays for no
+-- model call.
+CREATE INDEX rulings_question ON rulings(question_key);
 
 -- A ruling can be about more than one piece, which is why this is a join table
 -- and errata is not: an erratum changes one card's text, and a ruling routinely
@@ -390,9 +396,9 @@ function populate(db: DatabaseSync, corpus: Corpus): void {
   }
 
   const ruling = db.prepare(
-    `INSERT INTO rulings (id, kind, question, answer, rule_numbers, topic, topic_key,
+    `INSERT INTO rulings (id, kind, question, answer, question_key, rule_numbers, topic, topic_key,
       source_name, source_url, is_official, effective_date, is_deprecated, deprecation_note, position)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
   )
   const rulingCard = db.prepare(
     "INSERT INTO ruling_cards (ruling_id, card_id, card_name, card_key, card_png_uri) VALUES (?,?,?,?,?)",
@@ -406,6 +412,7 @@ function populate(db: DatabaseSync, corpus: Corpus): void {
       r.kind,
       r.question,
       r.answer,
+      normalizeQuestion(r.question),
       json(r.rule_numbers),
       r.topic,
       r.topic ? normalizeName(r.topic) : null,

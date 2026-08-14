@@ -52,6 +52,8 @@ const REFERENCE_SITES: ReferenceSite[] = [
     describes: "Community rulings for Example, with rule citations.",
     official: false,                  // false unless the publisher wrote it
     cardPath: "/cards/{slug}",        // optional: how a name becomes a page
+    // robots.txt read 2026-08-14: User-Agent: *, Allow: /, Disallow: /api/
+    disallowPaths: ["/api/"],         // addresses under these are refused
   },
 ]
 ```
@@ -63,10 +65,20 @@ const REFERENCE_SITES: ReferenceSite[] = [
 | `describes` | The one sentence the model reads to choose this site |
 | `official` | Shown to the reader. Default false |
 | `cardPath` | A hint for building an address. `{slug}` is the folded name |
+| `disallowPaths` | Addresses under any of these prefixes are refused |
 
 **Write the whole host, such as `faq.example.com`.** A host with no dot, such as
 `com` or `localhost`, allows every address underneath it, so
 `defineReferenceTools` throws on such a host before it reads any page.
+
+**A host holds a host and nothing else.** `defineReferenceTools` also throws for
+a `/`, a `:`, or a space in the field. Somebody who writes
+`host: "example.com/cards"` wants the read limited to `/cards`, and the host
+field cannot do that. Use `disallowPaths`.
+
+**Read the site's `robots.txt` and copy it into `disallowPaths`.** That file is
+where a site states which addresses an automatic reader may fetch. Nothing here
+reads it for you, and nothing rereads it, so record the date in a comment.
 
 **Leave `official` false unless the game's publisher writes the site.** True
 tells a reader the claim carries the publisher's authority, which is a claim
@@ -105,16 +117,17 @@ downstream can tell.
 ## Step 4. Trust the allowlist, and know one rule
 
 A model chooses the address, so `agent/references.ts` treats every address as
-untrusted input. Nine rules hold, and `references.test.ts` tests each one with
-no network. You configure none of them.
+untrusted input. Ten rules hold, and `references.test.ts` tests each one with
+no network. You configure one of them: `disallowPaths`.
 
 Read [`fetch-rules.md`](fetch-rules.md) beside this file when you write your own
 `readPage`, debug a refusal, or review this feature's security.
 
-**Rule 3 is the one a hand-written version leaves out.** A `fetch` that follows
+**Rule 4 is the one a hand-written version leaves out.** A `fetch` that follows
 a redirect by itself gives the site control of the allowlist, and an address
 such as `169.254.169.254` reads the network your server runs in. rulekit checks
-a redirect against the allowlist, then follows it at most once.
+a redirect against the allowlist AND against `disallowPaths`, then follows it at
+most once.
 
 ## Step 5. Show the reader
 

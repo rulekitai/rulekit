@@ -95,6 +95,30 @@ describe("narrowing a value off the wire", () => {
   })
 })
 
+describe("who wrote a cached answer", () => {
+  test("a cached model answer still reads as a model answer", () => {
+    // The server keeps the origin across the cache: `servedBy` becomes "cache"
+    // and `source` stays "agent". Reading only the stage labelled a model's own
+    // words as read from the rules data, on every repeat question.
+    assert.equal(answerSource("cache", "agent"), "model")
+  })
+
+  test("a cached free answer still reads as the rules data", () => {
+    assert.equal(answerSource("cache", "static"), "rules")
+    assert.equal(answerSource("cache", "glossary"), "rules")
+  })
+
+  test("the origin wins over the stage", () => {
+    assert.equal(answerSource("static", "agent"), "model")
+  })
+
+  test("falls back to the stage for a caller that has no origin", () => {
+    assert.equal(answerSource("agent"), "model")
+    assert.equal(answerSource("static"), "rules")
+    assert.equal(answerSource(undefined), "rules")
+  })
+})
+
 describe("the sources an answer read outside the rules data", () => {
   const step = (over: Partial<TraceStep>): TraceStep => ({
     id: crypto.randomUUID(),

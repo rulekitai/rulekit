@@ -52,8 +52,12 @@ export type RuleKitConfig = {
    * a reader weighs a claim from somebody's website differently from a rule,
    * and this is the only place a host app can tell them without trusting a
    * sentence the model chose to write.
+   *
+   * The third is where the facts came from, which is NOT the stage that served
+   * them. A cache hit serves an answer a model wrote, and `servedBy` reads
+   * "cache". Pass both to `answerSource` and it reads the origin.
    */
-  disclaimer?: ReactNode | ((servedBy: string, sources: ReadSource[]) => ReactNode)
+  disclaimer?: ReactNode | ((servedBy: string, sources: ReadSource[], source?: string) => ReactNode)
   /** Shown at the foot of the conversation. A host app's own notice goes here. */
   legalNote?: ReactNode
   /** Questions offered on an empty screen. */

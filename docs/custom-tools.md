@@ -24,6 +24,33 @@ second source, and a tool of your own does not.
 
 Write a tool for data only your application holds.
 
+**Is your subject on the decline list?** This is the question that costs the
+most time when nobody asks it. The assistant is told to decline whole subjects,
+and REGISTERING A TOOL DOES NOT AMEND THAT LIST. A tool whose subject sits on it
+is never called. No error appears: the model answers that the subject is outside
+what it covers, and your tool records zero calls.
+
+The list lives in `src/agent/instructions/base.md`, and this is all of it:
+
+> Decline each of these, even when you could guess:
+>
+> - Strategy and deck construction, including the best deck, a ranking, a
+>   comparison of two decks, whether to include a card, and any rating.
+> - Shops, events, dates, locations, and schedules.
+> - Real people, including players, staff, streamers, and anybody named.
+> - Prices, market value, trading, investment, and grading.
+> - Story and background, unless the question is about a defined term.
+> - Unreleased content, leaks, and future changes the tools do not return.
+> - Accounts, orders, refunds, and support.
+> - Invented cards, and cards changed by a house rule.
+> - Anything not about this game, including other games, general conversation,
+>   programming, translation, medical, legal, or financial questions.
+
+A `check_stock` tool works, because "how many copies are in stock" reads as a
+card question. A `find_events` tool does not, because events are on the list.
+**Write a procedure when your subject is on the list.** See "Write a procedure
+for it" below. That is what tells the model the subject is now in scope.
+
 ## Write the tool
 
 ```ts
@@ -94,13 +121,32 @@ a reader must weigh says so through `describeResult`:
 
 ```ts
 describeResult: (result) => ({
-  label: "Read the shop stock",
+  label: `Read the shop stock — ${result.length} on the shelf`,
   kind: "read",
 })
 ```
 
-`@rulekitai/ui` renders the label. The `source` field marks a claim from outside
-the corpus, and [reference sites](reference-sites.md) covers that.
+`result` is what `execute` resolved to, and `defineTool` infers it, so the
+compiler checks the line above.
+
+It returns some of the fields of one trace step. You may set four:
+
+| Field | What it does |
+|---|---|
+| `label` | The sentence the reader sees. Write it for them, not for you |
+| `kind` | `searched`, `looked-up`, `read`, or `ran`. It groups the step |
+| `status` | `running`, `completed`, `failed`, or `rejected` |
+| `source` | The site this step read, outside the corpus. `{ name, url, official }` |
+
+Return nothing and the step stays as it was.
+
+**Set `source` whenever your tool reads something that is not the corpus.** It
+is how a claim is marked as coming from elsewhere. `@rulekitai/ui` collects
+every `source` on an answer and hands the list to your disclaimer, so a reader
+learns the provenance from the machinery and never from a sentence the model
+chose to write. A tool that reads a supplier's website and leaves `source` unset
+produces an answer that looks like it came from your rules.
+[Reference sites](reference-sites.md) covers the built-in case.
 
 **Eve discards `describeResult`.** The Eve adapter passes `description`,
 `inputSchema`, and `execute`, and nothing else. A tool that marks its trace step
@@ -119,7 +165,7 @@ const shopLookup = {
   requiresTool: "check_stock",
 }
 
-createRulesAgent({ store, profile, model, extraTools: [checkStock], skills: [...builtinSkills(), shopLookup] })
+createRulesAgent({ store, profile, model, extraTools: [checkStock], extraSkills: [shopLookup] })
 ```
 
 **Set `requiresTool`.** The agent drops a procedure whose tool it does not
@@ -130,8 +176,11 @@ The two shipped procedures do the same: `card_lookup` states
 `requiresTool: search_cards`, and `rulings_lookup` states
 `requiresTool: list_rulings`.
 
-**Passing `skills` replaces the whole list.** Spread `builtinSkills()` to keep
-the shipped procedures.
+**Use `extraSkills`, and not `skills`.** `extraSkills` ADDS to the built-in
+procedures. `skills` REPLACES them, so passing one procedure there deletes the
+card and rulings procedures, and the assistant quietly gets worse at its main
+job with nothing to show for it. Pass `skills` only when you mean to write the
+whole set, and spread `builtinSkills()` when you want to keep the shipped ones.
 
 ## The Eve step
 

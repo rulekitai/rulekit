@@ -87,14 +87,25 @@ describe("choosing which site owns an address", () => {
     assert.throws(() => defineReferenceTools({ sites: [{ ...SITE, host: "  " }] }), /has no host/)
   })
 
-  test("cleans a scheme, a path, and a port off a configured host", () => {
-    for (const host of ["https://faq.example.com", "faq.example.com/cards", "faq.example.com:443"]) {
-      assert.equal(
-        siteFor(new URL("https://faq.example.com/x"), [{ ...SITE, host }])?.name,
-        "Example FAQ",
-        `"${host}" must still name the same site`,
-      )
-    }
+  test("refuses a host that holds a path, because the writer wanted scoping", () => {
+    // Somebody who writes "faq.example.com/cards" wanted the read kept inside
+    // /cards. The field cannot do that, and accepting it silently leaves them
+    // believing a restriction that is not there.
+    assert.throws(
+      () => defineReferenceTools({ sites: [{ ...SITE, host: "faq.example.com/cards" }] }),
+      /holds a path or a space/,
+    )
+    assert.throws(
+      () => defineReferenceTools({ sites: [{ ...SITE, host: "faq.example.com /x" }] }),
+      /holds a path or a space/,
+    )
+  })
+
+  test("still accepts a scheme, which changes nothing", () => {
+    assert.equal(
+      siteFor(new URL("https://faq.example.com/x"), [{ ...SITE, host: "https://faq.example.com" }])?.name,
+      "Example FAQ",
+    )
   })
 
   test("refuses a host that merely ends with the same letters", () => {
@@ -132,7 +143,43 @@ describe("the fetch rules", () => {
     )
   })
 
-  test("rule 3: follows one redirect that stays on the allowlist", async () => {
+  test("rule 3: refuses a path the operator listed as disallowed", async () => {
+    // The package reads no robots.txt. A site that disallows /api/ needs the
+    // prefix recorded here, or a model that builds such an address gets it
+    // fetched, and the operator who accepted the site's terms cannot honour them.
+    const site = { ...SITE, disallowPaths: ["/api/"] }
+    await assert.rejects(
+      fetchReference(
+        "https://faq.example.com/api/cards",
+        options({ sites: [site], fetchImpl: stubFetch({}).impl }),
+      ),
+      /does not allow a reader to fetch/,
+    )
+  })
+
+  test("rule 3: a redirect into a disallowed path is refused too", async () => {
+    const site = { ...SITE, disallowPaths: ["/api/"] }
+    const { impl, asked } = stubFetch({
+      "https://faq.example.com/ok": { status: 302, location: "https://faq.example.com/api/cards" },
+    })
+    await assert.rejects(
+      fetchReference("https://faq.example.com/ok", options({ sites: [site], fetchImpl: impl })),
+      /does not allow a reader to fetch/,
+    )
+    assert.deepEqual(asked, ["https://faq.example.com/ok"], "the disallowed address must never be requested")
+  })
+
+  test("rule 3: a path the operator did not refuse still reads", async () => {
+    const site = { ...SITE, disallowPaths: ["/api/"] }
+    const { impl } = stubFetch({ "https://faq.example.com/cards/x": { body: "<p>Fine.</p>" } })
+    const page = await fetchReference(
+      "https://faq.example.com/cards/x",
+      options({ sites: [site], fetchImpl: impl }),
+    )
+    assert.match(page.text, /Fine/)
+  })
+
+  test("rule 4: follows one redirect that stays on the allowlist", async () => {
     const { impl, asked } = stubFetch({
       "https://faq.example.com/old": { status: 301, location: "https://faq.example.com/new" },
       "https://faq.example.com/new": { body: "<html><title>New</title><p>Text here.</p></html>" },
@@ -143,7 +190,7 @@ describe("the fetch rules", () => {
     assert.deepEqual(asked, ["https://faq.example.com/old", "https://faq.example.com/new"])
   })
 
-  test("rule 3: refuses a redirect that leaves the allowlist", async () => {
+  test("rule 4: refuses a redirect that leaves the allowlist", async () => {
     // A site this project does not control decides where its redirects point,
     // so following one blindly hands that site the allowlist.
     const { impl, asked } = stubFetch({
@@ -156,7 +203,7 @@ describe("the fetch rules", () => {
     assert.deepEqual(asked, ["https://faq.example.com/away"], "the second address must never be requested")
   })
 
-  test("rule 3: refuses a chain of redirects", async () => {
+  test("rule 4: refuses a chain of redirects", async () => {
     const { impl } = stubFetch({
       "https://faq.example.com/a": { status: 302, location: "https://faq.example.com/b" },
       "https://faq.example.com/b": { status: 302, location: "https://faq.example.com/c" },
@@ -182,7 +229,7 @@ describe("the fetch rules", () => {
     assert.match(headers["user-agent"] ?? "", /rulekit/)
   })
 
-  test("rule 6: cuts an oversized page and says it did", async () => {
+  test("rule 8: cuts an oversized page and says it did", async () => {
     const huge = `<p>${"word ".repeat(20_000)}</p>`
     const { impl } = stubFetch({ "https://faq.example.com/big": { body: huge } })
     const page = await fetchReference(
@@ -234,7 +281,7 @@ describe("the reference tools", () => {
     assert.deepEqual(asked, [], "naming the sites must cost no page read")
   })
 
-  test("rule 8: stops at the per-question cap", async () => {
+  test("rule 9: stops at the per-question cap", async () => {
     const { impl, asked } = stubFetch({
       "https://faq.example.com/a": { body: "<p>A</p>" },
       "https://faq.example.com/b": { body: "<p>B</p>" },
@@ -256,7 +303,7 @@ describe("the reference tools", () => {
     assert.equal(asked.length, 3, "the fourth address must never be requested")
   })
 
-  test("rule 8: a refused address still spends its share of the cap", async () => {
+  test("rule 9: a refused address still spends its share of the cap", async () => {
     // Otherwise a model retries its way past the limit by aiming at hosts that
     // fail, and each failure costs a round trip anyway.
     const { impl } = stubFetch({ "https://faq.example.com/a": { body: "<p>A</p>" } })
@@ -283,7 +330,7 @@ describe("the reference tools", () => {
     assert.equal(second.error, undefined, "a new turn must start with a full budget")
   })
 
-  test("rule 9: reads one address once and serves the rest from the cache", async () => {
+  test("rule 10: reads one address once and serves the rest from the cache", async () => {
     const { impl, asked } = stubFetch({ "https://faq.example.com/a": { body: "<p>A</p>" } })
     const cache = new MemoryCache()
     const call = async () => {

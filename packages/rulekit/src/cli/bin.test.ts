@@ -6,6 +6,7 @@ import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { after, before, describe, test } from "node:test"
 import { fileURLToPath, pathToFileURL } from "node:url"
+import { parseProfile } from "../agent/profile.ts"
 import { loadCorpus } from "../corpus/load.ts"
 import {
   AGENT_README_SECTION,
@@ -16,6 +17,8 @@ import {
   commandInit,
   commandValidate,
   isMainModule,
+  missingReaderCredit,
+  output,
   packageVersion,
   SHIPPED_CORPORA,
 } from "./bin.ts"
@@ -38,34 +41,28 @@ const DEMO = resolve(ROOT, "data/demo")
 let scratch: string
 
 /**
- * Run a command with stdout captured. Returns the exit code and what it printed.
+ * Run a command with its output captured. Returns the exit code and the text.
  *
- * WHAT IT RETURNS MAY HOLD MORE THAN THE COMMAND WROTE. This replaces
- * `process.stdout.write` for everybody, and the test runner writes its own
- * report through the same function, so anything the runner announces inside the
- * window lands in the captured text. Assert with a regular expression, which
- * steps over that. A test that needs the exact output runs the command in its
+ * It replaces the command's own `output` object, and NOT `process.stdout.write`.
+ * The test runner reports its own results through `process.stdout.write`, so
+ * replacing that swallows them. Fifteen tests in this file ran invisibly that
+ * way for as long as the helper did it, and a deliberately broken one still
+ * printed "fail 0". A test that needs the exact bytes runs the command in its
  * own process instead. See "the command as a program" below.
  */
 async function run(fn: () => Promise<number>): Promise<{ code: number; out: string }> {
-  const original = process.stdout.write.bind(process.stdout)
+  const original = { ...output }
   let captured = ""
-  // A narrower signature than the real one, which is all these commands use.
-  process.stdout.write = ((chunk: string) => {
-    captured += chunk
-    return true
-  }) as typeof process.stdout.write
-  const originalError = process.stderr.write.bind(process.stderr)
-  process.stderr.write = ((chunk: string) => {
-    captured += chunk
-    return true
-  }) as typeof process.stderr.write
+  const keep = (text: string) => {
+    captured += text
+  }
+  output.write = keep
+  output.writeError = keep
   try {
     const code = await fn()
     return { code, out: captured }
   } finally {
-    process.stdout.write = original
-    process.stderr.write = originalError
+    Object.assign(output, original)
   }
 }
 
@@ -234,6 +231,28 @@ describe("ask", () => {
     const { out } = await run(() => commandAsk(DEMO, "how do Guard and Swift interact"))
     assert.match(out, /rulekit ask .*"what does rule [\d.a-z]+ say"/)
     assert.match(out, /rulekit ask .*"what is .+"/)
+  })
+
+  test("every example a miss prints really answers", async () => {
+    // The examples are built from the corpus in front of the reader, so each one
+    // must work as printed. A message that advertises a shape the stages cannot
+    // answer sends a reader to try it, watch it miss, and read the same message
+    // again.
+    const { out } = await run(() => commandAsk(DEMO, "how do Guard and Swift interact"))
+    const examples = [...out.matchAll(/rulekit ask \S+ "(.+)"/g)].map((m) => m[1] as string)
+    assert.ok(examples.length >= 4, `expected several examples, got ${examples.length}`)
+    for (const example of examples) {
+      const asked = await run(() => commandAsk(DEMO, example))
+      assert.match(asked.out, /served by (static|glossary)/, `"${example}" did not answer`)
+    }
+  })
+
+  test("a miss offers the question a ruling itself asks", async () => {
+    // A ruling carries the question it answers, and that is the phrasing a
+    // reader is most likely to type. Leaving it out of the list hides a whole
+    // shape of free answer.
+    const { out } = await run(() => commandAsk(DEMO, "how do Guard and Swift interact"))
+    assert.match(out, /a ruling's own question/)
   })
 
   test("names a rule number the corpus does not hold, rather than reporting a plain miss", async () => {
@@ -444,6 +463,41 @@ describe("a profile that names a field no card carries", () => {
     const result = await loadCorpus(DEMO)
     assert.ok(result.ok)
     assert.deepEqual(checkProfileFields("/no/such/directory", result.corpus), [])
+  })
+})
+
+describe("the sentence a corpus shows a reader", () => {
+  test("every corpus that ships carries one", async () => {
+    // NOTICE.txt states the terms for a developer choosing this corpus.
+    // `attribution` is the one sentence an application shows the person asking
+    // the question, and a corpus that ships without one leaves every
+    // application to invent its own.
+    const root = join(DEMO, "..")
+    for (const name of SHIPPED_CORPORA) {
+      const profile = parseProfile(JSON.parse(await readFile(join(root, name, "profile.json"), "utf8")))
+      assert.ok(profile.attribution?.text, `the ${name} corpus sets no reader credit`)
+    }
+  })
+
+  test("validate notes a missing credit, and still passes", async () => {
+    // A note and never a failure. A corpus may reasonably say nothing to a
+    // reader, and refusing to build one would be the wrong call to make here.
+    const dir = await corpusWith("no-credit")
+    const profile = JSON.parse(await readFile(join(dir, "profile.json"), "utf8"))
+    delete profile.attribution
+    await writeFile(join(dir, "profile.json"), JSON.stringify(profile))
+
+    assert.equal(missingReaderCredit(dir), true)
+    const { code, out } = await run(() => commandValidate(dir))
+    assert.equal(code, 0)
+    assert.match(out, /sets no `attribution`/)
+    assert.match(out, /Valid\./)
+  })
+
+  test("says nothing when the corpus carries one", async () => {
+    assert.equal(missingReaderCredit(DEMO), false)
+    const { out } = await run(() => commandValidate(DEMO))
+    assert.doesNotMatch(out, /sets no `attribution`/)
   })
 })
 

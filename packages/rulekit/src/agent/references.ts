@@ -16,11 +16,15 @@ import { defineTool, type RuleTool } from "./tools.ts"
  * makes the prose half hold, and it is added ONLY when sites are configured,
  * because without it a fetched page reads as though it were the rules.
  *
- * A model chooses the address, so treat every one as hostile input. The nine
+ * A model chooses the address, so treat every one as untrusted input. The ten
  * rules `fetchReference` enforces are listed on that function, and each is
  * tested. The one that is easiest to leave out is the redirect: a site that
  * answers a request with a redirect to an address inside the network hosting
  * this server turns a rules assistant into a way to read that network.
+ *
+ * THIS PACKAGE READS NO robots.txt. A site states its own rules there, and an
+ * operator who accepts a site's terms needs somewhere to record them, so
+ * `ReferenceSite.disallowPaths` is that place.
  */
 
 export type ReferenceSite = {
@@ -46,6 +50,17 @@ export type ReferenceSite = {
    * decides its own addresses, and a built address can still be absent.
    */
   cardPath?: string
+  /**
+   * Address prefixes on this host that must never be read, e.g. `["/api/"]`.
+   *
+   * **This package reads no robots.txt.** A site states its own rules there, and
+   * honouring them is the operator's job, so this is where you write them down.
+   * A site that disallows `/api/` needs that prefix here, or a model that builds
+   * such an address gets it fetched.
+   *
+   * A prefix matches the start of the path. Matching is case-insensitive.
+   */
+  disallowPaths?: string[]
 }
 
 export type ReferenceOptions = {
@@ -198,6 +213,17 @@ function assertUsableSites(sites: ReferenceSite[]): void {
           "A host with no dot allows every address underneath it. Write the whole host, " +
           'for example "faq.example.com".',
       )
+    // Being lenient about a scheme is kind, because it changes nothing. Being
+    // lenient about a path is not: somebody who writes "example.com/cards"
+    // wanted the read scoped to /cards, and the field cannot do that. Accepting
+    // it silently leaves them believing a restriction that is not there.
+    const raw = site.host.trim().replace(/^https?:\/\//, "")
+    if (/[/\s]/.test(raw))
+      throw new ReferenceFetchError(
+        `The reference site "${site.name}" has the host "${site.host}", which holds a path or a space. ` +
+          `This field takes a host and nothing else, such as "${host}". ` +
+          "To keep a read inside one part of a site, list the parts to refuse in `disallowPaths`.",
+      )
   }
 }
 
@@ -226,8 +252,8 @@ export class ReferenceFetchError extends Error {}
 /**
  * Check one address against the allowlist and return the site that owns it.
  *
- * Rules 1 and 2 of the nine live here, because they are the two that must hold
- * for a redirect target as well as for the address the model gave.
+ * Rules 1, 2, and 3 of the ten live here, because those three must hold for a
+ * redirect target as well as for the address the model first gave.
  */
 function resolveTarget(raw: string, sites: ReferenceSite[]): { url: URL; site: ReferenceSite } {
   let url: URL
@@ -246,6 +272,15 @@ function resolveTarget(raw: string, sites: ReferenceSite[]): { url: URL; site: R
   if (!site)
     throw new ReferenceFetchError(
       `${url.hostname} is not a reference site. You may read only: ${sites.map((s) => s.host).join(", ")}.`,
+    )
+  // Rule 3. A prefix the operator refused. This sits beside the host check so
+  // that a redirect meets it too: a site that disallows /api/ can otherwise
+  // redirect a permitted address there.
+  const path = url.pathname.toLowerCase()
+  const refused = site.disallowPaths?.find((prefix) => path.startsWith(prefix.toLowerCase()))
+  if (refused)
+    throw new ReferenceFetchError(
+      `${url.pathname} is under "${refused}", which ${site.name} does not allow a reader to fetch.`,
     )
   return { url, site }
 }
@@ -299,18 +334,19 @@ async function readCapped(response: Response, maxBytes: number): Promise<{ body:
 /**
  * Fetch one page from an allowlisted site.
  *
- * The nine rules, in the order they run:
+ * The ten rules, in the order they run:
  *
  * 1. The scheme must be https.
  * 2. The host must equal a configured host, or be one of its subdomains.
- * 3. Redirects are followed by hand, at most once, and only to a host that
- *    passes rule 2.
- * 4. No credentials, so nothing this server holds is sent to somebody's site.
- * 5. A timeout, so one slow site cannot hold a reader's question open.
- * 6. A byte cap, applied WHILE reading rather than after.
+ * 3. The path must not start with a prefix the operator refused.
+ * 4. Redirects are followed by hand, at most once, and only to an address that
+ *    passes rules 2 and 3.
+ * 5. No credentials, so nothing this server holds is sent to somebody's site.
+ * 6. A timeout, so one slow site cannot hold a reader's question open.
  * 7. The content type must be readable text.
- * 8. A per-turn count, enforced by the caller.
- * 9. A cache by address, so a popular page is read once.
+ * 8. A byte cap, applied WHILE reading rather than after.
+ * 9. A per-turn count, enforced by the caller.
+ * 10. A cache by address, so a popular page is read once.
  */
 export async function fetchReference(
   raw: string,
@@ -322,13 +358,13 @@ export async function fetchReference(
   if (!doFetch) throw new ReferenceFetchError("This runtime has no fetch, so no reference site can be read.")
 
   const response = await doFetch(url.toString(), {
-    // Rule 3. Manual, so a redirect is checked against the allowlist before it
+    // Rule 4. Manual, so a redirect is checked against the allowlist before it
     // is followed. Letting fetch follow one lets a site send this server to an
     // address inside its own network, which is the whole of that attack.
     redirect: "manual",
-    // Rule 4.
-    credentials: "omit",
     // Rule 5.
+    credentials: "omit",
+    // Rule 6.
     signal: AbortSignal.timeout(options.timeoutMs ?? DEFAULTS.timeoutMs),
     headers: {
       accept: "text/html, text/plain;q=0.9",
@@ -356,7 +392,7 @@ export async function fetchReference(
       `${url.toString()} is ${contentType || "an unnamed type"}, which is not a readable page.`,
     )
 
-  // Rule 6.
+  // Rule 8.
   const { body, cut } = await readCapped(response, options.maxBytes ?? DEFAULTS.maxBytes)
   const read = options.readPage ?? stripHtml
   return {
@@ -426,7 +462,7 @@ export function defineReferenceTools(options: ReferenceOptions): RuleTool[] {
         url: z.string().min(1).describe(`The full https address. Its host must be one of: ${hosts}`),
       }),
       async execute(input) {
-        // Rule 8. Counted before the read, so a refused call still costs one and
+        // Rule 9. Counted before the read, so a refused call still costs one and
         // a model cannot retry its way past the cap.
         if (used >= cap) {
           return {
@@ -437,7 +473,7 @@ export function defineReferenceTools(options: ReferenceOptions): RuleTool[] {
         }
         used += 1
 
-        // Rule 9. Keyed by the address, so the same page costs one read however
+        // Rule 10. Keyed by the address, so the same page costs one read however
         // many questions ask for it.
         const key = `rulekit:reference:${input.url}`
         const cached = await options.cache?.get<ReferencePage>(key).catch(() => null)

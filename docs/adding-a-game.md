@@ -33,9 +33,15 @@ the published text. An erratum changes that text. A ruling reads the unchanged
 text and says what it means in one case. See
 [the corpus format](corpus-format.md) for the fields.
 
-Once the file holds a row, two things switch on by themselves. "What are the
-rulings for X?" is answered from these rows with no model call, and the agent
-gains a `list_rulings` tool. Both stay off while the file is absent or empty.
+Once the file holds a row, two things switch on by themselves. A free stage
+answers from these rows with no model call, and the agent gains a `list_rulings`
+tool. Both stay off while the file is absent or empty.
+
+**Two shapes of question answer free**: a lookup such as "rulings for X", and
+the `question` field of a ruling typed word for word. Every other phrasing
+reaches the agent. Write `question` as the reader would type it.
+[The corpus format](corpus-format.md#which-questions-a-ruling-answers-free)
+gives the table.
 
 **A ruling that you may not copy belongs on somebody else's website.** See
 [reference sites](reference-sites.md) for reading one at run time instead.
@@ -136,6 +142,36 @@ code rewrites nothing until you ask for it.
 
 The refusals that apply to every game are part of the code: strategy, prices,
 real people, and questions about a different subject. This section adds to them.
+[Custom tools](custom-tools.md) prints the whole list, and explains why a tool
+on one of those subjects is never called.
+
+### The sentence a reader sees
+
+```json
+"attribution": {
+  "text": "Riot Games, Inc. owns the Riftbound rules data. This is an unofficial community project, and Riot Games does not endorse it.",
+  "url": "https://www.riotgames.com/en/legal",
+  "official": false
+}
+```
+
+Most rules data belongs to somebody, and a corpus states the terms in a
+`NOTICE.txt` beside its JSON. **That file is written for you**, the person
+choosing a corpus: it names licences, directories, and what you may sell. The
+person asking whether a unit can block has no use for any of it.
+
+Write the reader's sentence here instead. Every application built on this corpus
+then shows the same one, and `NOTICE.txt` goes back to being your file. Nothing
+sends `attribution` to the model: it is a credit, not an instruction.
+
+Show it under the conversation:
+
+```tsx
+<RuleKitProvider legalNote={profile.attribution?.text}>
+```
+
+`rulekit validate` prints a note when a corpus carries a `NOTICE.txt` and sets
+no `attribution`, and still reports the corpus valid.
 
 ## 3. Connect it
 

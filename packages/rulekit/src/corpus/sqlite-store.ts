@@ -10,7 +10,7 @@ import {
   TERM_WEIGHTS,
 } from "./build.ts"
 import type { ListOptions, RuleStore, RulingListOptions, SearchOptions } from "./store.ts"
-import { ftsQuery, nameStem, normalizeName, normalizeRuleNumber } from "./text.ts"
+import { ftsQuery, nameStem, normalizeName, normalizeQuestion, normalizeRuleNumber } from "./text.ts"
 import type {
   BanlistEntry,
   Card,
@@ -600,6 +600,18 @@ export class SqliteStore implements RuleStore {
       clampLimit(options.limit, 8),
     )
     return this.#withCards(rows)
+  }
+
+  async getRulingByQuestion(question: string): Promise<Ruling | null> {
+    const key = normalizeQuestion(question)
+    // An empty key would match every ruling whose own question folds to nothing,
+    // which is what the column holds when a build predates this lookup.
+    if (!key) return null
+    const rows = this.#all(
+      "SELECT * FROM rulings WHERE question_key = ? ORDER BY is_deprecated, position LIMIT 1",
+      key,
+    )
+    return this.#withCards(rows)[0] ?? null
   }
 
   async searchCards(query: string, options: { limit?: number } = {}): Promise<CardSummary[]> {

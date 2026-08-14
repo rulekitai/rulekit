@@ -31,3 +31,11 @@ packages/rulekit/data/
 # each published package. The root NOTICE is the original.
 packages/rulekit/NOTICE
 packages/ui/NOTICE
+
+# Copied from the root at build time, so a reader who installed from npm holds
+# the documents the README links and the list of what changed. The copies at the
+# root are the originals.
+packages/rulekit/docs/
+packages/rulekit/skills/
+packages/rulekit/CHANGELOG.md
+packages/ui/CHANGELOG.md

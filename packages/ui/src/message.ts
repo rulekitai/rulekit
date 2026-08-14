@@ -10,6 +10,14 @@ export type ChatMessage = {
   citations?: unknown[]
   /** Which stage answered, for a small label under the message. */
   servedBy?: ServedBy
+  /**
+   * Where the facts came from, which is NOT the stage that served them.
+   *
+   * A cache hit reports `servedBy: "cache"` and `source: "agent"` when a model
+   * wrote the answer the first time. Reading only `servedBy` then labels a
+   * model's words as read from the rules data, on every repeat question.
+   */
+  source?: string
   model?: string | null
   latencyMs?: number
   /** The message reports a failure rather than an answer. */
@@ -43,13 +51,16 @@ export function toServedBy(value: unknown): ServedBy | undefined {
  * disagrees with it on the same screen. This is what a host app tests to write
  * a disclaimer that stays true.
  *
- * A saved answer keeps the name of whatever wrote it the first time, and this
- * function only sees `cache`, so a cached answer counts as "rules". Say
- * "checked against the rules data" rather than "no model was involved", and the
- * sentence is true for both.
+ * Pass `message.source` as well as `message.servedBy`. A cache hit reports
+ * `servedBy: "cache"` and keeps `source: "agent"`, so reading the stage alone
+ * labels a model's own words as read from the rules data, on every repeat
+ * question. The origin wins when both are present.
  */
-export function answerSource(servedBy: string | undefined): "rules" | "model" {
-  return servedBy === "agent" || servedBy === "cheap" ? "model" : "rules"
+export function answerSource(servedBy: string | undefined, source?: string): "rules" | "model" {
+  // The ORIGIN decides, and the stage that served it does not. A cached answer
+  // a model wrote is still a model's answer, and `servedBy` reads "cache".
+  const origin = source ?? servedBy
+  return origin === "agent" || origin === "cheap" ? "model" : "rules"
 }
 
 /** One site read while answering, named so a disclaimer can list it. */

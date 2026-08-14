@@ -22,8 +22,23 @@ import { hideSqliteExperimentalWarning } from "../sqlite-warning.ts"
 
 type Problem = CorpusProblem
 
-const out = (line = "") => stdout.write(`${line}\n`)
-const err = (line: string) => stderr.write(`${line}\n`)
+/**
+ * Where this command writes, as one object a test can replace.
+ *
+ * A TEST MUST NOT REPLACE `process.stdout.write` TO READ WHAT A COMMAND PRINTS.
+ * The test runner reports its own results through that same function, so a
+ * replacement swallows them: the run prints fewer results than it ran, and the
+ * summary counts fewer than it ran. Fifteen tests in `bin.test.ts` were
+ * invisible that way, and a deliberately broken one still printed "fail 0".
+ * Only the exit code stayed honest.
+ */
+export const output = {
+  write: (text: string) => void stdout.write(text),
+  writeError: (text: string) => void stderr.write(text),
+}
+
+const out = (line = "") => output.write(`${line}\n`)
+const err = (line: string) => output.writeError(`${line}\n`)
 
 // A command is a program, so it decides which warnings it prints. See the
 // module for why this is not the library's decision to make.
@@ -123,7 +138,7 @@ function reportProblems(problems: CorpusProblem[], limit = 25): void {
   for (const [file, rows] of byFile) {
     out(`  ${file}  (${rows.length} problem${rows.length === 1 ? "" : "s"})`)
     for (const row of rows.slice(0, limit)) {
-      const where = row.index === null ? "" : ` [item ${row.index}]`
+      const where = row.id ? ` [${row.id}]` : row.index === null ? "" : ` [item ${row.index}]`
       out(`    ${where} ${row.message}`)
     }
     if (rows.length > limit) out(`    ... and ${rows.length - limit} more`)
@@ -205,6 +220,26 @@ export function checkProfileFields(dir: string, corpus: Corpus): Problem[] {
 }
 
 /**
+ * True when a corpus states terms for a developer and none for a reader.
+ *
+ * `NOTICE.txt` is the developer's file: it says what you may build and sell.
+ * The person asking whether a unit can block needs one sentence saying who owns
+ * these rules, and `profile.attribution` is where a corpus author writes it.
+ *
+ * This is a note and never a failure. A corpus in the public domain carries no
+ * notice, and one may still choose to say nothing to a reader.
+ */
+export function missingReaderCredit(dir: string): boolean {
+  if (!existsSync(join(dir, "NOTICE.txt"))) return false
+  try {
+    return !parseProfile(JSON.parse(readFileSync(resolve(dir, "profile.json"), "utf8"))).attribution
+  } catch {
+    // No profile, or one this version cannot read. Other checks report that.
+    return false
+  }
+}
+
+/**
  * Report any JSON file the corpus format does not know.
  *
  * One collection may be absent, which means a misspelled file name no longer
@@ -268,7 +303,7 @@ async function commandValidate(dir: string): Promise<number> {
   }
   if (integrity.length) {
     out(
-      `${integrity.length} link${integrity.length === 1 ? "" : "s"} point at something that does not exist:`,
+      `${integrity.length} link${integrity.length === 1 ? " points" : "s point"} at something that does not exist:`,
     )
     reportProblems(integrity)
     out("")
@@ -285,6 +320,15 @@ async function commandValidate(dir: string): Promise<number> {
   if (strays.length) {
     out(`${strays.length} file${strays.length === 1 ? "" : "s"} nothing reads:`)
     reportProblems(strays)
+    out("")
+  }
+
+  if (missingReaderCredit(dir)) {
+    out("Note: this corpus carries NOTICE.txt, and its profile sets no `attribution`.")
+    out("      NOTICE.txt is written for a developer choosing a corpus. It names")
+    out("      licences and directories, which the person asking a rules question")
+    out("      has no use for. Set `attribution` in profile.json to give every")
+    out("      application one sentence to show that person under an answer.")
     out("")
   }
 
@@ -408,12 +452,27 @@ async function commandAsk(dir: string, question: string, asJson = false): Promis
     else out(`No free stage could answer this. It would go to the agent, and the agent needs a model key.`)
     out(`Stages tried: ${trace.map((t) => `${t.stage}=${t.outcome}`).join(", ")}`)
 
+    // Name the SHAPE beside the example. A reader whose question missed cannot
+    // tell which part of an example was load-bearing, and a message that names
+    // fewer shapes than the corpus answers reads as a complete list: one that
+    // omitted rulings sent a reader away from the feature they had just added.
     const where = relative(cwd(), dir) || dir
     const rule = result.corpus.rules.find((r) => r.rule_type !== "section_header" && r.content.trim() !== "")
     const term = result.corpus.terms[0]
-    out(`\nThe free stages answer two shapes of question:`)
-    if (rule) out(`  rulekit ask ${where} "what does rule ${rule.rule_number} say"`)
-    if (term) out(`  rulekit ask ${where} "what is ${term.term}"`)
+    const banned = result.corpus.banlist.find((b) => b.card?.name)?.card?.name
+    const ruled = result.corpus.rulings.flatMap((r) => r.cards).find((c) => c.name)?.name
+    const published = result.corpus.rulings.find((r) => r.question.trim())?.question.trim()
+
+    const shapes: [string, string][] = []
+    if (rule) shapes.push(["a rule number", `what does rule ${rule.rule_number} say`])
+    if (banned) shapes.push(["a legality question", `is ${banned} banned`])
+    if (ruled) shapes.push(["a rulings lookup", `rulings for ${ruled}`])
+    if (published) shapes.push(["a ruling's own question", published])
+    if (term) shapes.push(["a keyword", `what is ${term.term}`])
+
+    const count = ["no", "one", "two", "three", "four", "five"][shapes.length] ?? String(shapes.length)
+    out(`\nThe free stages answer ${count} shape${shapes.length === 1 ? "" : "s"} of question here:`)
+    for (const [shape, example] of shapes) out(`  ${shape.padEnd(24)} rulekit ask ${where} "${example}"`)
     out(`\nThe agent answers every other question. The README section "${AGENT_README_SECTION}" starts one:`)
     out(`  ${AGENT_README_URL}`)
     return 0

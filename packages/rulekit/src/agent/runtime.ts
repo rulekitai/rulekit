@@ -4,7 +4,14 @@ import { buildInstructions } from "./instructions.ts"
 import type { Profile } from "./profile.ts"
 import { defineReferenceTools, type ReferenceOptions } from "./references.ts"
 import { builtinSkills, type Skill } from "./skills.ts"
-import { assertUniqueToolNames, corpusContents, defineRulesTools, type RuleTool } from "./tools.ts"
+import {
+  assertReferenceToolsAreConfigured,
+  assertUniqueToolNames,
+  corpusContents,
+  defineRulesTools,
+  type RuleTool,
+  warnAboutDeclinedSubjects,
+} from "./tools.ts"
 import {
   addStepUsage,
   buildMessage,
@@ -97,10 +104,26 @@ export type RulesAgentOptions = {
    */
   references?: ReferenceOptions
   /**
-   * Procedures to inline. Defaults to the skills that ship with this package,
-   * filtered to the ones this profile can use.
+   * Procedures to inline, REPLACING the ones that ship with this package.
+   *
+   * Prefer `extraSkills`, which adds to them. Setting this drops the card and
+   * rulings procedures unless you spread `builtinSkills()` back in, and dropping
+   * them is silent.
    */
   skills?: Skill[]
+  /**
+   * Procedures of your own, added to the ones that ship.
+   *
+   * **A tool is not enough on its own.** The instructions tell the model to
+   * decline whole subjects, such as shops, events, prices, and real people. A
+   * tool whose subject is on that list is never called, no error appears, and
+   * the model simply declines. A procedure is how you tell the model that this
+   * assistant now answers that subject.
+   *
+   * Set `requiresTool` on the procedure, and it is dropped when its tool is
+   * absent.
+   */
+  extraSkills?: Skill[]
 }
 
 /** The shape of an AI SDK model object, without importing the type. */
@@ -178,6 +201,9 @@ export function createRulesAgent(options: RulesAgentOptions) {
   let setupPromise: Promise<{ tools: RuleTool[]; instructions: string }> | null = null
   const setup = (): Promise<{ tools: RuleTool[]; instructions: string }> => {
     setupPromise ??= corpusContents(options.store).then((contents) => {
+      // Before anything reads them: reference tools built by hand carry no
+      // instruction block, and the answer then cites a website as the rules.
+      assertReferenceToolsAreConfigured(options.extraTools ?? [], Boolean(options.references))
       const tools = [
         ...defineRulesTools(options.store, options.profile, contents),
         ...(options.extraTools ?? []),
@@ -195,9 +221,12 @@ export function createRulesAgent(options: RulesAgentOptions) {
       const names = new Set([...tools.map((t) => t.name), ...referenceNames])
       // This filter also covers a caller's own procedures, which the old
       // hard-coded list could not reach.
-      const skills = (options.skills ?? builtinSkills()).filter(
+      const skills = [...(options.skills ?? builtinSkills()), ...(options.extraSkills ?? [])].filter(
         (skill) => !skill.requiresTool || names.has(skill.requiresTool),
       )
+      // After the procedures are settled, because a procedure naming the tool is
+      // what makes its subject answerable, and a caller who wrote one is right.
+      warnAboutDeclinedSubjects(options.extraTools ?? [], skills)
       const instructions =
         options.instructions ??
         buildInstructions(options.profile, { skills, references: Boolean(options.references?.sites.length) })

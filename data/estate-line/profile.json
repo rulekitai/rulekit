@@ -12,7 +12,7 @@
         "pound",
         "coin"
       ],
-      "means": "It names the money of Estate Line. The symbol is ₡."
+      "means": "It names the money of Estate Line. The symbol is \u20a1."
     },
     {
       "use": "full district",
@@ -52,7 +52,7 @@
         "start",
         "go"
       ],
-      "means": "It names the start space. A player who passes it collects ₡200."
+      "means": "It names the start space. A player who passes it collects \u20a1200."
     }
   ],
   "cards": {
@@ -155,11 +155,16 @@
     "refuse": []
   },
   "extraGuidance": [
-    "The symbol ₡ is the Crown, the money of Estate Line. Write amounts as ₡200 or as 200 Crowns. Never write a real-world currency symbol.",
+    "The symbol \u20a1 is the Crown, the money of Estate Line. Write amounts as \u20a1200 or as 200 Crowns. Never write a real-world currency symbol.",
     "A property card prints its text in two boxes. `deed_text` holds the price, the district, and the mortgage value. `rent_text` holds every rent line and the building costs. Read both before you state what a property charges, and never conclude from `deed_text` alone that a card prints no rent.",
     "Property cards carry no rarity, because Estate Line prints one copy of each deed. Do not report a rarity for them.",
     "Property `stats` differ by property type. A street prints `rent_base` through `rent_with_hotel` plus `house_cost`. A depot prints `rent_one_depot` through `rent_four_depots` and no house cost. A works property prints `rent_multiplier_one_works` and `rent_multiplier_both_works`. Read the keys the card carries, and do not expect the keys of another type.",
     "A playing token is the piece a player moves around the board. A token carries no rule and no rent. It prints only `description_text`, its material, and the edition that introduced it. Do not read a rule out of a token.",
     "Estate Line has one rulebook, the Official Rules. Section 950 follows section 900, and both are current."
-  ]
+  ],
+  "attribution": {
+    "text": "Estate Line is an invented game, written for this project. The rules data is in the public domain under CC0 1.0.",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "official": false
+  }
 }

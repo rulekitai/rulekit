@@ -27,6 +27,7 @@ The directory `data/demo/` is that example. Every field below appears in it.
 | `cards.json` | The pieces of the game that a player can name | Yes. It can be empty. |
 | `rulings.json` | Published rulings: a question, an answer, and the rules it rests on | No. It can be absent. |
 | `profile.json` | How the assistant speaks about this game | No. Write one. |
+| `NOTICE.txt` | Who owns this data, written for a developer | No. Write one when the data is not yours. |
 
 A necessary file can hold an empty list. An absent one stops the load. "This
 list is empty" and "I forgot to write this file" must look different.
@@ -311,6 +312,33 @@ Set `is_deprecated` on a withdrawn ruling. It stays out of search, as a
 deprecated rule does. A reader who asks for every ruling on one piece still sees
 it, with a label.
 
+**Set `source_url` beside `source_name`.** The answer prints the name as a link
+to that address, which is what a licence such as CC BY-SA asks for. The name
+alone leaves the obligation impossible to meet.
+
+### Which questions a ruling answers free
+
+Two shapes reach the rows in a few milliseconds, with no model call:
+
+| The reader asks | What answers |
+|---|---|
+| `rulings for Stonewall Sentry` | The free stage |
+| `Stonewall Sentry faq` | The free stage |
+| The `question` field, word for word | The free stage |
+| `Can Stonewall Sentry block two attackers?` | The agent. It costs a model call |
+
+The first two are a **lookup**: the word "rulings" or "faq", plus a piece this
+corpus knows. The third is an **exact match** on the question the ruling itself
+asks, folded for case, spacing, accents, and a final question mark.
+
+Nothing else matches, and that is deliberate. A ruling that merely resembles the
+question is the wrong answer, and presenting it as the right one is worse than
+paying for a model call. The agent reads the rules underneath a ruling and
+weighs them; the free stage cannot.
+
+**Write `question` as the reader would type it.** It is the phrasing they read
+on the publisher's page, and it is the one phrasing that costs nothing.
+
 ## What validation examines
 
 The command `rulekit validate` examines more than the format:
@@ -323,6 +351,11 @@ The command `rulekit validate` examines more than the format:
 - Every entry in `rule_numbers` on a ruling names a rule that exists.
 - A ruling whose `kind` is `card` names one card or more.
 - A ruling's `source_url`, when it holds one, is an `https` address.
+- No two rulings share an id. An answer cites a ruling by id, and a reader who
+  follows that citation to two rows cannot be told which one answered.
+- A ruling's `cards[].name` agrees with the card that its `cards[].id` names.
+  The id resolving is not enough: the answer prints the NAME, so a row that
+  names the wrong card produces an answer about a card nobody asked about.
 - No two terms answer to the same name or alias, because a shared name makes a
   lookup ambiguous.
 - No JSON file in the directory is one that the format does not know.

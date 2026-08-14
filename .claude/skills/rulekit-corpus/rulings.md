@@ -37,10 +37,33 @@ downstream notices.
 ## What `rulekit validate` checks
 
 - Every `cards[].id` names a real card.
+- Every `cards[].name` agrees with the card that its id names. The id resolving
+  is not enough: the answer prints the NAME.
+- No two rulings share an id. A citation carries the id.
 - Every entry in `rule_numbers` names a real rule.
 - A `card` ruling names at least one card. One that names none can never be
   found by a card lookup.
 - `source_url`, when set, is an `https` address.
+
+## Which questions answer with no model call
+
+| The reader asks | What answers |
+|---|---|
+| `rulings for Stonewall Sentry` | The free stage |
+| `Stonewall Sentry faq` | The free stage |
+| The `question` field, word for word | The free stage |
+| Any other phrasing | The agent. It costs a model call |
+
+The first two are a lookup: the word "rulings" or "faq", plus a piece the corpus
+knows. The third is an exact match, folded for case, spacing, accents, and a
+final question mark. Nothing else matches, because a ruling that merely
+resembles the question is the wrong answer.
+
+**Write `question` as the reader would type it.** It is the phrasing they read
+on the publisher's page, and the one phrasing that costs nothing.
+
+**Set `source_url` beside `source_name`.** The answer prints the name as a link
+to it, which is what a licence such as CC BY-SA asks for.
 
 ## Mark the authority honestly
 
@@ -57,3 +80,5 @@ nine official, because its game is invented and this project publishes it.
 - `rulekit validate <dir>` prints `Valid.` with the rulings in place.
 - `rulekit ask <dir> "rulings for <a piece>"` prints them, and reports
   `served by static`, which proves the answer cost no model call.
+- `rulekit ask <dir> "<the question field of one ruling>"` reports
+  `served by static` too.

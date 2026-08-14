@@ -50,14 +50,21 @@ export type RuleTool = {
  */
 const TOOL_NAME = /^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/
 
-/** One tool, before `defineTool` widens it. `S` is what gives `execute` its type. */
-export type ToolSpec<S extends z.ZodTypeAny> = {
+/**
+ * One tool, before `defineTool` widens it.
+ *
+ * `S` is what gives `execute` its input type, and `R` is what `execute` returns.
+ * `R` then types `describeResult`'s only argument, so a trace label is written
+ * against the real result rather than against `unknown`.
+ */
+export type ToolSpec<S extends z.ZodTypeAny, R> = {
   name: string
   description: string
   inputSchema: S
   /** `input` is inferred from `inputSchema`, so the compiler checks this body. */
-  execute: (input: z.output<S>) => Promise<unknown>
-  describeResult?: (result: unknown) => Partial<TraceStep> | undefined
+  execute: (input: z.output<S>) => Promise<R>
+  /** `result` is what `execute` resolved to, so the compiler checks this body too. */
+  describeResult?: (result: R) => Partial<TraceStep> | undefined
   replaces?: boolean
 }
 
@@ -73,7 +80,7 @@ export type ToolSpec<S extends z.ZodTypeAny> = {
  * It also checks the name, because a name is the one field with an outside
  * constraint. See `TOOL_NAME`.
  */
-export function defineTool<S extends z.ZodTypeAny>(spec: ToolSpec<S>): RuleTool {
+export function defineTool<S extends z.ZodTypeAny, R>(spec: ToolSpec<S, R>): RuleTool {
   if (!TOOL_NAME.test(spec.name)) {
     throw new Error(
       `"${spec.name}" is not a usable tool name. A name starts with a letter, then holds letters, ` +
@@ -89,8 +96,96 @@ export function defineTool<S extends z.ZodTypeAny>(spec: ToolSpec<S>): RuleTool 
     // against the schema, and `never` is what lets every concrete input type
     // satisfy the shared `RuleTool` shape.
     execute: spec.execute as RuleTool["execute"],
-    ...(spec.describeResult ? { describeResult: spec.describeResult } : {}),
+    // The same cast, for the same reason: the runtime hands this function what
+    // `execute` returned, which is exactly `R`, and the shared shape says
+    // `unknown` so that every tool fits one array.
+    ...(spec.describeResult ? { describeResult: spec.describeResult as RuleTool["describeResult"] } : {}),
     ...(spec.replaces ? { replaces: true } : {}),
+  }
+}
+
+/** The tools `defineReferenceTools` builds. A caller must not pass these by hand. */
+export const REFERENCE_TOOL_NAMES = ["list_references", "fetch_reference"] as const
+
+/**
+ * Refuse reference tools that arrived through `extraTools`.
+ *
+ * `createRulesAgent({ references })` adds two things: these tools, AND the
+ * instruction block that makes the model name the site and mark the claim as
+ * outside the rules data. Building the tools by hand gets the first and not the
+ * second, and the answer then cites somebody's website as though it were the
+ * rules. Nothing downstream can separate the two, which is why this throws
+ * rather than warning.
+ */
+export function assertReferenceToolsAreConfigured(extraTools: RuleTool[], hasReferences: boolean): void {
+  if (hasReferences) return
+  const found = extraTools.find((t) => (REFERENCE_TOOL_NAMES as readonly string[]).includes(t.name))
+  if (found)
+    throw new Error(
+      `"${found.name}" came through \`extraTools\`, and it must come through the \`references\` option. ` +
+        "That option adds the instruction block telling the model to name the site and to mark the " +
+        "claim as outside the rules data. Without it an answer cites a website as though it were " +
+        "your rules. Pass `references: { sites: [...] }` to `createRulesAgent` instead.",
+    )
+}
+
+/**
+ * Subjects the instructions decline, as words to look for in a tool.
+ *
+ * Drawn from `instructions/base.md`. It cannot be read from that file, because
+ * the file is prose written for a model and this needs a list to match against.
+ *
+ * EVERY WORD HERE IS ONE A RULES TOOL WOULD NOT USE. That is the whole design
+ * rule. The broad words from the same bullets are deliberately absent: "shop"
+ * would fire on the documented `check_stock` example, which is on no declined
+ * subject and works; "trade" and "order" are ordinary game words; "grading"
+ * describes a card's condition here and an answer's quality elsewhere. A missed
+ * subject costs one silent tool, and a false warning costs every reader's trust
+ * in the warning.
+ */
+const DECLINED_SUBJECTS = [
+  "event",
+  "tournament",
+  "schedule",
+  "venue",
+  "price",
+  "market value",
+  "investment",
+  "streamer",
+  "refund",
+  "best deck",
+  "deck advice",
+  "ranking",
+  "strategy",
+]
+
+/**
+ * Warn about a tool the model will never call.
+ *
+ * The instructions tell the assistant to decline whole subjects, and REGISTERING
+ * A TOOL DOES NOT AMEND THAT LIST. A tool on a declined subject is wired
+ * correctly, described correctly, and never called once: the model answers that
+ * the subject is outside what it covers, and the tool records no calls. Every
+ * check a caller can run by hand passes, so the cause is close to unfindable.
+ *
+ * A procedure naming the tool is the fix, so a caller who has written one gets
+ * no warning. This warns rather than throwing: the match is a word search, and a
+ * false positive must not stop an application that works.
+ */
+export function warnAboutDeclinedSubjects(tools: RuleTool[], skills: { requiresTool?: string }[]): void {
+  const granted = new Set(skills.map((skill) => skill.requiresTool).filter(Boolean))
+  for (const tool of tools) {
+    if (granted.has(tool.name)) continue
+    const text = `${tool.name} ${tool.description}`.toLowerCase()
+    const subject = DECLINED_SUBJECTS.find((word) => text.includes(word))
+    if (!subject) continue
+    console.warn(
+      `[rulekit] the tool "${tool.name}" describes ${subject}, which the instructions tell the ` +
+        "assistant to decline. Registering a tool does not amend that list, so the model will " +
+        "answer that the subject is outside what it covers and will never call this tool. Pass a " +
+        `procedure through \`extraSkills\` with \`requiresTool: "${tool.name}"\` to say that this ` +
+        "assistant now answers that subject.",
+    )
   }
 }
 

@@ -130,6 +130,21 @@ describe("a corpus written before rulings existed", () => {
   })
 })
 
+const EMPTY: Corpus = {
+  game: { slug: "g", name: "G" },
+  rulebooks: [],
+  sections: [],
+  rules: [],
+  terms: [],
+  cards: [],
+  errata: [],
+  banlist: [],
+  patchNotes: [],
+  rulings: [],
+}
+
+const CARD = COLLECTION_SCHEMAS.cards.parse({ id: "c1", name: "Knight" })
+
 describe("rulings", () => {
   const ruling = (over: Record<string, unknown> = {}) => ({
     id: "g1",
@@ -161,6 +176,45 @@ describe("rulings", () => {
 
   test("treats a ruling as unofficial unless the corpus says otherwise", () => {
     assert.equal(COLLECTION_SCHEMAS.rulings.safeParse(ruling()).data?.is_official, false)
+  })
+
+  test("refuses two rulings that share an id", () => {
+    // An id is what a citation carries. Two rows of one id leave a reader who
+    // follows that citation unable to tell which row answered.
+    const parse = (over: Record<string, unknown>) => COLLECTION_SCHEMAS.rulings.parse(ruling(over))
+    const problems = checkIntegrity({
+      ...EMPTY,
+      cards: [{ ...CARD, id: "c1", name: "Knight" }],
+      rulings: [parse({ id: "same" }), parse({ id: "same", question: "Another?" })],
+    })
+    assert.ok(
+      problems.some((p) => p.message.includes('id "same" is already used')),
+      `expected a duplicate id to be refused, got ${JSON.stringify(problems)}`,
+    )
+  })
+
+  test("refuses a ruling whose card name disagrees with its card id", () => {
+    // The id resolves, so every other check passes. The NAME is what an answer
+    // prints, so the reader is shown a card the ruling is not about.
+    const problems = checkIntegrity({
+      ...EMPTY,
+      cards: [{ ...CARD, id: "c1", name: "Knight" }],
+      rulings: [
+        COLLECTION_SCHEMAS.rulings.parse(ruling({ cards: [{ id: "c1", name: "Completely Wrong" }] })),
+      ],
+    })
+    assert.ok(
+      problems.some((p) => p.message.includes('"Completely Wrong"') && p.message.includes('"Knight"')),
+      `expected a name and id disagreement to be named, got ${JSON.stringify(problems)}`,
+    )
+  })
+
+  test("names the problem row by its id, so a large file is searchable", () => {
+    const problems = checkIntegrity({
+      ...EMPTY,
+      rulings: [COLLECTION_SCHEMAS.rulings.parse(ruling({ id: "rul-042", rule_numbers: ["999.9"] }))],
+    })
+    assert.equal(problems[0]?.id, "rul-042")
   })
 
   test("names every broken link a ruling can carry", () => {
@@ -464,6 +518,27 @@ for (const kind of ["sqlite", "json"] as const) {
     test("reaches rulings from a unified search", async () => {
       const result = await store.searchAll("Stonewall Sentry")
       assert.ok(result.rulings?.some((r) => r.id === "rul-001"))
+    })
+
+    test("finds the ruling that asks one exact question", async () => {
+      const found = await store.getRulingByQuestion?.(
+        "Does Stonewall Sentry's Guard force an attack to be blocked by it?",
+      )
+      assert.equal(found?.id, "rul-001")
+      // Both sides are folded the way the cache folds a question, so case,
+      // spacing, an apostrophe, and the question mark do not have to agree.
+      const same = await store.getRulingByQuestion?.(
+        "DOES STONEWALL SENTRYS  GUARD force an attack to be blocked by it",
+      )
+      assert.equal(same?.id, "rul-001")
+    })
+
+    test("returns nothing for a question that is merely similar", async () => {
+      // Equality, not a search. A published question and answer belong to each
+      // other, and handing this publisher's answer to a question it was not
+      // written for states something nobody published.
+      assert.equal(await store.getRulingByQuestion?.("Does Guard force a block?"), null)
+      assert.equal(await store.getRulingByQuestion?.("   "), null)
     })
   })
 }

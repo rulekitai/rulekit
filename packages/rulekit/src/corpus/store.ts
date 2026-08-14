@@ -99,6 +99,18 @@ export interface RuleStore {
   listRulings?(options?: RulingListOptions): Promise<Ruling[]>
   /** Rulings matching a query, best first. Superseded rulings are left out. */
   searchRulings?(query: string, options?: { limit?: number }): Promise<Ruling[]>
+  /**
+   * The ruling that asks this exact question, or null.
+   *
+   * Both sides are folded by `normalizeQuestion`, so case, spacing, accents, and
+   * a trailing question mark do not matter. Nothing else does: this is an equality
+   * test, not a search. A near miss must return null and let the agent answer,
+   * because a published question and answer belong to each other, and pairing one
+   * publisher's answer with a question it was not written for is an invented claim.
+   *
+   * A live ruling comes back before a withdrawn one when two ask the same thing.
+   */
+  getRulingByQuestion?(question: string): Promise<Ruling | null>
 
   /** Card identities matching a name. Ranked: exact, then prefix, then text. */
   searchCards(query: string, options?: { limit?: number }): Promise<CardSummary[]>

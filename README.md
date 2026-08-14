@@ -150,7 +150,7 @@ stage that can answer.
 | Stage | It answers | It costs |
 |---|---|---|
 | Exact cache | A question that somebody asked before | Nothing |
-| Static answers | "What does rule 300.2 say?", "Is X banned?", "What are the rulings for X?" | Nothing |
+| Static answers | "What does rule 300.2 say?", "Is X banned?", "Rulings for X", and the question a ruling itself asks | Nothing |
 | Glossary | "What is Shield?" | Nothing |
 | **The agent** | Every other question | One model turn |
 

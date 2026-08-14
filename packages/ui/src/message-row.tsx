@@ -38,7 +38,7 @@ export function MessageRow(props: { message: ChatMessage; streaming?: boolean })
   // contradicts the trace line directly above it.
   const disclaimer =
     typeof configured === "function"
-      ? configured(message.servedBy ?? "", readSources(message.steps))
+      ? configured(message.servedBy ?? "", readSources(message.steps), message.source)
       : configured
 
   if (message.role === "user") {

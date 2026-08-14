@@ -95,10 +95,30 @@ separate the two.
 | `describes` | The one sentence the model reads to choose this site |
 | `official` | Shown to the reader. False by default |
 | `cardPath` | An address hint. `{slug}` becomes the folded piece name |
+| `disallowPaths` | Addresses under any of these prefixes are refused |
 
 **Leave `official` false unless the game's publisher writes the site.** True
 tells a reader that the claim carries the publisher's authority. The reader
 cannot check that claim.
+
+**`host` takes a host and nothing else.** No scheme, no path, no space. A value
+such as `example.com/cards` is refused when the tools are built, because a
+person who writes it wants the read limited to `/cards`, and the host field
+cannot do that. Use `disallowPaths` instead.
+
+**Write `robots.txt` into `disallowPaths` yourself.** That file is where a
+website states which addresses an automatic reader may fetch. Read it, copy each
+`Disallow` prefix into the list, and record the date you read it in a comment.
+The site may change the file, and nothing here rereads it:
+
+```ts
+{
+  name: "Example FAQ",
+  host: "faq.example.com",
+  // robots.txt read 2026-08-14: User-Agent: *, Allow: /, Disallow: /api/
+  disallowPaths: ["/api/"],
+}
+```
 
 ### The option fields
 
@@ -117,7 +137,7 @@ cannot check that claim.
 The list of sites belongs to the agent, and not to `profile.json` or a corpus
 file. [Design decisions](design-decisions.md) gives the three reasons.
 
-## The nine rules on every fetch
+## The ten rules on every fetch
 
 A model chooses the address, so treat every address as untrusted input.
 `agent/references.ts` enforces each rule below, and each rule has its own test.
@@ -126,17 +146,29 @@ A model chooses the address, so treat every address as untrusted input.
 |---|---|---|
 | 1 | `https` only | A page rewritten in transit, and `file:` reading your disk |
 | 2 | The host must be one you list, or a subdomain of it | A read of any other address |
-| 3 | The code checks a redirect, then follows it at most once | A site that sends your server to an address inside your own network |
-| 4 | No credentials | Your cookies reaching somebody's site |
-| 5 | A timeout | One slow site that holds a reader's question open |
-| 6 | A byte cap, applied while reading | A large page that exhausts memory or your token budget |
+| 3 | The path must not start with a prefix you refused | A read of an address the site asks you to leave alone |
+| 4 | The code checks a redirect, then follows it at most once | A site that sends your server to an address inside your own network |
+| 5 | No credentials | Your cookies reaching somebody's site |
+| 6 | A timeout | One slow site that holds a reader's question open |
 | 7 | The content type must be readable text | A file that is not a page |
-| 8 | A fetch count for each question | A turn that spends its whole budget on page reads |
-| 9 | A cache by address | A read of one popular page for every question |
+| 8 | A byte cap, applied while reading | A large page that exhausts memory or your token budget |
+| 9 | A fetch count for each question | A turn that spends its whole budget on page reads |
+| 10 | A cache by address | A read of one popular page for every question |
 
-**Rule 3 is the rule a hand-written version leaves out.** A `fetch` that follows
+**Rule 4 is the rule a hand-written version leaves out.** A `fetch` that follows
 a redirect by itself gives the site control of your allowlist. An address such
-as `169.254.169.254` then reads the network that your server runs in.
+as `169.254.169.254` then reads the network that your server runs in. Rules 2
+and 3 run again on wherever the redirect lands, so a permitted address cannot
+redirect into a refused one.
+
+**Two things these rules do NOT do.**
+
+- **Nothing reads `robots.txt`.** Read it yourself and write what it forbids
+  into `disallowPaths`, as shown above.
+- **`maxFetchesPerTurn` is not a rate limit.** It caps ONE question. Ten readers
+  asking three questions each still make thirty reads. Pass your own `fetchImpl`
+  when you need a limit across questions; every fetch this package makes goes
+  through it.
 
 `defineReferenceTools` refuses a host with no dot when it builds the tools, and
 not when it reads a page. `host: "com"` allows every address that ends in

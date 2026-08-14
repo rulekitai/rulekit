@@ -35,7 +35,10 @@
     "dist",
     "src",
     "data",
-    "NOTICE"
+    "docs",
+    "skills",
+    "NOTICE",
+    "CHANGELOG.md"
   ],
   "bin": {
     "rulekit": "./dist/cli/bin.js"
@@ -193,17 +196,21 @@
     }
   },
   "scripts": {
-    "build": "node ./scripts/copy-corpora.mjs && tsc --build",
+    "build": "node ./scripts/copy-shipped-files.mjs && tsc --build",
     "test": "node --test src/**/*.test.ts"
   },
   "dependencies": {
     "zod": "^4.4.0"
   },
   "peerDependencies": {
-    "ai": "^5.0.0 || ^6.0.0 || ^7.0.0"
+    "ai": "^5.0.0 || ^6.0.0 || ^7.0.0",
+    "zod": "^4.4.0"
   },
   "peerDependenciesMeta": {
     "ai": {
+      "optional": true
+    },
+    "zod": {
       "optional": true
     }
   }

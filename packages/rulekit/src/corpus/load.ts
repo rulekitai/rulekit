@@ -19,6 +19,13 @@ export type CorpusProblem = {
   /** The row index inside `items`, or null for a whole-file problem. */
   index: number | null
   message: string
+  /**
+   * The row's own id, when it has one.
+   *
+   * An index is a counting exercise in a file of four hundred rows, and the id
+   * is already in the row. The command prints this in place of the index.
+   */
+  id?: string
 }
 
 export type LoadResult =
@@ -180,7 +187,8 @@ export function checkIntegrity(corpus: Corpus): CorpusProblem[] {
   const ruleIds = new Set(corpus.rules.map((r) => r.id))
   const cardIds = new Set(corpus.cards.map((c) => c.id))
 
-  const report = (file: string, index: number, message: string) => problems.push({ file, index, message })
+  const report = (file: string, index: number, message: string, id?: string) =>
+    problems.push({ file, index, message, ...(id ? { id } : {}) })
 
   corpus.sections.forEach((section, index) => {
     if (!bookIds.has(section.rule_book_id))
@@ -236,29 +244,56 @@ export function checkIntegrity(corpus: Corpus): CorpusProblem[] {
   // ruling to the evidence, so a broken one turns a cited answer into a bare
   // assertion that still looks cited.
   const ruleNumberKeys = new Set(corpus.rules.map((r) => normalizeRuleNumber(r.rule_number)).filter(Boolean))
+  const cardNameById = new Map(corpus.cards.map((c) => [c.id, c.name]))
+  // An id is what a citation carries, so two rulings sharing one leave a reader
+  // who follows that citation unable to tell which row answered.
+  const rulingIds = new Set<string>()
   corpus.rulings.forEach((ruling, index) => {
-    for (const card of ruling.cards)
-      if (card.id && !cardIds.has(card.id))
-        report("rulings.json", index, `cards holds id "${card.id}", which names no card`)
+    if (rulingIds.has(ruling.id))
+      report("rulings.json", index, `id "${ruling.id}" is already used by an earlier ruling`, ruling.id)
+    rulingIds.add(ruling.id)
+
+    for (const card of ruling.cards) {
+      if (card.id && !cardIds.has(card.id)) {
+        report("rulings.json", index, `cards holds id "${card.id}", which names no card`, ruling.id)
+        continue
+      }
+      // The id resolves and the NAME is what an answer prints. A row whose two
+      // halves disagree passes every other check and shows a reader the wrong
+      // card, which is the failure this collection exists to prevent.
+      const real = card.id ? cardNameById.get(card.id) : undefined
+      if (real && card.name && real !== card.name)
+        report(
+          "rulings.json",
+          index,
+          `cards names "${card.name}", and the id "${card.id}" is "${real}". An answer prints the name.`,
+          ruling.id,
+        )
+    }
 
     for (const number of ruling.rule_numbers)
       if (!ruleNumberKeys.has(normalizeRuleNumber(number)))
-        report("rulings.json", index, `rule_numbers holds "${number}", which names no rule`)
+        report("rulings.json", index, `rule_numbers holds "${number}", which names no rule`, ruling.id)
 
     // A card ruling is found by card name. One that names no card is reachable
     // only by a text search, which is exactly the lookup a reader does not do.
     if (ruling.kind === "card" && ruling.cards.length === 0)
-      report("rulings.json", index, 'kind is "card" but no card is named, so no card lookup can find it')
+      report(
+        "rulings.json",
+        index,
+        'kind is "card" but no card is named, so no card lookup can find it',
+        ruling.id,
+      )
 
     if (ruling.source_url) {
       let scheme = ""
       try {
         scheme = new URL(ruling.source_url).protocol
       } catch {
-        report("rulings.json", index, `source_url "${ruling.source_url}" is not a URL`)
+        report("rulings.json", index, `source_url "${ruling.source_url}" is not a URL`, ruling.id)
       }
       if (scheme && scheme !== "https:")
-        report("rulings.json", index, `source_url uses "${scheme}", and only https: is allowed`)
+        report("rulings.json", index, `source_url uses "${scheme}", and only https: is allowed`, ruling.id)
     }
   })
 

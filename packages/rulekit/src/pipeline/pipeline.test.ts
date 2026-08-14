@@ -356,7 +356,9 @@ describe("the pipeline", () => {
       (await build([staticAnswersStage(store)]).run({ question: "rulings for Stonewall Sentry" })).answer
         ?.text ?? ""
     assert.match(text, /Official ruling, from Paper Kingdoms Rules Team/)
-    assert.match(text, /Unofficial ruling, from Kingdoms Judge Circle/)
+    // A row carrying `source_url` prints the name as a LINK. A licence such as
+    // CC BY-SA asks for a credit and a link, and the corpus holds both.
+    assert.match(text, /Unofficial ruling, from \[Kingdoms Judge Circle\]\(https:\/\//)
   })
 
   test("names the rules a ruling rests on rather than paraphrasing them", async () => {
@@ -374,6 +376,37 @@ describe("the pipeline", () => {
   test("says a known card has no ruling, rather than staying silent", async () => {
     const result = await build([staticAnswersStage(store)]).run({ question: "rulings for Thornwood Warden" })
     assert.match(result.answer?.text ?? "", /no published ruling/)
+  })
+
+  test("answers a ruling's own question word for word, with no model", async () => {
+    // This is the phrasing a reader is most likely to type, because it is the
+    // phrasing they read on the publisher's page. Sending it to a model to have
+    // the model find and repeat this same pair costs a call and can only be less
+    // faithful than the pair itself.
+    const result = await build([staticAnswersStage(store)]).run({
+      question: "Does Stonewall Sentry's Guard force an attack to be blocked by it?",
+    })
+    assert.equal(result.answer?.servedBy, "static")
+    assert.equal(result.answer?.source, "rulings")
+    assert.match(result.answer?.text ?? "", /Guard makes an attacking unit/)
+    assert.deepEqual(result.answer?.citations?.[0]?.ruling, "rul-001")
+  })
+
+  test("reads that question through case, spacing, and a missing question mark", async () => {
+    const result = await build([staticAnswersStage(store)]).run({
+      question: "does stonewall sentrys  guard force an attack to be blocked by it",
+    })
+    assert.match(result.answer?.text ?? "", /Guard makes an attacking unit/)
+  })
+
+  test("declines a question that merely resembles a ruling's own", async () => {
+    // The match is equality, not a search. A published question and answer
+    // belong to each other, so pairing this publisher's answer with a question
+    // it was not written for would invent a claim. The agent answers instead.
+    const result = await build([staticAnswersStage(store)]).run({
+      question: "Does Stonewall Sentry's Guard force an attack?",
+    })
+    assert.equal(result.answer, null)
   })
 
   test("declines rather than claiming an unknown name has no ruling", async () => {

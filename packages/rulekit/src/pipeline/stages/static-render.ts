@@ -433,10 +433,18 @@ export function renderRulings(rulings: Ruling[], config: RenderConfig): string {
         ? `\n\n**This ruling was withdrawn.**${r.deprecation_note ? ` ${r.deprecation_note}` : ""}`
         : ""
       const rules = r.rule_numbers.length ? `\n\nRests on: ${r.rule_numbers.join(", ")}.` : ""
-      const who = r.source_name
-        ? `\n\n${r.is_official ? "Official ruling" : "Unofficial ruling"}, from ${r.source_name}` +
-          `${r.effective_date ? `, ${r.effective_date}` : ""}.`
-        : `\n\n${r.is_official ? "Official ruling" : "Unofficial ruling"}${r.effective_date ? `, ${r.effective_date}` : ""}.`
+      // The source is a LINK when the row carries one. A licence such as
+      // CC BY-SA asks for a credit and a link, and the corpus holds both, so
+      // printing only the name leaves an obligation impossible to meet without
+      // putting markup inside `source_name`.
+      const named = r.source_name
+        ? r.source_url && !UNSAFE_PATH.test(r.source_url) && !hasControlChar(r.source_url)
+          ? `[${r.source_name}](${r.source_url})`
+          : r.source_name
+        : ""
+      const label = r.is_official ? "Official ruling" : "Unofficial ruling"
+      const when = r.effective_date ? `, ${r.effective_date}` : ""
+      const who = named ? `\n\n${label}, from ${named}${when}.` : `\n\n${label}${when}.`
       return `${about}**${r.question}**\n\n${r.answer}${withdrawn}${rules}${who}`
     })
     .join("\n\n---\n\n")

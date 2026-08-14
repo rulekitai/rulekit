@@ -15,12 +15,14 @@ import * as proseModule from "./prose.ts"
 import { type AgentAnswer, resolveAnswer } from "./runtime.ts"
 import { builtinSkills, findSkill } from "./skills.ts"
 import {
+  assertReferenceToolsAreConfigured,
   assertUniqueToolNames,
   corpusContents,
   defineRulesTools,
   defineTool,
   findTool,
   type RuleTool,
+  warnAboutDeclinedSubjects,
 } from "./tools.ts"
 import {
   addStepUsage,
@@ -686,6 +688,71 @@ describe("defining a tool", () => {
     assert.equal(plain.replaces, undefined)
     assert.equal(defineTool({ ...spec, replaces: true }).replaces, true)
   })
+
+  test("types describeResult from what execute returns", () => {
+    // The compiler checks the body below. Before the second type parameter,
+    // `result` was `unknown`, and a trace label needed a cast or a guess. The
+    // reader who met it read three files to learn what to return.
+    const tool = defineTool({
+      ...spec,
+      describeResult: (result) => ({ label: `Read ${result.sku}`, kind: "looked-up" }),
+    })
+    assert.deepEqual(tool.describeResult?.({ sku: "abc" }), { label: "Read abc", kind: "looked-up" })
+  })
+})
+
+describe("a tool on a subject the assistant declines", () => {
+  const tool = (name: string, description: string) =>
+    defineTool({ name, description, inputSchema: z.object({}), execute: async () => ({}) })
+
+  /** Collect what `console.warn` was given, and put it back afterwards. */
+  function warnings(fn: () => void): string[] {
+    const original = console.warn
+    const said: string[] = []
+    console.warn = (...args: unknown[]) => said.push(args.join(" "))
+    try {
+      fn()
+    } finally {
+      console.warn = original
+    }
+    return said
+  }
+
+  test("warns, and names the procedure that fixes it", () => {
+    // The failure this prevents is silent and close to unfindable: the tool is
+    // registered, its description is right, `execute` works when called by
+    // hand, and the model never calls it once.
+    const said = warnings(() =>
+      warnAboutDeclinedSubjects([tool("find_events", "Read the event schedule for a shop.")], []),
+    )
+    assert.equal(said.length, 1)
+    assert.match(said[0] ?? "", /find_events/)
+    assert.match(said[0] ?? "", /extraSkills/)
+    assert.match(said[0] ?? "", /requiresTool: "find_events"/)
+  })
+
+  test("says nothing once a procedure names the tool", () => {
+    // The procedure IS the fix, so a caller who wrote one is right and must not
+    // be told off for it on every start.
+    const said = warnings(() =>
+      warnAboutDeclinedSubjects(
+        [tool("find_events", "Read the event schedule for a shop.")],
+        [{ requiresTool: "find_events" }],
+      ),
+    )
+    assert.deepEqual(said, [])
+  })
+
+  test("says nothing about the documented example", () => {
+    // `check_stock` reads a shop's shelf, sits on no declined subject, and is
+    // reported to work. A warning here would be false, and one false warning
+    // costs a reader their trust in every later one.
+    const checkStock = tool("check_stock", "Read how many copies of a card this shop holds.")
+    assert.deepEqual(
+      warnings(() => warnAboutDeclinedSubjects([checkStock], [])),
+      [],
+    )
+  })
 })
 
 describe("two tools of one name", () => {
@@ -749,5 +816,56 @@ describe("a procedure whose tool is absent", () => {
     assert.equal(findSkill("rulings_lookup")?.requiresTool, "list_rulings")
     assert.equal(findSkill("sequence")?.requiresTool, undefined)
     assert.equal(findSkill("interaction")?.requiresTool, undefined)
+  })
+})
+
+describe("reference tools built by hand", () => {
+  const byHand = (name: string) =>
+    defineTool({ name, description: "d", inputSchema: z.object({}), execute: async () => ({}) })
+
+  test("throw when they arrive through extraTools with no references option", () => {
+    // The README calls this mistake unrecoverable, because the tools carry no
+    // instruction block and the answer then cites a website as though it were
+    // the rules. Nothing downstream can separate the two.
+    assert.throws(
+      () => assertReferenceToolsAreConfigured([byHand("fetch_reference")], false),
+      /must come through the `references` option/,
+    )
+    assert.throws(() => assertReferenceToolsAreConfigured([byHand("list_references")], false), /references/)
+  })
+
+  test("pass when the references option built them", () => {
+    assert.doesNotThrow(() => assertReferenceToolsAreConfigured([byHand("fetch_reference")], true))
+  })
+
+  test("leave an ordinary custom tool alone", () => {
+    assert.doesNotThrow(() => assertReferenceToolsAreConfigured([byHand("check_stock")], false))
+  })
+})
+
+describe("adding a procedure of your own", () => {
+  const skill = (name: string, requiresTool?: string) => ({
+    name,
+    description: "d",
+    body: "b",
+    ...(requiresTool ? { requiresTool } : {}),
+  })
+
+  test("extraSkills adds, where skills replaces", () => {
+    // `extraTools` adds and `skills` replaces, and the names give no hint of the
+    // difference. Somebody who sets `skills` without spreading the built-ins
+    // silently deletes the card and rulings procedures.
+    const builtin = builtinSkills().map((s) => s.name)
+    const added = [...builtinSkills(), skill("shop_events")].map((s) => s.name)
+    assert.ok(added.length === builtin.length + 1)
+    assert.ok(added.includes("shop_events"))
+    for (const name of builtin) assert.ok(added.includes(name), `${name} must survive`)
+  })
+
+  test("a procedure naming an absent tool is dropped from either list", () => {
+    const keep = (list: ReturnType<typeof skill>[], names: string[]) =>
+      list.filter((s) => !s.requiresTool || new Set(names).has(s.requiresTool)).map((s) => s.name)
+    assert.deepEqual(keep([skill("a", "missing_tool"), skill("b")], ["check_stock"]), ["b"])
+    assert.deepEqual(keep([skill("a", "check_stock")], ["check_stock"]), ["a"])
   })
 })

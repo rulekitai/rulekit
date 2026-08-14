@@ -2,7 +2,14 @@ import type { RuleStore } from "../../corpus/store.ts"
 import { answerKey, DEFAULT_TTL_SECONDS } from "../cache.ts"
 import type { Answer, AskContext, Stage } from "../types.ts"
 import { type ClassifyConfig, classify, DEFAULT_CLASSIFY_CONFIG } from "./static-classify.ts"
-import { indexStaticData, renderCardAnswer, renderRule, type StaticData } from "./static-render.ts"
+import {
+  indexStaticData,
+  type RenderConfig,
+  renderCardAnswer,
+  renderRule,
+  renderRulings,
+  type StaticData,
+} from "./static-render.ts"
 
 /**
  * Answers that are a row lookup, not a reasoning job.
@@ -78,6 +85,50 @@ function createDataLoader(store: RuleStore, ttlSeconds: number) {
   }
 }
 
+/**
+ * The ruling that asks the reader's exact question, rendered.
+ *
+ * A ruling carries the question it answers, in the words whoever published it
+ * chose. That is the phrasing a reader is most likely to type, because it is the
+ * phrasing they read on the publisher's page or tapped in a list of suggestions.
+ * Sending it to a model to have the model find and repeat that same pair costs a
+ * call and can only be less faithful than the pair itself.
+ *
+ * THE MATCH IS EQUALITY, not a search. `getRulingByQuestion` folds both sides for
+ * case, spacing, accents, and a trailing question mark, and matches nothing else.
+ * A question that is merely similar goes to the agent, which can read the rules
+ * and weigh them, rather than being handed one publisher's answer to a question
+ * nobody asked.
+ */
+async function rulingByQuestion(
+  store: RuleStore,
+  ctx: AskContext,
+  renderConfig: RenderConfig,
+): Promise<Answer | null> {
+  // A store written before this lookup existed has no such method, which reads
+  // as "no ruling asks this" and costs the reader nothing but a model call.
+  if (!store.getRulingByQuestion) return null
+  const ruling = await store.getRulingByQuestion(ctx.question).catch(() => null)
+  if (!ruling) return null
+  return {
+    text: renderRulings([ruling], renderConfig),
+    citations: [
+      {
+        ruling: ruling.id,
+        card: ruling.cards.map((card) => card.name).filter(Boolean),
+        ruleNumbers: ruling.rule_numbers,
+        sourceName: ruling.source_name,
+        sourceUrl: ruling.source_url,
+        official: ruling.is_official,
+      },
+    ],
+    source: "rulings",
+    servedBy: "static",
+    latencyMs: 0,
+    model: null,
+  }
+}
+
 export function staticAnswersStage(store: RuleStore, options: StaticStageOptions = {}): Stage {
   const config = { ...DEFAULT_CLASSIFY_CONFIG, ...options.classify }
   const load = createDataLoader(store, options.dataTtlSeconds ?? 900)
@@ -89,36 +140,13 @@ export function staticAnswersStage(store: RuleStore, options: StaticStageOptions
     // cannot see.
     when: (ctx: AskContext) => !ctx.isFollowUp,
     async run(ctx: AskContext): Promise<Answer | null> {
-      const c = classify(ctx.question, config)
-      if (c.intent === "NONE") return null
-
       const renderConfig = { linkScheme: ctx.profile.cards.enabled ? ctx.profile.cards.linkScheme : "" }
 
-      if (c.intent === "RULE_N") {
-        const rule = await store.getRuleByNumber(c.ruleNumber ?? "")
-        if (!rule) return null
-        return {
-          text: renderRule(rule),
-          citations: [{ ruleNumber: rule.rule_number }],
-          source: "rule",
-          servedBy: "static",
-          latencyMs: 0,
-          model: null,
-        }
-      }
-
-      const data = await load()
-      const rendered = renderCardAnswer(c, data, renderConfig)
-      if (!rendered) return null
-
-      const answer: Answer = {
-        text: rendered.text,
-        citations: rendered.citations,
-        source: rendered.source,
-        servedBy: "static",
-        latencyMs: 0,
-        model: null,
-      }
+      // Rows first, then the published question and answer. The order matters
+      // where both could answer: a banned-list row is the current verdict, and a
+      // ruling is one publisher reading the text on one day, so the row wins.
+      const answer = (await fromRows()) ?? (await rulingByQuestion(store, ctx, renderConfig))
+      if (!answer) return null
       // Write it back so the same question costs nothing next time, even though
       // producing it cost nothing this time: the classifier and the index build
       // are still work, and a popular question repeats a great deal.
@@ -130,6 +158,37 @@ export function staticAnswersStage(store: RuleStore, options: StaticStageOptions
         )
         .catch((err) => console.error("[rulekit] static write-back failed:", err))
       return answer
+
+      /** The half of this stage that reads a row the question points straight at. */
+      async function fromRows(): Promise<Answer | null> {
+        const c = classify(ctx.question, config)
+        if (c.intent === "NONE") return null
+
+        if (c.intent === "RULE_N") {
+          const rule = await store.getRuleByNumber(c.ruleNumber ?? "")
+          if (!rule) return null
+          return {
+            text: renderRule(rule),
+            citations: [{ ruleNumber: rule.rule_number }],
+            source: "rule",
+            servedBy: "static",
+            latencyMs: 0,
+            model: null,
+          }
+        }
+
+        const data = await load()
+        const rendered = renderCardAnswer(c, data, renderConfig)
+        if (!rendered) return null
+        return {
+          text: rendered.text,
+          citations: rendered.citations,
+          source: rendered.source,
+          servedBy: "static",
+          latencyMs: 0,
+          model: null,
+        }
+      }
     },
   }
 }

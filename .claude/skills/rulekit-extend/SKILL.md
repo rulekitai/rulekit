@@ -75,15 +75,24 @@ const shopLookup = {
   requiresTool: "check_stock",
 }
 
-createRulesAgent({ ..., skills: [...builtinSkills(), shopLookup] })
+createRulesAgent({ ..., extraTools: [checkStock], extraSkills: [shopLookup] })
 ```
 
 **Set `requiresTool`.** The agent drops a procedure whose tool it does not
 offer. Without it, the model reads a page telling it to call a tool that is not
 there.
 
-**Spread `builtinSkills()`.** Passing `skills` replaces the whole list, so the
-shipped procedures disappear when you leave them out.
+**Use `extraSkills`, and not `skills`.** `extraSkills` ADDS to the built-in
+procedures. `skills` REPLACES them, so passing one procedure there deletes the
+card and rulings procedures, and the assistant quietly gets worse at its main
+job. Pass `skills` only when you mean to write the whole set.
+
+**A procedure is also how a declined subject becomes answerable.** The
+instructions tell the assistant to decline whole subjects — shops, events,
+prices, real people, and more — and registering a tool does not amend that list.
+A tool whose subject sits on it is never called, and nothing reports that: the
+model answers that the subject is outside what it covers, and the tool records
+zero calls. `docs/custom-tools.md` prints the whole list.
 
 ## Step 5: add the Eve file, when you run the Eve template
 
@@ -110,7 +119,8 @@ AI SDK runtime and does nothing on Eve.
 | `"X" is not a usable tool name` | The name breaks the pattern. Start with a letter |
 | `input` is typed `never` | You wrote a plain object. Use `defineTool` |
 | The model never calls the tool | The description names no trigger |
-| The shipped procedures disappeared | You passed `skills` without `builtinSkills()` |
+| The shipped procedures disappeared | You passed `skills` rather than `extraSkills` |
+| The model never calls the tool, and says the subject is outside what it covers | Your subject is on the decline list. Write a procedure |
 | It works on the AI SDK and not on Eve | Add the file under `agent/tools/` |
 
 ## Completion criterion

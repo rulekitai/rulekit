@@ -47,11 +47,11 @@ ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
   because a copied corpus must not grant a server outbound network access. The
   option adds an instruction block as well as the tools. Without that block, the
   model cites a fetched page as though it were the rules.
-- **Nine rules on every fetch**, and each rule has a test that needs no network:
+- **Ten rules on every fetch**, and each rule has a test that needs no network:
   `https` only; a host allowlist that accepts subdomains and refuses
-  look-alikes; a redirect checked, and followed at most once; no credentials; a
-  timeout; a byte cap applied while reading; a content-type check; a count for
-  each question; and a cache by address.
+  look-alikes; a path prefix the operator refused; a redirect checked, and
+  followed at most once; no credentials; a timeout; a content-type check; a byte
+  cap applied while reading; a count for each question; and a cache by address.
 - **An outside claim is marked outside the model's prose.** The tool writes the
   site, the address, and whether it is official onto its trace step. The trace
   says so in its closed summary, and `readSources` in `@rulekitai/ui/message`
@@ -77,6 +77,54 @@ ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
   directory only, so the file at the root of the repository never travelled.
   Apache 2.0 section 4(d) asks that it does, and the README already said it did.
   The build copies it into each package.
+- **`docs/`, `CHANGELOG.md`, and the eight skills now travel inside
+  `@rulekitai/rulekit`.** The README links seven documents, and a reader who
+  installed from npm could open none of them: `files` reads paths inside the
+  package directory only, and every document sat at the root of this repository.
+  The README was then the whole documentation set for three features it does not
+  fully explain. `@rulekitai/ui` ships the changelog too. Three tests hold this
+  in place: every relative link names a file, every link into this project's own
+  branch names a file, and every document the published README links is inside
+  the shipped `files`.
+- **A ruling answers its own question, free.** Ask the exact question a ruling
+  asks and the answer arrives from the rows in a few milliseconds, with no model
+  call. Both sides are folded for case, spacing, accents, and a final question
+  mark. The match is EQUALITY and never a search: a ruling that merely resembles
+  the question goes to the agent, because a published question and answer belong
+  to each other, and pairing one publisher's answer with a question it was not
+  written for states something nobody published. `RuleStore` gained an optional
+  `getRulingByQuestion`, and both stores implement it.
+- **`disallowPaths` on a reference site.** A website states which addresses an
+  automatic reader may fetch, and rulekit gave the operator no way to honour
+  that: the nine checks held no path rule. An address under a listed prefix is
+  now refused, and the rule applies to a redirect target as well, so a permitted
+  address cannot redirect into a refused one. The README now also states the two
+  things these checks do NOT do: nothing reads `robots.txt`, and
+  `maxFetchesPerTurn` caps one question rather than a rate.
+- **`extraSkills` adds a procedure without replacing the built-in ones.**
+  `skills` REPLACES the set, so a caller who passed one procedure silently
+  deleted the card and rulings procedures. The names gave no hint of the
+  difference: `extraTools` adds and `skills` replaced.
+- **`profile.attribution` is one sentence for the READER.** Every corpus carries
+  a `NOTICE.txt`, and that file is written for the developer choosing a corpus:
+  it names licences, directories, and what may be sold. The person asking
+  whether a unit can block has no use for any of it, so an application that
+  printed the file verbatim showed them the wrong document. A corpus author now
+  writes the reader's sentence once. Nothing sends it to the model. `rulekit
+  validate` prints a note when a corpus carries a notice and sets no
+  attribution, and still reports the corpus valid. All five corpora carry one.
+- **`createRulesAgent` warns about a tool on a declined subject.** The failure
+  it names is silent and close to unfindable: the tool is registered, its
+  description is right, `execute` works when called by hand, and the model never
+  calls it once, because the instructions tell the assistant to decline that
+  whole subject. The warning names the tool, the subject, and the procedure that
+  grants it. It disappears once a procedure names the tool. It warns rather than
+  throwing, and every word it matches is one a rules tool would not use, because
+  a false warning costs a reader their trust in every later one.
+- **`zod` is an optional peer dependency, pinned to version 4.** It was a plain
+  dependency, so `import { z } from "zod"` in an application failed with
+  `Cannot find package 'zod'`, and the Install section never mentioned it. The
+  version matters as well: `defineTool` compares a schema against the copy here.
 
 - **`defineTool` writes a tool with its input type inferred.** `RuleTool.execute`
   takes `never`, so one shared shape accepts every concrete input type. A plain
@@ -123,6 +171,20 @@ ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
   two checks compare an answer against the corpus, so it would grade a quotation
   from a website as a fabrication. A live page would also make one run score
   differently from the next.
+- **`describeResult` receives the result `execute` returned**, rather than
+  `unknown`. `defineTool` infers it, so a trace label is checked by the compiler.
+  The README shows the four fields it may set, and says that a tool reading
+  anything outside the corpus must set `source`.
+- **The README prints the decline list.** The assistant is told to decline whole
+  subjects, and registering a tool does not amend that list: a tool on a
+  declined subject is never called, no error appears, and the tool records zero
+  calls. The list was only in `src/agent/instructions/base.md`. A test fails if
+  the printed copy drifts from the instructions.
+- **The compiled database is version 3.** Rulings carry a folded copy of their
+  own question, which is what answers a reader who types it. `SqliteStore.open`
+  refuses an older file and names the command that rebuilds it.
+- **The ten reference-site rules are numbered 1 to 10** in the code, the tests,
+  and the README, and they are listed in the order they run.
 - `CLAUDE.md` said seven packages were published. Two are.
 - **The documents now follow ASD-STE100 Simplified Technical English.** Every
   Markdown file carries one idea per sentence, the active voice, and no idiom.
@@ -131,6 +193,44 @@ ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
   no network connection of its own, which `fetch_reference` made untrue; and
   `data/README.md` said both rulings files mark their rulings unofficial, while
   `data/demo` marks 7 of 9 official.
+
+
+### Fixed
+
+- **`source_url` reaches the screen.** A ruling that carries a publisher and an
+  address printed the publisher alone, so a corpus under a licence such as
+  CC BY-SA could not meet its own terms without putting markup inside a field
+  called `source_name`. The name is now a link.
+- **A cached answer that a model wrote no longer reads as "no AI wrote this".**
+  The server kept the origin correctly across the cache, and the interface lost
+  it: `ChatMessage` carried no `source`, and the non-streaming path read
+  `servedBy` where the streaming path read `source`. A cache hit always takes
+  the non-streaming path, so every repeated question was mislabelled. The
+  disclaimer callback now receives the origin as a third argument.
+- **`rulekit validate` refuses two rulings that share an id.** The id is what a
+  citation carries, so a reader following one to a corpus with two such rows
+  cannot be told which one answered.
+- **`rulekit validate` refuses a ruling whose card name disagrees with its card
+  id.** The id resolved, so the link check passed, and the rendered answer
+  prints the NAME. A ruling that names the wrong card is worse than no ruling.
+- **`rulekit validate` names the ruling, not the array index.** It reported
+  `[item 0]`, which is a counting exercise in a file of four hundred rows, while
+  the id sat in the row. It also said "1 link point at something"; it now says
+  "points".
+- **A reference site whose `host` holds a path or a space is refused.** The type
+  said "no scheme and no path" and nothing enforced it, so
+  `host: "example.com/cards"` matched every path on the host. A person who
+  writes that wants a restriction the field cannot give.
+- **`rulekit ask` names five shapes of question, with an example of each.** It
+  named two, and never mentioned the banned list or rulings. The reader most
+  likely to meet that message is the one who just wrote `rulings.json`. A test
+  now runs every example the message prints and fails if one does not answer.
+- **Fifteen of the forty-one command tests ran invisibly.** The test helper
+  replaced `process.stdout.write` to capture what a command printed, and the
+  test runner reports its own results through that same function, so the runner
+  lines were swallowed. The summary printed "tests 26 / pass 26 / fail 0", and a
+  deliberately broken test still printed "fail 0". Only the exit code stayed
+  honest. The command now writes through an `output` object a test replaces.
 
 ### Breaking
 

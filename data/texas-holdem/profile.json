@@ -118,5 +118,10 @@
     "Texas Hold'em uses one standard pack of 52 cards, so this corpus holds no card database and the card tools are switched off. A question about a single card is a question about the rules of rank and suit, and rule 100.1 answers it.",
     "The word hand carries two meanings at a poker table: the whole deal from the blinds to the showdown, and the best five cards a player makes. Say which one you mean every time you use it.",
     "Table stakes, blind sizes, and rake are house settings. This rulebook states the structure. It does not state the stakes of any one game."
-  ]
+  ],
+  "attribution": {
+    "text": "These Texas hold 'em rules are a plain reading of common house rules. This assistant is unofficial, and the rules data is in the public domain under CC0 1.0.",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "official": false
+  }
 }

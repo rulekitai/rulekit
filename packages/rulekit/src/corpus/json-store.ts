@@ -1,6 +1,6 @@
 import { Bm25Index } from "./bm25.ts"
 import type { ListOptions, RuleStore, RulingListOptions, SearchOptions } from "./store.ts"
-import { nameStem, normalizeName, normalizeRuleNumber } from "./text.ts"
+import { nameStem, normalizeName, normalizeQuestion, normalizeRuleNumber } from "./text.ts"
 import type {
   BanlistEntry,
   Card,
@@ -60,6 +60,7 @@ export class JsonStore implements RuleStore {
   #errataByCard: Map<string, Erratum[]>
   #banlistByCard: Map<string, BanlistEntry[]>
   #rulingsByCard: Map<string, Ruling[]>
+  #rulingsByQuestion: Map<string, Ruling>
   #ruleIndex: Bm25Index<Rule>
   #termIndex: Bm25Index<Term>
   #cardIndex: Bm25Index<Card>
@@ -102,6 +103,19 @@ export class JsonStore implements RuleStore {
         if (found) found.push(ruling)
         else this.#rulingsByCard.set(key, [ruling])
       }
+    }
+
+    // A reader who types the question a ruling asks is answered from that
+    // ruling, so the question is a key of its own. A live ruling wins over a
+    // withdrawn one when two ask the same thing.
+    this.#rulingsByQuestion = new Map()
+    for (const ruling of corpus.rulings) {
+      const key = normalizeQuestion(ruling.question)
+      if (!key) continue
+      const found = this.#rulingsByQuestion.get(key)
+      // The first ruling wins within each of the two groups, which is the order
+      // `ORDER BY is_deprecated, position` gives in the SQLite store.
+      if (!found || (found.is_deprecated && !ruling.is_deprecated)) this.#rulingsByQuestion.set(key, ruling)
     }
 
     // Deprecated rules and bare section headers stay out of the index, for the
@@ -311,6 +325,12 @@ export class JsonStore implements RuleStore {
 
   async searchRulings(query: string, options: { limit?: number } = {}): Promise<Ruling[]> {
     return this.#rulingIndex.search(query, clampLimit(options.limit, 8)).map(({ item }) => item)
+  }
+
+  async getRulingByQuestion(question: string): Promise<Ruling | null> {
+    const key = normalizeQuestion(question)
+    if (!key) return null
+    return this.#rulingsByQuestion.get(key) ?? null
   }
 
   async searchCards(query: string, options: { limit?: number } = {}): Promise<CardSummary[]> {

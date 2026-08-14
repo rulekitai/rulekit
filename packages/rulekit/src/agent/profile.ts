@@ -131,6 +131,33 @@ export const profileSchema = z.object({
     })
     .prefault({}),
 
+  /**
+   * One sentence for the READER about who owns these rules.
+   *
+   * Every corpus already carries a `NOTICE.txt`, and that file is written for a
+   * developer choosing a corpus: it talks about licences, directories, and what
+   * you may sell. The person asking whether a unit can block has no directory
+   * and no reason to read any of it, so an application that prints the file
+   * verbatim shows them the wrong document.
+   *
+   * The two audiences are both real and one file cannot serve both. Write the
+   * reader's sentence here, once, and every application built on this corpus
+   * shows the same one. `NOTICE.txt` goes back to being the developer's file.
+   *
+   * NOTHING SENDS THIS TO THE MODEL. It is not instruction; it is a credit an
+   * interface prints under an answer.
+   */
+  attribution: z
+    .object({
+      /** The sentence itself, e.g. "Riot Games, Inc. owns the Riftbound rules data." */
+      text: nonEmpty,
+      /** Where a reader goes to read the terms in full. */
+      url: z.string().trim().default(""),
+      /** True only when the rights holder publishes this assistant. */
+      official: z.boolean().default(false),
+    })
+    .optional(),
+
   /** Anything else, one paragraph per entry. Appended last. */
   extraGuidance: z.array(nonEmpty).default([]),
 })
