@@ -339,6 +339,67 @@ weighs them; the free stage cannot.
 **Write `question` as the reader would type it.** It is the phrasing they read
 on the publisher's page, and it is the one phrasing that costs nothing.
 
+## profile.json
+
+The profile says how the assistant SPEAKS about this game: its words, its card
+fields, its symbols, and what it declines.
+[Adding a game](adding-a-game.md#2-the-profile) covers those field by field.
+
+One field belongs here instead, because it describes the DATA rather than the
+speech.
+
+### attribution
+
+One sentence for the READER about who owns these rules.
+
+```json
+"attribution": {
+  "text": "Riot Games, Inc. owns the Riftbound rules data. This is an unofficial community project, and Riot Games does not endorse it.",
+  "url": "https://www.riotgames.com/en/legal",
+  "official": false
+}
+```
+
+| Field | Necessary | What it holds |
+|---|---|---|
+| `text` | Yes | The sentence itself. Write it for a reader, not for a developer |
+| `url` | No | Where a reader goes to read the terms in full |
+| `official` | No | True only when the rights holder publishes this assistant. Default false |
+
+**`official` here is not `official` on a ruling.** On a ruling it means the
+publisher wrote that ruling. Here it means the publisher runs this whole
+assistant. Almost every assistant sets false, and false is what says "unofficial
+community project" to a reader who is deciding how much to trust the answer.
+
+**`url` is a link on the credit, and nothing reads it for you.** Render all
+three yourself:
+
+```tsx
+<RuleKitProvider
+  legalNote={
+    <>
+      {profile.attribution?.text}{" "}
+      {profile.attribution?.url ? <a href={profile.attribution.url}>Terms</a> : null}
+    </>
+  }
+/>
+```
+
+**Nothing sends `attribution` to the model.** It is a credit an interface
+prints, and not an instruction.
+
+**Why the field exists.** A corpus whose data belongs to somebody carries a
+`NOTICE.txt` beside its JSON, and that file is written for the developer
+choosing the corpus: it names licences, directories, and what may be sold. The
+person asking whether a unit can block has no use for any of it. An application
+that printed the notice verbatim showed that person the wrong document. The
+corpus author writes the reader's sentence once here, and every application
+shows the same one.
+
+`rulekit validate` prints a note when a corpus carries a `NOTICE.txt` and sets
+no `attribution`. It is a note and never a failure: a corpus in the public
+domain may reasonably say nothing to a reader.
+
 ## What validation examines
 
 The command `rulekit validate` examines more than the format:

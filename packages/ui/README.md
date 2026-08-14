@@ -52,16 +52,16 @@ components read CSS variables, so your theme controls their appearance.
 
 ## Say something true under each answer
 
-`disclaimer` takes a node, or a function. Take the function. It receives two
-facts, and both change what is true of the answer above it.
+`disclaimer` takes a node, or a function. Take the function. It receives three
+facts, and each one changes what is true of the answer above it.
 
 ```tsx
 import { answerSource, type ReadSource } from "@rulekitai/ui/message"
 
 <RuleKitProvider
-  disclaimer={(servedBy: string, sources: ReadSource[]) => {
+  disclaimer={(servedBy: string, sources: ReadSource[], source?: string) => {
     const base =
-      answerSource(servedBy) === "model"
+      answerSource(servedBy, source) === "model"
         ? "Written by an AI from the rules data."
         : "Read from the rules data, with no AI."
     return sources.length
@@ -71,10 +71,18 @@ import { answerSource, type ReadSource } from "@rulekitai/ui/message"
 />
 ```
 
-**`servedBy` says whether a model wrote the answer.** Most answers come from the
+**`servedBy` is the stage that served the answer.** Most answers come from the
 free stages, where no model runs. One fixed sentence about an AI therefore
 states the opposite of what happened, and it contradicts the trace line above
 it.
+
+**`source` is where the facts came from, which is NOT the stage that served
+them.** PASS BOTH TO `answerSource`, as above. A cache hit serves an answer a
+model wrote earlier, and `servedBy` then reads `"cache"`. Reading the stage
+alone labels a model's own words "no AI wrote this", on every repeated question,
+which is every question a cache exists for. `answerSource` reads the origin
+first and falls back to the stage, so a one-argument call still compiles and
+still gets this wrong.
 
 **`sources` names any website that the answer read.** It is empty for almost
 every answer. It holds a name only when the server was given reference sites.

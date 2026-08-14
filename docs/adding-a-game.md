@@ -59,7 +59,18 @@ This is the shortest profile that works:
 { "game": { "name": "My Game" }, "cards": { "enabled": false } }
 ```
 
-Then make it more exact.
+Then make it more exact. Every field below is optional.
+
+### The sentence that says what this assistant is
+
+```json
+"identity": "You are the rules assistant for My Game, a two-player card game."
+```
+
+**Leave it unset.** The assistant writes this sentence from `game.name` and
+`game.description`, and a generated sentence stays correct when the game is
+renamed. Set it only when the generated one reads wrong, and then remember that
+you now own it.
 
 ### The words of your game
 
@@ -144,6 +155,23 @@ The refusals that apply to every game are part of the code: strategy, prices,
 real people, and questions about a different subject. This section adds to them.
 [Custom tools](custom-tools.md) prints the whole list, and explains why a tool
 on one of those subjects is never called.
+
+### Anything else you need to say
+
+```json
+"extraGuidance": [
+  "A question about the digital client is about a different product. Say so, and answer the paper rule.",
+  "Rule numbers in this game carry a letter suffix. Print it."
+]
+```
+
+One paragraph for each entry, added to the end of the instructions. Use it for a
+fact about your game that no other field holds.
+
+**Reach for it last.** Every entry costs context on every question, including
+the questions it has nothing to do with. A fact that fits `vocabulary` or
+`scope` belongs there, where the assistant reads it in a shape it already
+understands.
 
 ### The sentence a reader sees
 

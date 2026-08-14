@@ -493,7 +493,17 @@ export function defineReferenceTools(options: ReferenceOptions): RuleTool[] {
       },
       describeResult(result) {
         const page = result as Partial<ReferencePage> | { error?: string } | null
-        if (!page || typeof page !== "object" || !("url" in page) || !page.url) return undefined
+        if (!page || typeof page !== "object") return undefined
+        // A read that did not happen. The tool returns the refusal as an
+        // ordinary result, so the runtime marks the step "completed", and the
+        // reader watching the trace then sees a refused read reported as a
+        // finished one. `rejected` is the true word, and it is what the
+        // interface already counts and colours.
+        if (!("url" in page) || !page.url) {
+          return "error" in page && page.error
+            ? { label: "Refused a reference read", kind: "read", status: "rejected" }
+            : undefined
+        }
         return {
           label: `Read ${page.site ?? "a reference site"}`,
           kind: "read",

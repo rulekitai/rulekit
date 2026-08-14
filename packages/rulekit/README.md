@@ -340,13 +340,27 @@ This is the list, and it is the most behaviour-determining text in the package:
 > - Anything not about this game, including other games, general conversation,
 >   programming, translation, medical, legal, or financial questions.
 
-`check_stock` above works because "how many copies are in stock" reads as a card
-question. A `find_events` tool does not, because events are on the list. Read
-the list before you write a tool, and check whether your subject sits on it.
+**The list is about the QUESTION a reader asks, and not about your tool's
+name.** That is the test to apply. Read the question your tool exists to answer,
+and ask whether the assistant would decline that question from a reader who had
+no tool at all.
 
-`createRulesAgent` warns when it recognises a declined subject in a tool's name
-or description, and stops warning once a procedure names that tool. The warning
-is a word search, so it can miss one. Read the list yourself as well.
+- "How many copies of Called Shot does the shop have?" is a question about a
+  card. `check_stock` is called, and it works.
+- "Where can I play Constructed in Austin this week?" is a question about events
+  and locations. The assistant declines it, and `find_events` is never called.
+
+Both tools have a shop in them. Only one has a declined SUBJECT. A tool called
+`find_shop_stock` is the first case and works; a tool called `find_shop_hours`
+is the second and does not.
+
+**A separate, cruder net also warns you.** `createRulesAgent` searches a tool's
+name and description for thirteen words, and warns when it finds one. The word
+list deliberately omits `shop`, `store`, `trade`, `order`, and `grading`: each
+is an ordinary word in some game, and a warning that fires on `check_stock`
+would be false. So the warning catches the plain cases and misses the subtle
+ones. **Apply the question test yourself; do not wait to be warned.** The
+warning stops once a procedure names the tool.
 
 **Write a procedure to grant the subject.** A procedure is a short document the
 assistant reads when a question matches its description. It is what tells the

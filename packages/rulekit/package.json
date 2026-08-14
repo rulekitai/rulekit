@@ -1,6 +1,6 @@
 {
   "name": "@rulekitai/rulekit",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A grounded rules assistant: the corpus, the agent, the answer pipeline, the HTTP handler, and the rulekit command.",
   "keywords": [
     "rules",

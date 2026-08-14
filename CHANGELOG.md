@@ -13,6 +13,12 @@ would be an invented one.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-14
+
+The same reader took this build, deleted every workaround they had written, and
+reported again. Fifteen of their seventeen issues were closed; the entries below
+close the rest, and the five things they found on the way.
+
 A player asked whether rulekit answers the harder questions, and named a
 community rulings site. Two parts were missing. A corpus held no place for a
 ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
@@ -121,6 +127,35 @@ ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
   grants it. It disappears once a procedure names the tool. It warns rather than
   throwing, and every word it matches is one a rules tool would not use, because
   a false warning costs a reader their trust in every later one.
+- **The declined-subject warning fires while the agent is built.** It sat inside
+  the lazy setup, so it printed after the server had started and its log had
+  been read, in the middle of the first reader's request, once per process. The
+  whole value of the warning is catching the mistake while somebody is wiring
+  the tool up. A developer wired a tool, read a clean log, and shipped a tool
+  the model never called.
+- **A refused reference read reports itself as `rejected`.** The tool hands a
+  refusal back as an ordinary result, so the runtime marked the step
+  "completed", and a reader watching the trace saw a read that never happened
+  reported as a finished one. `rejected` was declared in the type and set by
+  nothing. The interface already counts and colours it.
+- **`profile.attribution` is in the document that claims to hold every field.**
+  So are `identity` and `extraGuidance`, which were in no document at all. A
+  test now fails when any profile field is in no shipped document.
+- **`@rulekitai/ui`'s README taught the fault its own release notes called
+  fixed.** Its disclaimer example called `answerSource` with one argument, which
+  mislabels every cached model answer as one no model wrote. The
+  `rulekit-interface` skill did the same. A test now fails on a one-argument
+  call in any document.
+- **The `rulekit ask` miss message names the credential.** It said "the agent
+  needs a model key" and never `AI_GATEWAY_API_KEY`, which left a reader knowing
+  they needed a credential and not which name to set. The name comes from the
+  resolver, so the message cannot drift from the code.
+- **The README states the real test for a declined subject.** It said
+  `check_stock` works because the question "reads as a card question", which is
+  a judgement a reader cannot apply. The test is whether the assistant would
+  decline the QUESTION from a reader holding no tool. The word list behind the
+  warning is a separate, cruder net, and the README now says which words it
+  deliberately omits and why.
 - **`zod` is an optional peer dependency, pinned to version 4.** It was a plain
   dependency, so `import { z } from "zod"` in an application failed with
   `Cannot find package 'zod'`, and the Install section never mentioned it. The

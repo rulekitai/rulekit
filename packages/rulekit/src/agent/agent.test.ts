@@ -12,7 +12,7 @@ import { decodeEvents, deriveLabel, encodeEvent } from "./events.ts"
 import { buildInstructions } from "./instructions.ts"
 import { minimalProfile, type Profile, parseProfile } from "./profile.ts"
 import * as proseModule from "./prose.ts"
-import { type AgentAnswer, resolveAnswer } from "./runtime.ts"
+import { type AgentAnswer, createRulesAgent, resolveAnswer } from "./runtime.ts"
 import { builtinSkills, findSkill } from "./skills.ts"
 import {
   assertReferenceToolsAreConfigured,
@@ -752,6 +752,37 @@ describe("a tool on a subject the assistant declines", () => {
       warnings(() => warnAboutDeclinedSubjects([checkStock], [])),
       [],
     )
+  })
+
+  test("warns while the agent is built, and not on the first question", () => {
+    // The whole value of this warning is catching the mistake while somebody is
+    // wiring the tool up. It once sat inside the lazy setup, so it printed after
+    // the server had started and its log had been read, in the middle of a
+    // reader's request. A developer wired a tool, read a clean log, and shipped
+    // a tool the model never called.
+    const said = warnings(() => {
+      createRulesAgent({
+        store: SqliteStore.fromCorpus(EMPTY_CORPUS),
+        profile: minimalProfile("G"),
+        model: "test/model",
+        extraTools: [tool("find_events", "Read the event schedule for a shop.")],
+      })
+    })
+    assert.equal(said.length, 1, "createRulesAgent must warn before any question is asked")
+    assert.match(said[0] ?? "", /find_events/)
+  })
+
+  test("says nothing while the agent is built when a procedure grants it", () => {
+    const said = warnings(() => {
+      createRulesAgent({
+        store: SqliteStore.fromCorpus(EMPTY_CORPUS),
+        profile: minimalProfile("G"),
+        model: "test/model",
+        extraTools: [tool("find_events", "Read the event schedule for a shop.")],
+        extraSkills: [{ name: "shop_events", description: "d", body: "b", requiresTool: "find_events" }],
+      })
+    })
+    assert.deepEqual(said, [])
   })
 })
 

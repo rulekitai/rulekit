@@ -190,6 +190,21 @@ const modelId = (model: string | LanguageModelLike): string =>
  * is.
  */
 export function createRulesAgent(options: RulesAgentOptions) {
+  // HERE, and not inside the lazy setup below. The whole value of this warning
+  // is catching the mistake while somebody is wiring the tool up. Deferred to
+  // the first question, it printed after the server had started and its log had
+  // been read, in the middle of a reader's request, once per process. A
+  // developer wired a tool, read a clean log, and shipped a tool the model
+  // never called.
+  //
+  // It needs no corpus read. A caller's own procedures decide the answer, and
+  // both lists are in `options`. The filter below drops a procedure whose tool
+  // is absent, which cannot matter here: a procedure naming a tool this caller
+  // just passed is a procedure whose tool exists.
+  warnAboutDeclinedSubjects(options.extraTools ?? [], [
+    ...(options.skills ?? builtinSkills()),
+    ...(options.extraSkills ?? []),
+  ])
   // Built on the first turn, not here, because knowing which collections hold
   // anything needs a read and this function is not async. The answer cannot
   // change while a process runs: a corpus is a file, opened read-only.
@@ -224,9 +239,6 @@ export function createRulesAgent(options: RulesAgentOptions) {
       const skills = [...(options.skills ?? builtinSkills()), ...(options.extraSkills ?? [])].filter(
         (skill) => !skill.requiresTool || names.has(skill.requiresTool),
       )
-      // After the procedures are settled, because a procedure naming the tool is
-      // what makes its subject answerable, and a caller who wrote one is right.
-      warnAboutDeclinedSubjects(options.extraTools ?? [], skills)
       const instructions =
         options.instructions ??
         buildInstructions(options.profile, { skills, references: Boolean(options.references?.sites.length) })

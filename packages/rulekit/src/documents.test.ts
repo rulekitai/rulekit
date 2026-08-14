@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process"
 import { existsSync, readFileSync } from "node:fs"
 import { dirname, join, resolve } from "node:path"
 import { describe, test } from "node:test"
+import { profileSchema } from "./agent/profile.ts"
 
 /**
  * Every document this project links must exist, and must reach a reader.
@@ -23,6 +24,13 @@ const ROOT = resolve(import.meta.dirname, "../../..")
 const MARKDOWN = execFileSync("git", ["ls-files", "*.md"], { cwd: ROOT, encoding: "utf8" })
   .split("\n")
   .filter(Boolean)
+
+/** The documents a reader who installed from npm can open. */
+const SHIPPED = [
+  "packages/rulekit/README.md",
+  "packages/ui/README.md",
+  ...MARKDOWN.filter((file) => file.startsWith("docs/")),
+]
 
 /** `[label](target)`, with the target captured. */
 const LINK = /\[[^\]]*\]\(([^)\s]+)/g
@@ -91,6 +99,32 @@ describe("the documents this project links", () => {
       declined,
       "the README's printed copy of the decline list no longer matches the instructions",
     )
+  })
+
+  test("no document teaches the one-argument disclaimer", () => {
+    // `answerSource` falls back to the stage when it is given no origin, so a
+    // one-argument call compiles, runs, and mislabels every cached model answer
+    // as one no model wrote. Two packages ship one version here: one said that
+    // fault was fixed while the other handed a reader the code that causes it.
+    const bad: string[] = []
+    for (const file of MARKDOWN) {
+      const text = readFileSync(join(ROOT, file), "utf8")
+      for (const call of text.matchAll(/answerSource\(([^)]*)\)/g)) {
+        const args = (call[1] ?? "").split(",").filter((part) => part.trim())
+        if (args.length < 2) bad.push(`${file}: answerSource(${call[1]})`)
+      }
+    }
+    assert.deepEqual(bad, [], `these teach a call that mislabels a cached answer:\n${bad.join("\n")}`)
+  })
+
+  test("every field of the profile is named in a document that ships", () => {
+    // The README sends a reader to `docs/corpus-format.md` for "every field".
+    // Three fields were in no document at all, and the reader who wanted one of
+    // them searched all seven and then read the build. A field nobody can read
+    // about is a field nobody uses.
+    const documented = SHIPPED.map((file) => readFileSync(join(ROOT, file), "utf8")).join("\n")
+    const missing = Object.keys(profileSchema.shape).filter((field) => !documented.includes(field))
+    assert.deepEqual(missing, [], `these profile fields are in no shipped document: ${missing}`)
   })
 
   test("every document the published README links travels in the package", () => {

@@ -366,10 +366,39 @@ describe("the reference tools", () => {
     })
   })
 
-  test("marks nothing when the read failed", async () => {
+  test("marks a refused read as rejected, and names no source", async () => {
+    // The tool hands the refusal back as an ordinary result, so the runtime
+    // marks the step "completed". A reader watching the trace then sees a read
+    // that never happened reported as a finished one. `rejected` is the true
+    // word, and the interface already counts and colours it.
     const tool = findTool(defineReferenceTools(options({ fetchImpl: stubFetch({}).impl })), "fetch_reference")
     const result = await tool?.execute({ url: "https://elsewhere.test/x" } as never)
-    assert.equal(tool?.describeResult?.(result), undefined)
+    const step = tool?.describeResult?.(result)
+    assert.equal(step?.status, "rejected")
+    assert.equal(step?.source, undefined, "a read that did not happen cites no source")
+    assert.match(step?.label ?? "", /Refused/)
+  })
+
+  test("marks a read stopped by the per-question cap as rejected too", async () => {
+    // Same result for the reader: the page was not read. Reporting the first
+    // three reads and then a silent "completed" for the fourth would say the
+    // opposite.
+    const { impl } = stubFetch({
+      "https://faq.example.com/a": { body: "<html><p>A.</p></html>" },
+    })
+    const tool = findTool(
+      defineReferenceTools(options({ fetchImpl: impl, maxFetchesPerTurn: 1 })),
+      "fetch_reference",
+    )
+    await tool?.execute({ url: "https://faq.example.com/a" } as never)
+    const capped = await tool?.execute({ url: "https://faq.example.com/a" } as never)
+    assert.equal(tool?.describeResult?.(capped)?.status, "rejected")
+  })
+
+  test("marks nothing when a tool returns something it does not recognise", async () => {
+    const tool = findTool(defineReferenceTools(options({ fetchImpl: stubFetch({}).impl })), "fetch_reference")
+    assert.equal(tool?.describeResult?.(null), undefined)
+    assert.equal(tool?.describeResult?.({}), undefined)
   })
 })
 

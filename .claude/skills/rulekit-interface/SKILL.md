@@ -124,15 +124,15 @@ function CardChip(card: { name: string; path: string; inline: boolean }) {
 
 ### Say something true under the answer
 
-`disclaimer` takes one node, or a function. Take the function: it receives two
+`disclaimer` takes one node, or a function. Take the function: it receives three
 things that change what is true of the answer above it.
 
 ```tsx
 import { answerSource, type ReadSource } from "@rulekitai/ui/message"
 
-const disclaimerFor = (servedBy: string, sources: ReadSource[]) => {
+const disclaimerFor = (servedBy: string, sources: ReadSource[], source?: string) => {
   const base =
-    answerSource(servedBy) === "model"
+    answerSource(servedBy, source) === "model"
       ? "Written by an AI from the rules data. Check anything that decides a game."
       : "Read from the rules data, with no AI. Check anything that decides a game."
   if (!sources.length) return base
@@ -141,9 +141,15 @@ const disclaimerFor = (servedBy: string, sources: ReadSource[]) => {
 }
 ```
 
-**`servedBy` decides whether a model wrote the answer.** Most answers come from
+**`servedBy` is the stage that served the answer.** Most answers come from
 the free stages, where no model runs, and one fixed sentence about an AI then
 contradicts the trace line directly above it.
+
+**`source` is where the facts came from, and it is not the same thing.** PASS
+BOTH, as above. A cache hit serves an answer a model wrote earlier, and
+`servedBy` then reads `"cache"`. Reading the stage alone labels a model's own
+words "no AI wrote this", on every repeated question, which is every question a
+cache exists for.
 
 **`sources` names any website the answer read.** It is empty for almost every
 answer. When it holds a site, say so: a reader weighs a claim from somebody's

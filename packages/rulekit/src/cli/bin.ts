@@ -10,6 +10,7 @@ import { type CorpusProblem, checkIntegrity, loadCorpus } from "../corpus/load.t
 import { KNOWN_CORPUS_FILES } from "../corpus/schema.ts"
 import { SqliteStore } from "../corpus/sqlite-store.ts"
 import type { Corpus } from "../corpus/types.ts"
+import { DEFAULT_CREDENTIAL_VARIABLE } from "../pipeline/gate.ts"
 import { hideSqliteExperimentalWarning } from "../sqlite-warning.ts"
 
 /**
@@ -449,7 +450,14 @@ async function commandAsk(dir: string, question: string, asJson = false): Promis
     }
 
     if (missingRule) out(`This corpus holds no rule ${missingRule}.`)
-    else out(`No free stage could answer this. It would go to the agent, and the agent needs a model key.`)
+    else {
+      // Name the variable. "The agent needs a model key" is true and leaves a
+      // reader standing exactly where they cannot act: they know they need a
+      // credential and not which name this package reads.
+      out("No free stage could answer this. It would go to the agent, and the agent needs a model")
+      out(`credential. A server reads ${DEFAULT_CREDENTIAL_VARIABLE} from its environment by default.`)
+      out("This command never calls the agent, whatever you set.")
+    }
     out(`Stages tried: ${trace.map((t) => `${t.stage}=${t.outcome}`).join(", ")}`)
 
     // Name the SHAPE beside the example. A reader whose question missed cannot

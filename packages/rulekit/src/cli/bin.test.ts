@@ -8,6 +8,7 @@ import { after, before, describe, test } from "node:test"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { parseProfile } from "../agent/profile.ts"
 import { loadCorpus } from "../corpus/load.ts"
+import { DEFAULT_CREDENTIAL_VARIABLE } from "../pipeline/gate.ts"
 import {
   AGENT_README_SECTION,
   AGENT_README_URL,
@@ -212,6 +213,15 @@ describe("ask", () => {
   test("answers a definition question from the glossary", async () => {
     const { out } = await run(() => commandAsk(DEMO, "what is Swift"))
     assert.match(out, /served by glossary/)
+  })
+
+  test("names the credential a server reads, not just that one is needed", async () => {
+    // "The agent needs a model key" leaves a reader standing exactly where they
+    // cannot act: they know they need a credential and not which name to set.
+    // The name comes from the resolver, so the two cannot drift apart.
+    const { out } = await run(() => commandAsk(DEMO, "how do Guard and Swift interact"))
+    assert.match(out, new RegExp(DEFAULT_CREDENTIAL_VARIABLE))
+    assert.match(out, /never calls the agent/, "and say that this command will not use it")
   })
 
   test("says plainly when no free stage can answer, and names what it tried", async () => {

@@ -46,10 +46,29 @@ The list lives in `src/agent/instructions/base.md`, and this is all of it:
 > - Anything not about this game, including other games, general conversation,
 >   programming, translation, medical, legal, or financial questions.
 
-A `check_stock` tool works, because "how many copies are in stock" reads as a
-card question. A `find_events` tool does not, because events are on the list.
+**The list is about the QUESTION a reader asks, and not about your tool's
+name.** Apply that test: read the question your tool exists to answer, and ask
+whether the assistant would decline it from a reader who had no tool at all.
+
+- "How many copies of Called Shot does the shop have?" is a question about a
+  card. `check_stock` is called, and it works.
+- "Where can I play Constructed in Austin this week?" is a question about events
+  and locations. The assistant declines it, and `find_events` is never called.
+
+Both tools have a shop in them. Only one has a declined SUBJECT. A tool called
+`find_shop_stock` is the first case and works; `find_shop_hours` is the second
+and does not.
+
+**A separate, cruder net also warns you.** `createRulesAgent` searches a tool's
+name and description for thirteen words, and warns while the agent is built. The
+word list deliberately omits `shop`, `store`, `trade`, `order`, and `grading`:
+each is an ordinary word in some game, and a warning that fired on `check_stock`
+would be false. The warning therefore catches the plain cases and misses the
+subtle ones. Apply the question test yourself; do not wait to be warned.
+
 **Write a procedure when your subject is on the list.** See "Write a procedure
-for it" below. That is what tells the model the subject is now in scope.
+for it" below. That is what tells the model the subject is now in scope, and it
+also stops the warning.
 
 ## Write the tool
 
