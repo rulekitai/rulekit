@@ -115,14 +115,15 @@
     "build": "node ./scripts/copy-notice.mjs && tsc --build"
   },
   "dependencies": {
-    "@rulekitai/rulekit": "workspace:*",
     "react-markdown": "^10.0.0",
     "remark-gfm": "^4.0.0"
   },
   "peerDependencies": {
+    "@rulekitai/rulekit": "^0.5.0",
     "react": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0"
+    "@types/react": "^19.0.0",
+    "@rulekitai/rulekit": "workspace:*"
   }
 }

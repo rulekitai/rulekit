@@ -156,6 +156,13 @@ ruling. When a corpus missed, the assistant stopped, and looked nowhere else.
   decline the QUESTION from a reader holding no tool. The word list behind the
   warning is a separate, cruder net, and the README now says which words it
   deliberately omits and why.
+- **`@rulekitai/rulekit` is a PEER dependency of `@rulekitai/ui`.** It was an
+  ordinary dependency written `workspace:*`, which npm publishes as an exact
+  version. An application on any other version of the rules package therefore
+  received a SECOND copy of it inside the interface package, so the reader's
+  answers were decoded by a different build from the one that produced them. A
+  peer says the true thing: this interface reads the event stream that the rules
+  package's server writes, so the two must be one copy.
 - **`zod` is an optional peer dependency, pinned to version 4.** It was a plain
   dependency, so `import { z } from "zod"` in an application failed with
   `Cannot find package 'zod'`, and the Install section never mentioned it. The
