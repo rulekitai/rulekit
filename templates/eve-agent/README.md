@@ -13,6 +13,9 @@ The shared contract in `@rulekitai/rulekit/agent/events` makes this possible. A
 command tests the contract, and the project does not assume it:
 
 ```bash
+# from the root of the repository. Both runtimes read this database.
+pnpm rulekit build data/riftbound
+
 cd templates/eve-agent && pnpm dev     # this needs Node 24. Leave it running.
 # then, from the root of the repository:
 pnpm compare-runtimes "what is the Shield keyword"
@@ -33,15 +36,25 @@ the Node version is the cause.
 
 ## Run it
 
+Build the corpus database first. It is not in version control, and every tool
+here reads it. Without it the build stops with `No corpus database`:
+
 ```bash
-pnpm eve build            # this checks the layout
-pnpm dev
+# from the root of the repository
+pnpm rulekit build data/riftbound
 ```
 
-Write one model credential into `.env` in this directory before `pnpm dev`:
+Then write one model credential into `.env` in this directory:
 
 ```bash
 cp .env.example .env      # then fill in AI_GATEWAY_API_KEY
+```
+
+Then build and run:
+
+```bash
+pnpm eve build            # this checks the layout
+pnpm dev
 ```
 
 ## The files in this template
@@ -52,14 +65,15 @@ cp .env.example .env      # then fill in AI_GATEWAY_API_KEY
 | `agent/instructions.ts` | Builds the prompt from the corpus profile. |
 | `agent/tools/<name>.ts` | One file for each tool. **Eve gives a tool the name of its file.** |
 | `agent/skills/<name>.ts` | One file for each procedure. **Eve gives a skill the name of its file.** |
-| `agent/channels/ask.ts` | Serves `POST /eve/v1/ask/stream`, and sends the shared events. |
+| `agent/channels/ask.ts` | Serves `POST /ask/stream`, and sends the shared events. |
 | `lib/rules-tools.ts` | Adapts the corpus tools. It is outside `agent/` on purpose. |
 
-## Three rules that Eve applies to this layout
+## Four rules that Eve applies to this layout
 
-Each rule stops the build. None of them stops the program at run time. That
-behaviour is correct, but each message is short, and each one costs real time to
-understand. Therefore:
+The first three stop the build. None of those three stops the program at run
+time. That behaviour is correct, but each message is short, and each one costs
+real time to understand. **The fourth is the dangerous one, because it does the
+opposite: the build passes and the server refuses to start.** Therefore:
 
 1. **One file in `agent/tools/` is one tool, and the file name is the tool
    name.** A file that exports more than one tool stops the build. A helper
@@ -74,6 +88,21 @@ understand. Therefore:
    Schema field. Zod 3 declares that field for the type system, and it does not
    create the field at run time. The file `lib/rules-tools.ts` converts the
    schema, so the Zod schema stays the one definition.
+4. **`disableTool()` removes a FRAMEWORK tool, and nothing else.** Eve owns that
+   list: `agent`, `ask_question`, `bash`, `glob`, `grep`, `load_skill`,
+   `read_file`, `task_cancel`, `task_update`, `todo`, `web_fetch`, `web_search`,
+   and `write_file`. Export it from a file named after one of the project's own
+   tools and Eve stops with `exports disableTool() but "<name>" is not a
+   framework tool`. To say a corpus cannot offer one of its own tools, return a
+   resolver that answers with nothing instead:
+
+   ```ts
+   defineDynamic({ events: { "session.started": () => null } })
+   ```
+
+   **`pnpm eve build` and `pnpm eve info` both accept the broken file.** Only
+   `pnpm start` reads the agent graph and reports it. Run the server once before
+   you trust a change to `lib/rules-tools.ts`.
 
 ## This corpus serves its own tools, and no others
 

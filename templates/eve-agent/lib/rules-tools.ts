@@ -4,7 +4,7 @@ import { parseProfile } from "@rulekitai/rulekit/agent/profile"
 import { findSkill } from "@rulekitai/rulekit/agent/skills"
 import { corpusContents, defineRulesTools } from "@rulekitai/rulekit/agent/tools"
 import { defineSkill } from "eve/skills"
-import { defineTool, disableTool } from "eve/tools"
+import { defineDynamic, defineTool } from "eve/tools"
 import { z } from "zod"
 import { CORPUS_DIR, corpusStore } from "./corpus.ts"
 
@@ -36,10 +36,24 @@ export const TOOL_NAMES = [...byName.keys()]
  *
  * A file under `agent/tools/` exists for every tool this project can offer, and
  * Eve reads the directory rather than a list. A corpus that holds no banned
- * list therefore still has the file. Switching that tool off is the Eve way to
- * say so, and it keeps the two runtimes offering the same set: a tool that
- * exists and answers nothing is worse than one that is absent, because the
- * model calls it, gets nothing, and reports that nothing exists.
+ * list therefore still has the file, and the tool has to disappear instead: a
+ * tool that exists and answers nothing is worse than one that is absent,
+ * because the model calls it, gets nothing, and reports that nothing exists.
+ *
+ * A resolver that returns `null` is how Eve says "no tool here". It is NOT
+ * `disableTool()`: that sentinel removes a FRAMEWORK tool by name (`bash`,
+ * `web_fetch`, `todo`, and the rest of the list Eve owns), and Eve rejects it
+ * for any other name while it resolves the agent graph:
+ *
+ *     agent/tools/list_rulings.ts exports disableTool() but "list_rulings" is
+ *     not a framework tool. Rename the file to one of: agent, ask_question, ...
+ *
+ * That error costs a whole session to place, because `eve build` and `eve info`
+ * both accept the file and only `eve start` reads the graph. `data/riftbound`
+ * ships an empty `rulings.json`, so `list_rulings` is the tool that finds it.
+ *
+ * The resolver captures nothing, which matters: since 0.43.0 Eve stores each
+ * callback's closure values and rejects any that is not JSON-serializable.
  */
 /**
  * One procedure, ready for Eve, and switched off when its tool is absent.
@@ -69,7 +83,7 @@ export function eveSkill(name: string) {
 
 export function eveTool(name: string) {
   const tool = byName.get(name)
-  if (!tool) return disableTool()
+  if (!tool) return defineDynamic({ events: { "session.started": () => null } })
   return defineTool({
     description: tool.description,
     // JSON Schema, NOT the Zod schema itself.

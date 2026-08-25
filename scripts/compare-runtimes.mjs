@@ -63,7 +63,7 @@ async function runEve() {
   const headers = { "content-type": "application/json" }
   if (env.RULEKIT_INTERNAL_SECRET) headers.authorization = `Bearer ${env.RULEKIT_INTERNAL_SECRET}`
 
-  const res = await fetch(`${EVE_URL}/eve/v1/ask/stream`, {
+  const res = await fetch(`${EVE_URL}/ask/stream`, {
     method: "POST",
     headers,
     body: JSON.stringify({ question: QUESTION }),

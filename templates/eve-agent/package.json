@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@rulekitai/rulekit": "workspace:*",
-    "ai": "^7.0.38",
-    "eve": "^0.31.0",
+    "ai": "^7.0.58",
+    "eve": "^0.44.4",
     "zod": "^4.4.0"
   },
   "engines": {

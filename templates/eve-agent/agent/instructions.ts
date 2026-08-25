@@ -26,5 +26,7 @@ import { CORPUS_DIR } from "../lib/corpus.ts"
 const profile = parseProfile(JSON.parse(readFileSync(resolve(CORPUS_DIR, "profile.json"), "utf8")))
 
 export default defineInstructions({
-  markdown: buildInstructions(profile),
+  // The field is `content`. Eve still compiles `markdown`, but it deprecated
+  // that name and treats it as a system-role prompt with no way to say otherwise.
+  content: buildInstructions(profile),
 })

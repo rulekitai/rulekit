@@ -15,7 +15,11 @@ import {
 import { defineChannel, POST } from "eve/channels"
 
 /**
- * `POST /eve/v1/ask/stream`.
+ * `POST /ask/stream`.
+ *
+ * The path is the whole application URL: a channel filename prefixes nothing,
+ * so this is NOT `/ask/ask/stream`. It also stays out of `/eve/v1/*`, which Eve
+ * reserves for its own session, stream, callback, and schedule routes.
  *
  * It re-emits Eve's session events as the same four events every runtime here
  * emits, so the browser never learns which runtime answered. That shared
@@ -73,7 +77,7 @@ function rejectUnauthorized(req: Request): Response | null {
 
 export default defineChannel({
   routes: [
-    POST("/eve/v1/ask/stream", async (req, { send }) => {
+    POST("/ask/stream", async (req, { send }) => {
       const denied = rejectUnauthorized(req)
       if (denied) return denied
 
