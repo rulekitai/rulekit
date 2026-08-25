@@ -13,7 +13,35 @@ would be an invented one.
 
 ## [Unreleased]
 
-Nothing yet. The newest release is below.
+Neither package changed. The work below is in the Eve template, which lives in
+this repository and ships in no package.
+
+### Fixed
+
+- **The Eve template starts again.** It served no request at all: Eve stopped
+  with `agent/tools/list_rulings.ts exports disableTool() but "list_rulings" is
+  not a framework tool`. `disableTool()` removes a tool Eve owns, such as `bash`
+  or `web_fetch`, and not one of this project's own tools. The `riftbound`
+  corpus ships an empty `rulings.json`, so `list_rulings` is absent, and
+  `lib/rules-tools.ts` said so with `disableTool()`. It now returns a resolver
+  that answers with nothing, which is how Eve says it. `eve build` and
+  `eve info` both accept the broken file, and only `eve start` reads the agent
+  graph, so the template README states that as the fourth rule of the layout.
+- **The template README names the step that builds the corpus database.** The
+  database is not in version control, so a fresh clone met a failed build with
+  no instruction to follow. Both places that start the agent now name it.
+
+### Changed
+
+- **The ask channel serves `POST /ask/stream`.** It served
+  `POST /eve/v1/ask/stream`, and Eve reserves `/eve/v1` for its own session,
+  stream, callback, and schedule routes. A route path is the whole URL, because
+  the channel filename adds no prefix. `scripts/compare-runtimes.mjs` follows
+  the move.
+- **The template reads `eve` 0.44.4, up from 0.31.0**, and `ai` 7.0.58, which
+  the new `eve` requires. Two renames come with it: instructions take `content`
+  in place of the deprecated `markdown`, and `glob` and `grep` left Eve's
+  default tool set in 0.39.0.
 
 ## [0.5.0] - 2026-08-14
 
