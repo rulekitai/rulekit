@@ -450,6 +450,8 @@ cat node_modules/@rulekitai/rulekit/docs/custom-tools.md
   reading a website when the corpus holds no answer
 - [Custom tools](https://github.com/rulekitai/rulekit/blob/main/docs/custom-tools.md):
   a tool of your own, and the procedure that lets the model use it
+- [Eve](https://github.com/rulekitai/rulekit/blob/main/docs/eve.md):
+  the supported versions, adapter rules, stream contract, and upgrade checks
 - [Architecture](https://github.com/rulekitai/rulekit/blob/main/docs/architecture.md)
 - [Verifying answers](https://github.com/rulekitai/rulekit/blob/main/docs/verifying-answers.md)
 - [Design decisions](https://github.com/rulekitai/rulekit/blob/main/docs/design-decisions.md)

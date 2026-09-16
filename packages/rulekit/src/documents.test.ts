@@ -8,7 +8,7 @@ import { profileSchema } from "./agent/profile.ts"
 /**
  * Every document this project links must exist, and must reach a reader.
  *
- * Both halves failed at once in 0.4.0. The README linked seven documents that
+ * Both halves failed at once in 0.4.0. The README linked several documents that
  * were written but not yet on the default branch, so each link answered 404;
  * and `docs` was not in the published `files` list, so a reader who installed
  * from npm held no local copy either. The README was then the whole
@@ -120,7 +120,7 @@ describe("the documents this project links", () => {
   test("every field of the profile is named in a document that ships", () => {
     // The README sends a reader to `docs/corpus-format.md` for "every field".
     // Three fields were in no document at all, and the reader who wanted one of
-    // them searched all seven and then read the build. A field nobody can read
+    // them searched each document and then read the build. A field nobody can read
     // about is a field nobody uses.
     const documented = SHIPPED.map((file) => readFileSync(join(ROOT, file), "utf8")).join("\n")
     const missing = Object.keys(profileSchema.shape).filter((field) => !documented.includes(field))
@@ -142,5 +142,18 @@ describe("the documents this project links", () => {
       if (!manifest.files.includes(top) && !manifest.files.includes(path)) missing.push(path)
     }
     assert.deepEqual(missing, [], `the README links these, and the package ships none of them: ${missing}`)
+  })
+
+  test("the public Eve guide names the template dependency versions", () => {
+    // The guide is copied into the npm package, but the template is not. A
+    // version change must update the guide before the source and public copy
+    // disagree.
+    const manifest = JSON.parse(readFileSync(resolve(ROOT, "templates/eve-agent/package.json"), "utf8")) as {
+      dependencies: Record<string, string>
+    }
+    const guide = readFileSync(resolve(ROOT, "docs/eve.md"), "utf8")
+
+    assert.ok(guide.includes(`| \`eve\` | \`${manifest.dependencies.eve}\` |`))
+    assert.ok(guide.includes(`| \`ai\` | \`${manifest.dependencies.ai}\` |`))
   })
 })

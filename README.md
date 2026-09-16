@@ -175,7 +175,8 @@ answers from the free stages alone never needs it.
 
 The directory `templates/eve-agent` holds the same agent on
 [Vercel Eve](https://eve.dev). The directory `examples/next-app` holds a chat
-that you can copy.
+that you can copy. [`docs/eve.md`](docs/eve.md) explains the supported versions,
+adapter rules, stream contract, and upgrade checks.
 
 ## Where to read more
 
@@ -184,15 +185,16 @@ that you can copy.
 | [`docs/adding-a-game.md`](docs/adding-a-game.md) | How to write a corpus and a profile for your own game |
 | [`docs/corpus-format.md`](docs/corpus-format.md) | Every field of every corpus file, including rulings |
 | [`docs/custom-tools.md`](docs/custom-tools.md) | How to give the agent a tool or a procedure of your own |
+| [`docs/eve.md`](docs/eve.md) | How to run the agent on Eve and keep both runtimes aligned |
 | [`docs/reference-sites.md`](docs/reference-sites.md) | How to let the assistant read a website when your corpus misses |
 | [`docs/architecture.md`](docs/architecture.md) | How the code makes an agent, and how one turn runs |
 | [`docs/verifying-answers.md`](docs/verifying-answers.md) | How to prove that the answers invent nothing |
 | [`docs/design-decisions.md`](docs/design-decisions.md) | Why one file, no data collection, and no price |
 | [`CHANGELOG.md`](CHANGELOG.md) | What changed in each release |
 
-The directory `.claude/skills/` holds seven skills. They tell an AI coding agent
+The directory `.claude/skills/` holds eight skills. They tell an AI coding agent
 how to add rulekit to an application. Read the `rulekit` skill first. It sends
-the agent to the correct one of the other six.
+the agent to the correct one of the other seven.
 
 ## Licence
 

@@ -222,8 +222,12 @@ export default eveTool("check_stock")
 ```
 
 Without that file the tool exists on the AI SDK runtime and is absent on Eve.
-The directory holds 22 files today: 13 map to rulekit tools, and 9 switch off an
-Eve built-in.
+The template sets `defaultTools: false`, then adds `load_skill` back explicitly.
+It does not need one disable file for each optional Eve tool.
+
+`eveTool` converts the Zod input to JSON Schema. It also captures only the tool
+name because Eve persists dynamic resolver closures. Keep nonserializable tool
+objects and functions in module state.
 
 A procedure needs the same treatment, through `eveSkill("shop_lookup")`, which
 reads `requiresTool` for you.
@@ -244,4 +248,5 @@ reads `requiresTool` for you.
 
 - [The corpus format](corpus-format.md): hold the data instead
 - [Reference sites](reference-sites.md): read a website instead
+- [Eve](eve.md): run this tool through the Eve adapter
 - [Architecture](architecture.md): where a tool sits in one turn

@@ -13,6 +13,7 @@ import {
   usageOrNull,
 } from "@rulekitai/rulekit/agent/turn"
 import { defineChannel, POST } from "eve/channels"
+import { appendMessageDelta } from "../../lib/stream-text"
 
 /**
  * `POST /ask/stream`.
@@ -77,7 +78,7 @@ function rejectUnauthorized(req: Request): Response | null {
 
 export default defineChannel({
   routes: [
-    POST("/ask/stream", async (req, { send }) => {
+    POST("/ask/stream", async (req, { from }) => {
       const denied = rejectUnauthorized(req)
       if (denied) return denied
 
@@ -102,7 +103,7 @@ export default defineChannel({
             // One question is one session. The transcript travels inside the
             // message, so there is nothing to resume and a fresh token per
             // request is correct.
-            const session = await send(message, { auth: null, continuationToken: crypto.randomUUID() })
+            const session = await from(crypto.randomUUID()).send(message, { auth: null })
             reader = (await session.getEventStream()).getReader()
 
             const steps = new Map<string, TraceStep>()
@@ -167,7 +168,7 @@ export default defineChannel({
                   write({ type: "step", step: { ...step } })
                 }
               } else if (event.type === "message.appended") {
-                running = (data.messageSoFar as string) ?? running
+                running = appendMessageDelta(running, data)
                 write({ type: "text", text: running })
               } else if (event.type === "message.completed") {
                 if (data.finishReason === "tool-calls") {

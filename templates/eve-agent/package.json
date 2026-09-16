@@ -8,13 +8,14 @@
   "scripts": {
     "dev": "eve dev",
     "build": "eve build",
+    "test": "node --test --experimental-strip-types lib/*.test.ts",
     "start": "eve start",
     "deploy": "eve deploy"
   },
   "dependencies": {
     "@rulekitai/rulekit": "workspace:*",
-    "ai": "^7.0.58",
-    "eve": "^0.44.4",
+    "ai": "^7.0.93",
+    "eve": "^0.57.0",
     "zod": "^4.4.0"
   },
   "engines": {

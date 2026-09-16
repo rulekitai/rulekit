@@ -19,6 +19,10 @@ const model = process.env.RULEKIT_MODEL ?? "anthropic/claude-sonnet-5"
 export default defineAgent({
   model,
 
+  // This agent reads only its corpus tools. `load_skill` is the one Eve tool
+  // it needs, and agent/tools/load_skill.ts adds that tool back explicitly.
+  defaultTools: false,
+
   /**
    * Grounded quote-and-cite work needs little chain of thought. The tools supply
    * the facts; the model reads, quotes, and cites. Low effort keeps a turn fast.

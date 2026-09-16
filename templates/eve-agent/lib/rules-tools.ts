@@ -100,6 +100,8 @@ export function eveTool(name: string) {
     // The tool's own Zod schema is still the single definition; this converts
     // it, so the two descriptions of one input cannot drift.
     inputSchema: z.toJSONSchema(tool.inputSchema, { target: "draft-7" }),
-    execute: (input: unknown) => tool.execute(input as never),
+    // Capture the tool name, which is serializable. The module-level lookup
+    // keeps the RuleTool object and its execute function out of durable state.
+    execute: (input: unknown) => byName.get(name)?.execute(input as never),
   })
 }

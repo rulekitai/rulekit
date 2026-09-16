@@ -1,6 +1,6 @@
 ---
 name: rulekit
-description: Add a rules assistant that answers only from a corpus you supply. Routes to one of seven rulekit skills. Use when the user names rulekit, `@rulekitai/rulekit`, or `createAskHandler`, or wants an assistant that answers only from their own rulebook.
+description: Add a rules assistant that answers only from a corpus you supply. Routes to one of seven task skills. Use when the user names rulekit, `@rulekitai/rulekit`, the Eve template, or `createAskHandler`, or wants an assistant that answers only from their own rulebook.
 ---
 
 # rulekit
@@ -28,7 +28,7 @@ Read this page, choose the branch, then open that skill.
 
 | The user wants | Open |
 |---|---|
-| To run it, and to answer questions from their server | `rulekit-serve` |
+| To run it with the AI SDK or Eve, and answer from their server | `rulekit-serve` |
 | A chat interface in their pages | `rulekit-interface` |
 | A game other than the ones that ship | `rulekit-corpus` |
 | The assistant to read a website when the corpus misses | `rulekit-references` |

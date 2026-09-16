@@ -108,6 +108,10 @@ export default eveTool("check_stock")
 Without that file the tool works on the AI SDK runtime and is absent on Eve. A
 procedure needs `eveSkill("shop_lookup")` in `agent/skills/`.
 
+The template sets `defaultTools: false` and adds `load_skill` back explicitly.
+Do not add one disable file for each optional Eve tool. `eveTool` converts the
+Zod input to JSON Schema and captures only the serializable tool name.
+
 **Eve discards `describeResult`.** A tool that marks its trace step works on the
 AI SDK runtime and does nothing on Eve.
 
@@ -139,3 +143,5 @@ All four are true:
 - Read a website instead: `rulekit-references`
 - The whole step, in depth:
   <https://github.com/rulekitai/rulekit/blob/main/docs/custom-tools.md>
+- The Eve adapter and upgrade checks:
+  <https://github.com/rulekitai/rulekit/blob/main/docs/eve.md>

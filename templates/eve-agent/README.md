@@ -8,6 +8,9 @@ its sandbox, or its deployment path. If you want none of those, use
 `@rulekitai/rulekit/agent/runtime` instead. That runtime needs one model key and
 no separate process.
 
+Read [`docs/eve.md`](../../docs/eve.md) for the supported versions, stream
+contract, and upgrade checks.
+
 **Both runtimes send the same events**, so one interface can drive either one.
 The shared contract in `@rulekitai/rulekit/agent/events` makes this possible. A
 command tests the contract, and the project does not assume it:
@@ -70,11 +73,6 @@ pnpm dev
 
 ## Four rules that Eve applies to this layout
 
-The first three stop the build. None of those three stops the program at run
-time. That behaviour is correct, but each message is short, and each one costs
-real time to understand. **The fourth is the dangerous one, because it does the
-opposite: the build passes and the server refuses to start.** Therefore:
-
 1. **One file in `agent/tools/` is one tool, and the file name is the tool
    name.** A file that exports more than one tool stops the build. A helper
    module in that directory also stops the build. This is the reason for the
@@ -88,28 +86,21 @@ opposite: the build passes and the server refuses to start.** Therefore:
    Schema field. Zod 3 declares that field for the type system, and it does not
    create the field at run time. The file `lib/rules-tools.ts` converts the
    schema, so the Zod schema stays the one definition.
-4. **`disableTool()` removes a FRAMEWORK tool, and nothing else.** Eve owns that
-   list: `agent`, `ask_question`, `bash`, `glob`, `grep`, `load_skill`,
-   `read_file`, `task_cancel`, `task_update`, `todo`, `web_fetch`, `web_search`,
-   and `write_file`. Export it from a file named after one of the project's own
-   tools and Eve stops with `exports disableTool() but "<name>" is not a
-   framework tool`. To say a corpus cannot offer one of its own tools, return a
-   resolver that answers with nothing instead:
+4. **A missing corpus tool needs a dynamic resolver.** `disableTool()` removes
+   an Eve default. It cannot remove one of this project's tools. To say a corpus
+   cannot offer one of its own tools, return a resolver that answers with
+   nothing:
 
    ```ts
    defineDynamic({ events: { "session.started": () => null } })
    ```
-
-   **`pnpm eve build` and `pnpm eve info` both accept the broken file.** Only
-   `pnpm start` reads the agent graph and reports it. Run the server once before
-   you trust a change to `lib/rules-tools.ts`.
 
 ## This corpus serves its own tools, and no others
 
 A file in `agent/tools/` exists for every tool that this project can offer, and
 Eve reads the directory in place of a list. A corpus with no banned list
 therefore still has the file. The adapter switches that tool off with
-`disableTool()`.
+the empty dynamic resolver above.
 
 Both runtimes then offer the same set of tools. Measured: the Riftbound corpus
 gets 12 tools, and the chess corpus gets 10. Chess has no errata, no banned
@@ -141,7 +132,6 @@ not there.
 
 ## Why the built-in tools are off
 
-An Eve agent starts with tools that read files, run commands, and fetch web
-pages. A rules assistant needs none of them. Each one is also a path for a
-question to reach something other than the corpus. These tools are off, and that
-also stops Eve from starting a container for the shell.
+`defaultTools: false` disables Eve's optional shell, file, network, planning,
+question, and delegation tools. The template adds `load_skill` back because its
+four procedures need it. The model can otherwise call only corpus tools.

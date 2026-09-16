@@ -3,7 +3,7 @@
 // directory, and `files` cannot reach above it, so each one is copied here
 // before a build.
 //
-// THE DOCUMENTS ARE THE REASON THIS MATTERS MOST. The README links seven of
+// THE DOCUMENTS ARE THE REASON THIS MATTERS MOST. The README links eight of
 // them. A reader who installed from npm followed those links to a 404, because
 // the documents stayed in the repository, and the README was then the whole
 // documentation set for three features it does not fully explain.

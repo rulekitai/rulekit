@@ -1,9 +1,25 @@
 ---
 name: rulekit-serve
-description: Mount the rulekit ask endpoint in a server, and choose its runtime settings. Use when the user wants a rules answer endpoint, or names `createAskHandler`, `createPipeline`, or `createRulesAgent`.
+description: Mount the rulekit ask endpoint with the AI SDK or Eve, and choose its runtime settings. Use when the user wants a rules answer endpoint, or names `createAskHandler`, `createPipeline`, `createRulesAgent`, or the Eve template.
 ---
 
 # Mount the ask endpoint
+
+## Choose the runtime
+
+| Runtime | Use it when |
+|---|---|
+| `@rulekitai/rulekit/agent/runtime` | The application needs one process and no durable agent session. |
+| `templates/eve-agent` | The application needs Eve sessions, deployment, or a sandbox. |
+
+Both runtimes emit `@rulekitai/rulekit/agent/events`, so one interface reads
+either one. The steps below cover the AI SDK runtime.
+
+For Eve, open
+<https://github.com/rulekitai/rulekit/blob/main/docs/eve.md>. Use Node 24 or
+later, and keep the `eve` and `ai` versions from the template package together.
+The Eve path is complete when `pnpm test`, `pnpm eve build`, and
+`pnpm exec eve info --json` pass inside `templates/eve-agent`.
 
 ## Step 1: get the packages
 
@@ -131,6 +147,8 @@ RULEKIT_MODEL=anthropic/claude-sonnet-5
 ## Next
 
 - The interface: `rulekit-interface`
+- The Eve runtime:
+  <https://github.com/rulekitai/rulekit/blob/main/docs/eve.md>
 - Quotas or billing: `rulekit-limits`
 - Reading a website when the corpus misses: `rulekit-references`
 - A tool of your own: `rulekit-extend`
