@@ -13,6 +13,8 @@ would be an invented one.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-16
+
 The runtime packages did not change. The rulekit package now includes updated
 public guides and skills. The Eve template remains a repository template.
 
