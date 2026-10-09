@@ -212,25 +212,53 @@ whole set, and spread `builtinSkills()` when you want to keep the shipped ones.
 Skip this unless you run the Eve template.
 
 Eve names a tool after its file, and reads the directory rather than a list. A
-custom tool therefore needs a file:
+custom tool therefore needs a file. Keep the application client in `lib/shop.ts`
+and define the Eve tool directly:
 
 ```ts
 // templates/eve-agent/agent/tools/check_stock.ts
-import { eveTool } from "../../lib/rules-tools.ts"
+import { defineTool } from "eve/tools"
+import { z } from "zod"
+import { myShop } from "../../lib/shop.ts"
 
-export default eveTool("check_stock")
+export default defineTool({
+  description: "Read how many copies of a card this shop holds. Use it when a reader asks to buy one.",
+  inputSchema: z.object({
+    card_name: z.string(),
+    limit: z.number().int().min(1).max(20).optional(),
+  }),
+  async execute({ card_name, limit }) {
+    const rows = await myShop.find(card_name, limit ?? 5)
+    return { rows, count: rows.length }
+  },
+})
 ```
 
 Without that file the tool exists on the AI SDK runtime and is absent on Eve.
 The template sets `defaultTools: false`, then adds `load_skill` back explicitly.
 It does not need one disable file for each optional Eve tool.
 
-`eveTool` converts the Zod input to JSON Schema. It also captures only the tool
-name because Eve persists dynamic resolver closures. Keep nonserializable tool
-objects and functions in module state.
+The template's `eveTool` and `eveSkill` helpers wrap shipped corpus tools and
+procedures. They do not register custom definitions. The corpus adapter converts
+Zod input to JSON Schema and captures only the serializable tool name. Keep
+nonserializable objects and functions in imported application modules.
 
-A procedure needs the same treatment, through `eveSkill("shop_lookup")`, which
-reads `requiresTool` for you.
+A custom procedure also needs its own Eve definition:
+
+```ts
+// templates/eve-agent/agent/skills/shop_lookup.ts
+import { defineSkill } from "eve/skills"
+
+export default defineSkill({
+  description: "Use when the reader asks to buy a card, or asks what a card costs.",
+  markdown: "# Reading the shop\n\nCall `check_stock` with the printed name...",
+})
+```
+
+For shipped procedures, `eveSkill` reads `requiresTool`. When the required
+corpus tool is absent, it returns a dynamic resolver that resolves to `null`.
+Eve then omits that procedure. Apply the same rule to optional custom tools:
+omit their procedures when the tools are unavailable.
 
 ## Failures, and the cause of each
 

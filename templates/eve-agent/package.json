@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@rulekitai/rulekit": "workspace:*",
-    "ai": "^7.0.93",
-    "eve": "^0.57.0",
+    "ai": "^7.0.128",
+    "eve": "^0.75.1",
     "zod": "^4.4.0"
   },
   "engines": {

@@ -177,6 +177,8 @@ The directory `templates/eve-agent` holds the same agent on
 [Vercel Eve](https://eve.dev). The directory `examples/next-app` holds a chat
 that you can copy. [`docs/eve.md`](docs/eve.md) explains the supported versions,
 adapter rules, stream contract, and upgrade checks.
+The Eve template reports cache tokens and compaction spend. Its optional
+`RULEKIT_STEP_CAP` stops continued model work at the configured limit.
 
 ## Where to read more
 

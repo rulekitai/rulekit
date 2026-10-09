@@ -25,10 +25,24 @@ import { test } from "node:test"
  */
 const MANIFEST = JSON.parse(readFileSync(join(import.meta.dirname, "../package.json"), "utf8")) as {
   exports: Record<string, string | Record<string, string>>
+  dependencies: Record<string, string>
+  peerDependenciesMeta: Record<string, { optional?: boolean }>
 }
 
 /** Names a build tool matches with no instruction from anybody. */
 const TOOL_MATCHED = ["development", "production", "browser", "node", "import", "require", "default"]
+
+test("required dependencies cannot also be optional peers", () => {
+  // pnpm omits an optional peer even when dependencies also requires it. A
+  // clean rulekit install then fails before the free CLI can read a corpus.
+  for (const name of Object.keys(MANIFEST.dependencies)) {
+    assert.notEqual(
+      MANIFEST.peerDependenciesMeta[name]?.optional,
+      true,
+      `${name} is required at runtime; declaring it as an optional peer prevents a clean install.`,
+    )
+  }
+})
 
 test("no export condition is one a build tool matches by itself", () => {
   for (const [subpath, entry] of Object.entries(MANIFEST.exports)) {

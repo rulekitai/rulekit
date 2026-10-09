@@ -97,16 +97,41 @@ zero calls. `docs/custom-tools.md` prints the whole list.
 ## Step 5: add the Eve file, when you run the Eve template
 
 Eve names a tool after its file, and reads the directory rather than a list.
+Keep the application client in `lib/shop.ts` and define the Eve tool directly:
 
 ```ts
 // templates/eve-agent/agent/tools/check_stock.ts
-import { eveTool } from "../../lib/rules-tools.ts"
+import { defineTool } from "eve/tools"
+import { z } from "zod"
+import { myShop } from "../../lib/shop.ts"
 
-export default eveTool("check_stock")
+export default defineTool({
+  description: "Read how many copies of a card this shop holds. Use it when a reader asks to buy one.",
+  inputSchema: z.object({ card_name: z.string(), limit: z.number().int().min(1).max(20).optional() }),
+  async execute({ card_name, limit }) {
+    const rows = await myShop.find(card_name, limit ?? 5)
+    return { rows, count: rows.length }
+  },
+})
 ```
 
-Without that file the tool works on the AI SDK runtime and is absent on Eve. A
-procedure needs `eveSkill("shop_lookup")` in `agent/skills/`.
+Without that file the tool works on the AI SDK runtime and is absent on Eve.
+A custom procedure also needs an Eve definition:
+
+```ts
+// templates/eve-agent/agent/skills/shop_lookup.ts
+import { defineSkill } from "eve/skills"
+
+export default defineSkill({
+  description: "Use when the reader asks to buy a card, or asks what a card costs.",
+  markdown: "# Reading the shop\n\nCall `check_stock` with the printed name...",
+})
+```
+
+The template's `eveTool` and `eveSkill` helpers wrap shipped corpus tools and
+procedures. They do not register custom definitions. For shipped procedures,
+`eveSkill` reads `requiresTool` and resolves to `null` when that tool is absent.
+Eve then omits the procedure. Omit a custom procedure too when its tool is unavailable.
 
 The template sets `defaultTools: false` and adds `load_skill` back explicitly.
 Do not add one disable file for each optional Eve tool. `eveTool` converts the

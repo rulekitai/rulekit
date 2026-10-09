@@ -18,8 +18,14 @@ either one. The steps below cover the AI SDK runtime.
 For Eve, open
 <https://github.com/rulekitai/rulekit/blob/main/docs/eve.md>. Use Node 24 or
 later, and keep the `eve` and `ai` versions from the template package together.
+The template uses `eve ^0.75.1` with `ai ^7.0.128`.
 The Eve path is complete when `pnpm test`, `pnpm eve build`, and
 `pnpm exec eve info --json` pass inside `templates/eve-agent`.
+
+The Eve route reports cache tokens and compaction spend in the shared usage
+contract. Set `RULEKIT_STEP_CAP` to bound model calls per question. The
+`step_cap` hook stops server work before another model call. Closing an event
+reader alone does not stop that work.
 
 ## Step 1: get the packages
 

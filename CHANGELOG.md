@@ -13,6 +13,40 @@ would be an invented one.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-09
+
+The runtime packages retain their interfaces. The rulekit package ships updated
+public guides and skills. The Eve template remains a repository template.
+Both npm packages carry this release's changelog and the shared version.
+
+### Fixed
+
+- **A clean rulekit install includes Zod.** Zod remains a required runtime
+  dependency. Removing its duplicate optional peer declaration prevents pnpm
+  from omitting it and breaking the free CLI before it can read a corpus.
+- **A configured Eve step cap now stops server work.** A committed
+  `step.completed` hook cancels continued tool work before another model call.
+  A completed answer at the cap finishes normally. Cancelled answers remain
+  incomplete and cannot enter the answer cache.
+- **The Eve route retains cache token counts and compaction spend.** It maps
+  Eve's cache fields into the shared usage contract and reads session totals
+  after successful, cancelled, and failed turns. Compaction spend remains
+  visible when the first agent model call fails.
+- **Eve omits procedures whose required corpus tool is absent.** A dynamic
+  skill resolver returns `null` instead of advertising an unavailable procedure.
+  Riftbound therefore offers three skills.
+
+### Changed
+
+- **The template uses `eve ^0.75.1` and `ai ^7.0.128`.** Node 24 remains the
+  minimum version. New regression tests cover step caps, usage accounting,
+  and procedure availability against the real corpus.
+- **The public Eve guide and extension skills match the updated template.**
+  They explain cancellation, session usage, conditional skills, and the
+  supported dependency versions. Custom Eve tools and procedures use direct
+  Eve definitions; the template's corpus helpers do not register custom names.
+  The custom-tool guide and READMEs follow the same behavior.
+
 ## [0.6.0] - 2026-09-16
 
 The runtime packages did not change. The rulekit package now includes updated

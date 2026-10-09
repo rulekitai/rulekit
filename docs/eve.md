@@ -19,8 +19,8 @@ The template uses these versions:
 | Requirement | Version |
 |---|---|
 | Node | 24 or later |
-| `eve` | `^0.57.0` |
-| `ai` | `^7.0.93` |
+| `eve` | `^0.75.1` |
+| `ai` | `^7.0.128` |
 
 The template package lists the supported versions. Read its `package.json`
 before an upgrade. Eve also installs version-matched documentation under
@@ -46,8 +46,9 @@ pnpm exec eve info --json
 pnpm dev
 ```
 
-For the Riftbound corpus, `eve info` must report no diagnostic, 13 tools, and
-four skills. The tools are 12 corpus tools plus `load_skill`.
+For the Riftbound corpus, `eve info` must report no diagnostic, 13 static tools,
+and three static skills. The tools are 12 corpus tools plus `load_skill`.
+Dynamic placeholders for unavailable tools and skills do not appear in these counts.
 
 ## How the adapter works
 
@@ -62,6 +63,7 @@ an invalid tool, so shared adapter code stays under `lib/`.
 | `agent/tools/<name>.ts` | Exposes one rulekit tool to Eve. |
 | `agent/skills/<name>.ts` | Exposes one rulekit procedure to Eve. |
 | `agent/channels/ask.ts` | Serves `POST /ask/stream`. |
+| `agent/hooks/step_cap.ts` | Stops continued model work at a configured step cap. |
 | `lib/rules-tools.ts` | Adapts shared tools and procedures. |
 
 The adapter follows five rules:
@@ -85,7 +87,7 @@ lookup in module state.
 The custom channel serves `POST /ask/stream`. It accepts the same question,
 history, and retrieved-rule input that the AI SDK runtime accepts.
 
-Eve 0.57 custom routes receive `from`. The route binds a channel address, then
+Eve custom routes receive `from`. The route binds a channel address, then
 sends the message through that source:
 
 ```ts
@@ -103,8 +105,14 @@ The template uses `RULEKIT_INTERNAL_SECRET` and fails closed in production.
 text. `message.completed` contains the authoritative final message. Do not read
 the removed `messageSoFar` field.
 
-Usage can arrive in `step.completed` after the final message. Keep reading until
-the turn or session completes, or the final step cost will be absent.
+Usage can arrive in `step.completed` after the final message. The route reads
+through `session.waiting` to collect session totals, including compaction spend.
+It maps Eve's cache read and write fields into the shared usage contract.
+
+Set `RULEKIT_STEP_CAP` to cap model calls per question. A committed
+`step.completed` hook cancels continued tool work before the next model call.
+The route reads the cancellation boundary and returns an incomplete answer.
+Closing an event reader alone does not stop server work.
 
 ## Keep both runtimes aligned
 

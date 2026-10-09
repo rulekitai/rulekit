@@ -1,7 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto"
 import { type AgentEvent, deriveLabel, encodeEvent, type TraceStep } from "@rulekitai/rulekit/agent/events"
 import {
-  addStepUsage,
   buildMessage,
   EMPTY_USAGE,
   type RetrievedRule,
@@ -13,7 +12,10 @@ import {
   usageOrNull,
 } from "@rulekitai/rulekit/agent/turn"
 import { defineChannel, POST } from "eve/channels"
+import type { MessageStreamEvent } from "eve/client"
+import { configuredStepCap } from "../../lib/step-cap.ts"
 import { appendMessageDelta } from "../../lib/stream-text"
+import { addEveStepUsage, withEveSessionUsage } from "../../lib/stream-usage.ts"
 
 /**
  * `POST /ask/stream`.
@@ -34,9 +36,6 @@ import { appendMessageDelta } from "../../lib/stream-text"
 
 /** Eve reaches skills through a tool of its own. A reader has no use for seeing it. */
 const HIDDEN_TOOLS = new Set(["connection_search", "load_skill"])
-
-type StreamEvent = { type?: string; data?: Record<string, unknown> }
-type ToolCall = { kind?: string; callId?: string; toolName?: string; input?: Record<string, unknown> }
 
 /** True when this PROCESS is local development, decided from the build, never the request. */
 function isLocalDevProcess(env = process.env): boolean {
@@ -98,7 +97,7 @@ export default defineChannel({
       const stream = new ReadableStream<Uint8Array>({
         async start(controller) {
           const write = (event: AgentEvent) => controller.enqueue(encoder.encode(encodeEvent(event)))
-          let reader: ReadableStreamDefaultReader | undefined
+          let reader: ReadableStreamDefaultReader<MessageStreamEvent> | undefined
           try {
             // One question is one session. The transcript travels inside the
             // message, so there is nothing to resume and a fresh token per
@@ -115,33 +114,47 @@ export default defineChannel({
             // it belongs to. Stopping at the message loses the most expensive
             // step's cost, every time.
             let answered = false
+            let interrupted = false
             let capped: { text: string; complete: boolean } | null = null
             // No ceiling unless this deployment sets one. A turn ends when the
             // model stops calling tools. See NO_STEP_CAP in @rulekitai/rulekit/agent/turn
             // for why this project ships no cap of its own.
-            const cap = process.env.RULEKIT_STEP_CAP ? Number(process.env.RULEKIT_STEP_CAP) : null
+            const cap = configuredStepCap()
 
             while (true) {
               const { done, value } = await reader.read()
               if (done) break
-              const event = value as StreamEvent
-              const data = event.data ?? {}
+              const event = value
 
               if (event.type === "step.completed") {
-                usage = addStepUsage(usage, data.usage as never)
+                usage = addEveStepUsage(usage, event.data.usage)
                 // `answered` guards the cap: once the answer has arrived the
                 // loop is only collecting cost, and cutting that short throws
                 // away the price of a finished answer.
                 if (!answered && cap !== null && stepCapReached(usage, cap)) {
                   capped = stopAtStepCap(finalText, running, usage.agent_steps ?? 0, cap)
-                  await reader.cancel().catch(() => {})
-                  break
+                  // The committed step_cap hook stops Eve before another
+                  // model call. Keep reading its cancellation and usage totals.
                 }
+              } else if (event.type === "session.waiting" || event.type === "session.completed") {
+                usage = withEveSessionUsage(usage, event.data?.usage)
+                break
+              } else if (event.type === "session.failed") {
+                usage = withEveSessionUsage(usage, event.data.usage)
+                interrupted = true
+                write({ type: "error", error: event.data.message })
+                break
+              } else if (event.type === "turn.cancelled") {
+                interrupted = true
+              } else if (event.type === "turn.failed") {
+                interrupted = true
+                write({ type: "error", error: event.data.message })
+                // Failed turns still park with session usage. Read that
+                // boundary so compaction spend and the final cost survive.
               } else if (answered) {
-                if (event.type === "turn.completed" || event.type === "session.completed") break
-                if (event.type === "turn.failed" || event.type === "session.failed") break
+                // The final text arrived. Wait for the session usage boundary.
               } else if (event.type === "actions.requested") {
-                for (const action of (Array.isArray(data.actions) ? data.actions : []) as ToolCall[]) {
+                for (const action of event.data.actions) {
                   if (action.kind !== "tool-call" || !action.callId || !action.toolName) continue
                   if (HIDDEN_TOOLS.has(action.toolName)) continue
                   const { label, kind } = deriveLabel(action.toolName, action.input)
@@ -156,42 +169,34 @@ export default defineChannel({
                   write({ type: "step", step })
                 }
               } else if (event.type === "action.result") {
-                const result = data.result as { callId?: string } | undefined
-                const step = result?.callId ? steps.get(result.callId) : undefined
+                const step = steps.get(event.data.result.callId)
                 if (step) {
                   step.status =
-                    data.status === "completed"
+                    event.data.status === "completed"
                       ? "completed"
-                      : data.status === "rejected"
+                      : event.data.status === "rejected"
                         ? "rejected"
                         : "failed"
                   write({ type: "step", step: { ...step } })
                 }
               } else if (event.type === "message.appended") {
-                running = appendMessageDelta(running, data)
+                running = appendMessageDelta(running, event.data)
                 write({ type: "text", text: running })
               } else if (event.type === "message.completed") {
-                if (data.finishReason === "tool-calls") {
+                if (event.data.finishReason === "tool-calls") {
                   // The model's preamble before a tool call. It is not the
                   // answer, so it is discarded rather than left on screen.
                   running = ""
                   write({ type: "text", text: "" })
                 } else {
-                  finalText = (data.message as string) ?? running
+                  finalText = event.data.message ?? running
                   write({ type: "text", text: finalText })
                   answered = true
                 }
               } else if (event.type === "turn.completed") {
                 finalText = finalText || running
                 write({ type: "text", text: finalText })
-                break
-              } else if (event.type === "turn.failed" || event.type === "session.failed") {
-                write({ type: "error", error: (data.message as string) ?? "the turn failed" })
-                // BREAK, not return. A failed turn has usually already run
-                // several steps and every one was charged. Returning here skips
-                // the done event below, which is the only one carrying usage, so
-                // a failure loop burning real money would report no spend at all.
-                break
+                answered = true
               }
             }
 
@@ -200,7 +205,7 @@ export default defineChannel({
               type: "done",
               text,
               source: "agent",
-              complete,
+              complete: complete && !interrupted,
               usage: usageOrNull(usage),
               model: process.env.RULEKIT_MODEL ?? null,
               latencyMs: Date.now() - startedAt,
@@ -208,6 +213,7 @@ export default defineChannel({
           } catch (error) {
             write({ type: "error", error: String(error) })
           } finally {
+            await reader?.cancel().catch(() => {})
             reader?.releaseLock()
             controller.close()
           }

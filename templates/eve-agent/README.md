@@ -69,6 +69,7 @@ pnpm dev
 | `agent/tools/<name>.ts` | One file for each tool. **Eve gives a tool the name of its file.** |
 | `agent/skills/<name>.ts` | One file for each procedure. **Eve gives a skill the name of its file.** |
 | `agent/channels/ask.ts` | Serves `POST /ask/stream`, and sends the shared events. |
+| `agent/hooks/step_cap.ts` | Stops continued model work at `RULEKIT_STEP_CAP`. |
 | `lib/rules-tools.ts` | Adapts the corpus tools. It is outside `agent/` on purpose. |
 
 ## Four rules that Eve applies to this layout
@@ -80,12 +81,10 @@ pnpm dev
 2. **Put the instructions in `agent/instructions.ts`, and not in
    `defineAgent`.** If you give them to `defineAgent`, the build stops with the
    message `Unknown key "instructions"`.
-3. **A tool schema crosses the boundary as JSON Schema, and not as Zod.** Eve
-   accepts either format, but a Zod object here stops the build with the message
-   `Cannot read properties of undefined (reading 'input')`. Eve reads a Standard
-   Schema field. Zod 3 declares that field for the type system, and it does not
-   create the field at run time. The file `lib/rules-tools.ts` converts the
-   schema, so the Zod schema stays the one definition.
+3. **The adapter passes JSON Schema.** Eve also accepts Zod. The conversion
+   keeps the adapter independent of Eve's schema compiler. The file
+   `lib/rules-tools.ts` converts the shared Zod schema, so both runtimes use
+   one input definition.
 4. **A missing corpus tool needs a dynamic resolver.** `disableTool()` removes
    an Eve default. It cannot remove one of this project's tools. To say a corpus
    cannot offer one of its own tools, return a resolver that answers with
@@ -123,15 +122,20 @@ Each file in that directory holds only the connection. The procedure itself
 exists one time, in `@rulekitai/rulekit/agent/skills`, and both runtimes read it
 from there.
 
-A procedure whose tools this corpus does not offer shrinks to one sentence. Eve
-reads the whole directory and cannot drop a file, so `eveSkill` in
-`lib/rules-tools.ts` does the same job that the AI SDK runtime does by leaving
-the procedure out. Without that, a corpus with no ruling would still receive a
-procedure that names `list_rulings`, and the model would call a tool that is
-not there.
+A procedure whose required tool is absent returns the same empty dynamic
+resolver as an unavailable tool. Eve omits that procedure from the model's
+skills. This matches the AI SDK runtime. Riftbound therefore offers three
+skills because its corpus has no rulings.
 
 ## Why the built-in tools are off
 
-`defaultTools: false` disables Eve's optional shell, file, network, planning,
-question, and delegation tools. The template adds `load_skill` back because its
+`defaultTools: false` disables Eve's optional shell, file, network, and
+delegation tools. The template adds `load_skill` back because its
 four procedures need it. The model can otherwise call only corpus tools.
+
+## Optional step cap
+
+Set `RULEKIT_STEP_CAP` to bound model calls per question. The default has no cap.
+The `step_cap` hook stops continued tool work before the next model call.
+The route preserves collected text, marks the answer incomplete, and reads
+the final session usage. A completed answer at the cap finishes normally.

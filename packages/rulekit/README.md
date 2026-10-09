@@ -451,7 +451,8 @@ cat node_modules/@rulekitai/rulekit/docs/custom-tools.md
 - [Custom tools](https://github.com/rulekitai/rulekit/blob/main/docs/custom-tools.md):
   a tool of your own, and the procedure that lets the model use it
 - [Eve](https://github.com/rulekitai/rulekit/blob/main/docs/eve.md):
-  the supported versions, adapter rules, stream contract, and upgrade checks
+  the supported versions, adapter rules, stream contract, usage accounting,
+  optional model-call cap, and upgrade checks
 - [Architecture](https://github.com/rulekitai/rulekit/blob/main/docs/architecture.md)
 - [Verifying answers](https://github.com/rulekitai/rulekit/blob/main/docs/verifying-answers.md)
 - [Design decisions](https://github.com/rulekitai/rulekit/blob/main/docs/design-decisions.md)

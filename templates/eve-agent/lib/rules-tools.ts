@@ -42,7 +42,7 @@ export const TOOL_NAMES = [...byName.keys()]
  *
  * A resolver that returns `null` is how Eve says "no tool here". It is NOT
  * `disableTool()`: that sentinel removes a FRAMEWORK tool by name (`bash`,
- * `web_fetch`, `todo`, and the rest of the list Eve owns), and Eve rejects it
+ * `web_fetch`, and the rest of the list Eve owns), and Eve rejects it
  * for any other name while it resolves the agent graph:
  *
  *     agent/tools/list_rulings.ts exports disableTool() but "list_rulings" is
@@ -58,9 +58,9 @@ export const TOOL_NAMES = [...byName.keys()]
 /**
  * One procedure, ready for Eve, and switched off when its tool is absent.
  *
- * Eve reads every file under `agent/skills/` and offers no way to disable one.
- * The AI SDK runtime drops a procedure whose tool the corpus cannot offer, so
- * without this the two runtimes disagree: Eve would hand the model a procedure
+ * A dynamic resolver can omit a skill, as it can omit a tool. The AI SDK
+ * runtime also drops procedures whose tools are absent. Without this, Eve
+ * would hand the model a procedure
  * that names `list_rulings` for a corpus that holds no ruling, and the model
  * would call a tool that is not there.
  *
@@ -73,10 +73,7 @@ export function eveSkill(name: string) {
   if (!skill) throw new Error(`the ${name} skill is missing from @rulekitai/rulekit/agent/skills`)
   const needs = skill.requiresTool
   if (needs && !byName.has(needs)) {
-    return defineSkill({
-      description: `Not available. This corpus offers no ${needs}.`,
-      markdown: `This corpus offers no \`${needs}\`, so this procedure does not apply. Answer from the rules.`,
-    })
+    return defineDynamic({ events: { "session.started": () => null } })
   }
   return defineSkill({ description: skill.description, markdown: skill.body })
 }
@@ -86,19 +83,8 @@ export function eveTool(name: string) {
   if (!tool) return defineDynamic({ events: { "session.started": () => null } })
   return defineTool({
     description: tool.description,
-    // JSON Schema, NOT the Zod schema itself.
-    //
-    // Eve accepts either, but handing it a Zod object here fails the build with
-    // "Cannot read properties of undefined (reading 'input')". Eve reads the
-    // Standard Schema `~standard.types.input` field, which Zod declares for the
-    // type system and does not create at run time. JSON Schema is plain data,
-    // so it cannot disagree with whichever Zod version anything resolves.
-    //
-    // The conversion is Zod's own, from version 4. It replaced a separate
-    // package that did the same job for version 3.
-    //
-    // The tool's own Zod schema is still the single definition; this converts
-    // it, so the two descriptions of one input cannot drift.
+    // Plain JSON Schema keeps this adapter independent of Eve's schema
+    // compiler. Zod remains the single input definition for both runtimes.
     inputSchema: z.toJSONSchema(tool.inputSchema, { target: "draft-7" }),
     // Capture the tool name, which is serializable. The module-level lookup
     // keeps the RuleTool object and its execute function out of durable state.
