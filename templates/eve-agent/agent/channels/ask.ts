@@ -12,10 +12,8 @@ import {
   usageOrNull,
 } from "@rulekitai/rulekit/agent/turn"
 import { defineChannel, POST } from "eve/channels"
-import type { MessageStreamEvent } from "eve/client"
 import { configuredStepCap } from "../../lib/step-cap.ts"
-import { appendMessageDelta } from "../../lib/stream-text"
-import { addEveStepUsage, withEveSessionUsage } from "../../lib/stream-usage.ts"
+import { addEveUsage } from "../../lib/stream-usage.ts"
 
 /**
  * `POST /ask/stream`.
@@ -35,7 +33,7 @@ import { addEveStepUsage, withEveSessionUsage } from "../../lib/stream-usage.ts"
  */
 
 /** Eve reaches skills through a tool of its own. A reader has no use for seeing it. */
-const HIDDEN_TOOLS = new Set(["connection_search", "load_skill"])
+const HIDDEN_TOOLS = new Set(["connection_search", "load_skill", "eve__skill", "eve__search", "eve__tool"])
 
 /** True when this PROCESS is local development, decided from the build, never the request. */
 function isLocalDevProcess(env = process.env): boolean {
@@ -97,15 +95,16 @@ export default defineChannel({
       const stream = new ReadableStream<Uint8Array>({
         async start(controller) {
           const write = (event: AgentEvent) => controller.enqueue(encoder.encode(encodeEvent(event)))
-          let reader: ReadableStreamDefaultReader<MessageStreamEvent> | undefined
           try {
             // One question is one session. The transcript travels inside the
             // message, so there is nothing to resume and a fresh token per
             // request is correct.
-            const session = await from(crypto.randomUUID()).send(message, { auth: null })
-            reader = (await session.getEventStream()).getReader()
+            const delivery = await from(crypto.randomUUID()).send(message, { auth: null })
 
             const steps = new Map<string, TraceStep>()
+            const modelRuns = new Set<string>()
+            const textParts = new Map<string, string>()
+            const textKinds = new Map<string, string>()
             let running = ""
             let finalText = ""
             let usage: UsageTotals = EMPTY_USAGE
@@ -121,82 +120,83 @@ export default defineChannel({
             // for why this project ships no cap of its own.
             const cap = configuredStepCap()
 
-            while (true) {
-              const { done, value } = await reader.read()
-              if (done) break
-              const event = value
-
-              if (event.type === "step.completed") {
-                usage = addEveStepUsage(usage, event.data.usage)
-                // `answered` guards the cap: once the answer has arrived the
-                // loop is only collecting cost, and cutting that short throws
-                // away the price of a finished answer.
-                if (!answered && cap !== null && stepCapReached(usage, cap)) {
+            for await (const event of delivery.stream()) {
+              if (event.type === "model.requested" && "turnId" in event.data.owner) {
+                modelRuns.add(event.data.runId)
+              } else if (event.type === "model.settled" && modelRuns.has(event.data.runId)) {
+                usage = { ...usage, agent_steps: (usage.agent_steps ?? 0) + 1 }
+                if (
+                  !answered &&
+                  event.data.outcome === "completed" &&
+                  event.data.finishReason === "tool-calls" &&
+                  cap !== null &&
+                  stepCapReached(usage, cap)
+                ) {
                   capped = stopAtStepCap(finalText, running, usage.agent_steps ?? 0, cap)
-                  // The committed step_cap hook stops Eve before another
-                  // model call. Keep reading its cancellation and usage totals.
                 }
-              } else if (event.type === "session.waiting" || event.type === "session.completed") {
-                usage = withEveSessionUsage(usage, event.data?.usage)
-                break
-              } else if (event.type === "session.failed") {
-                usage = withEveSessionUsage(usage, event.data.usage)
+              } else if (event.type === "usage.recorded") {
+                usage = addEveUsage(usage, event.data.usage)
+              } else if (event.type === "turn.settled") {
+                if (event.data.outcome !== "completed") {
+                  interrupted = true
+                  if (event.data.error) write({ type: "error", error: event.data.error.message })
+                } else {
+                  const reply = event.data.reply?.map((id) => textParts.get(id) ?? "").join("")
+                  finalText = reply || finalText || running
+                  write({ type: "text", text: finalText })
+                  answered = true
+                }
+              } else if (event.type === "session.ended" && event.data.outcome === "failed") {
                 interrupted = true
-                write({ type: "error", error: event.data.message })
-                break
-              } else if (event.type === "turn.cancelled") {
+                write({ type: "error", error: event.data.error?.message ?? "The session failed" })
+              } else if (event.type === "turn.paused") {
                 interrupted = true
-              } else if (event.type === "turn.failed") {
-                interrupted = true
-                write({ type: "error", error: event.data.message })
-                // Failed turns still park with session usage. Read that
-                // boundary so compaction spend and the final cost survive.
+                write({ type: "error", error: "The agent requires input before it can finish." })
               } else if (answered) {
-                // The final text arrived. Wait for the session usage boundary.
-              } else if (event.type === "actions.requested") {
-                for (const action of event.data.actions) {
-                  if (action.kind !== "tool-call" || !action.callId || !action.toolName) continue
-                  if (HIDDEN_TOOLS.has(action.toolName)) continue
-                  const { label, kind } = deriveLabel(action.toolName, action.input)
-                  const step: TraceStep = {
-                    id: action.callId,
-                    tool: action.toolName,
-                    label,
-                    kind,
-                    status: "running",
-                  }
-                  steps.set(action.callId, step)
-                  write({ type: "step", step })
-                }
-              } else if (event.type === "action.result") {
-                const step = steps.get(event.data.result.callId)
+                // Keep reading through delivery settlement to collect all usage.
+              } else if (event.type === "call.requested") {
+                const { callId, capability, input } = event.data
+                if (capability.kind !== "tool" || HIDDEN_TOOLS.has(capability.name)) continue
+                const argumentsObject =
+                  input && typeof input === "object" && !Array.isArray(input)
+                    ? Object.fromEntries(Object.entries(input))
+                    : undefined
+                const { label, kind } = deriveLabel(capability.name, argumentsObject)
+                const step: TraceStep = { id: callId, tool: capability.name, label, kind, status: "running" }
+                steps.set(callId, step)
+                write({ type: "step", step })
+              } else if (event.type === "call.settled") {
+                const step = steps.get(event.data.callId)
                 if (step) {
                   step.status =
-                    event.data.status === "completed"
+                    event.data.outcome === "completed"
                       ? "completed"
-                      : event.data.status === "rejected"
+                      : event.data.outcome === "rejected"
                         ? "rejected"
                         : "failed"
                   write({ type: "step", step: { ...step } })
                 }
-              } else if (event.type === "message.appended") {
-                running = appendMessageDelta(running, event.data)
+              } else if (event.type === "content.delta") {
+                const { partId, kind, delta } = event.data
+                if (kind) textKinds.set(partId, kind)
+                if (textKinds.get(partId) !== "text") continue
+                running = (textParts.get(partId) ?? "") + delta
+                textParts.set(partId, running)
                 write({ type: "text", text: running })
-              } else if (event.type === "message.completed") {
-                if (event.data.finishReason === "tool-calls") {
-                  // The model's preamble before a tool call. It is not the
-                  // answer, so it is discarded rather than left on screen.
+              } else if (event.type === "content.completed" && event.data.kind === "text") {
+                const text =
+                  typeof event.data.value === "string"
+                    ? event.data.value
+                    : (textParts.get(event.data.partId) ?? "")
+                textParts.set(event.data.partId, text)
+                if (event.data.phase === "reply") {
+                  finalText = text
+                  running = text
+                  write({ type: "text", text })
+                } else {
                   running = ""
                   write({ type: "text", text: "" })
-                } else {
-                  finalText = event.data.message ?? running
-                  write({ type: "text", text: finalText })
-                  answered = true
                 }
-              } else if (event.type === "turn.completed") {
-                finalText = finalText || running
-                write({ type: "text", text: finalText })
-                answered = true
               }
             }
 
@@ -205,7 +205,7 @@ export default defineChannel({
               type: "done",
               text,
               source: "agent",
-              complete: complete && !interrupted,
+              complete: complete && answered && !interrupted,
               usage: usageOrNull(usage),
               model: process.env.RULEKIT_MODEL ?? null,
               latencyMs: Date.now() - startedAt,
@@ -213,8 +213,6 @@ export default defineChannel({
           } catch (error) {
             write({ type: "error", error: String(error) })
           } finally {
-            await reader?.cancel().catch(() => {})
-            reader?.releaseLock()
             controller.close()
           }
         },

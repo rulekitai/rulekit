@@ -19,8 +19,8 @@ The template uses these versions:
 | Requirement | Version |
 |---|---|
 | Node | 24 or later |
-| `eve` | `^0.75.1` |
-| `ai` | `^7.0.128` |
+| `eve` | `^0.84.1` |
+| `ai` | `^7.0.137` |
 
 The template package lists the supported versions. Read its `package.json`
 before an upgrade. Eve also installs version-matched documentation under
@@ -41,13 +41,14 @@ cd templates/eve-agent
 cp .env.example .env
 # Add AI_GATEWAY_API_KEY to .env.
 pnpm test
+pnpm test:integration
 pnpm eve build
 pnpm exec eve info --json
 pnpm dev
 ```
 
-For the Riftbound corpus, `eve info` must report no diagnostic, 13 static tools,
-and three static skills. The tools are 12 corpus tools plus `load_skill`.
+For the Riftbound corpus, `eve info` must report no diagnostic, 12 static corpus tools
+and three static skills. Eve adds its skill-loading catalog tool at runtime.
 Dynamic placeholders for unavailable tools and skills do not appear in these counts.
 
 ## How the adapter works
@@ -75,12 +76,11 @@ The adapter follows five rules:
    the rulekit Zod schema with `z.toJSONSchema`.
 4. An unavailable corpus tool returns a dynamic resolver that resolves to
    `null`. `disableTool()` removes an Eve default, not a rulekit tool.
-5. `defaultTools: false` removes optional Eve tools. The template adds
-   `load_skill` back because the rulekit procedures need it.
+5. `defaultTools: false` removes optional Eve tools. Eve adds `eve__skill`
+   automatically because the agent has skills.
 
-Eve persists dynamic resolver closures. Capture only serializable values in a
-resolver or tool callback. The adapter captures a tool name and performs its
-lookup in module state.
+The adapter looks up each tool by name in module state. Dynamic resolvers return
+`null` for capabilities that the current corpus cannot support.
 
 ## The streaming route
 
@@ -92,8 +92,8 @@ sends the message through that source:
 
 ```ts
 POST("/ask/stream", async (request, { from }) => {
-  const session = await from(crypto.randomUUID()).send(message, { auth: null })
-  // Read session.getEventStream().
+  const delivery = await from(crypto.randomUUID()).send(message, { auth: null })
+  // Read delivery.stream().
 })
 ```
 
@@ -101,18 +101,18 @@ One request creates one Eve session because the rulekit request already carries
 its history. Do not expose this route without an ownership and access check.
 The template uses `RULEKIT_INTERNAL_SECRET` and fails closed in production.
 
-`message.appended` contains `messageDelta`. Append each delta to the current
-text. `message.completed` contains the authoritative final message. Do not read
-the removed `messageSoFar` field.
+`content.delta` carries text by part ID. `content.completed` gives the full
+text and marks it as narration or a reply. The route clears narration and keeps
+the reply. `call.requested` and `call.settled` supply tool progress.
 
-Usage can arrive in `step.completed` after the final message. The route reads
-through `session.waiting` to collect session totals, including compaction spend.
-It maps Eve's cache read and write fields into the shared usage contract.
+Usage arrives in `usage.recorded`, including compaction spend. The route reads
+through delivery settlement and maps cache reads and writes into the shared
+usage contract. It counts ordinary model runs separately from compaction.
 
-Set `RULEKIT_STEP_CAP` to cap model calls per question. A committed
-`step.completed` hook cancels continued tool work before the next model call.
-The route reads the cancellation boundary and returns an incomplete answer.
-Closing an event reader alone does not stop server work.
+Set `RULEKIT_STEP_CAP` to cap model calls per question. A `model.settled` hook
+cancels continued tool work before the next model call. The route reads the
+cancellation boundary and returns an incomplete answer. Closing an event reader
+alone does not stop server work.
 
 ## Keep both runtimes aligned
 

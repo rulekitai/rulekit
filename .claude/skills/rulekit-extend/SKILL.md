@@ -124,7 +124,7 @@ import { defineSkill } from "eve/skills"
 
 export default defineSkill({
   description: "Use when the reader asks to buy a card, or asks what a card costs.",
-  markdown: "# Reading the shop\n\nCall `check_stock` with the printed name...",
+  content: "# Reading the shop\n\nCall `check_stock` with the printed name...",
 })
 ```
 
@@ -133,9 +133,10 @@ procedures. They do not register custom definitions. For shipped procedures,
 `eveSkill` reads `requiresTool` and resolves to `null` when that tool is absent.
 Eve then omits the procedure. Omit a custom procedure too when its tool is unavailable.
 
-The template sets `defaultTools: false` and adds `load_skill` back explicitly.
-Do not add one disable file for each optional Eve tool. `eveTool` converts the
-Zod input to JSON Schema and captures only the serializable tool name.
+The template sets `defaultTools: false`. Eve adds `eve__skill` automatically
+when the agent has skills. Do not add one disable file for each optional Eve
+tool. `eveTool` converts the Zod input to JSON Schema and looks up the tool by
+name in module state.
 
 **Eve discards `describeResult`.** A tool that marks its trace step works on the
 AI SDK runtime and does nothing on Eve.

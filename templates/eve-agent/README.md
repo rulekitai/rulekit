@@ -91,7 +91,7 @@ pnpm dev
    nothing:
 
    ```ts
-   defineDynamic({ events: { "session.started": () => null } })
+   defineDynamic(() => null)
    ```
 
 ## This corpus serves its own tools, and no others
@@ -130,8 +130,8 @@ skills because its corpus has no rulings.
 ## Why the built-in tools are off
 
 `defaultTools: false` disables Eve's optional shell, file, network, and
-delegation tools. The template adds `load_skill` back because its
-four procedures need it. The model can otherwise call only corpus tools.
+delegation tools. Eve adds `eve__skill` automatically because the agent has
+skills. The model can otherwise call only corpus tools.
 
 ## Optional step cap
 

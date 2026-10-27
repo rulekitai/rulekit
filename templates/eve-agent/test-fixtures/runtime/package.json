@@ -1,0 +1,8 @@
+{
+  "name": "rulekit-eve-runtime-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "eve": "^0.84.1"
+  }
+}

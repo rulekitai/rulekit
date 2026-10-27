@@ -19,8 +19,7 @@ const model = process.env.RULEKIT_MODEL ?? "anthropic/claude-sonnet-5"
 export default defineAgent({
   model,
 
-  // This agent reads only its corpus tools. `load_skill` is the one Eve tool
-  // it needs, and agent/tools/load_skill.ts adds that tool back explicitly.
+  // Eve adds the skill catalog tool automatically when the agent has skills.
   defaultTools: false,
 
   /**
@@ -40,7 +39,6 @@ export default defineAgent({
    * should only ever be reached by something pathological.
    */
   limits: {
-    maxInputTokensPerSession: 2_000_000,
-    maxOutputTokensPerSession: 200_000,
+    sessionUsage: ({ window }) => window.inputTokens >= 2_000_000 || window.outputTokens >= 200_000,
   },
 })

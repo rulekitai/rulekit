@@ -1,4 +1,4 @@
-import type { StepCompletedStreamEvent } from "eve/client"
+import type { ModelSettledData } from "eve/events"
 
 export function configuredStepCap(env = process.env): number | null {
   const cap = Number(env.RULEKIT_STEP_CAP)
@@ -6,11 +6,13 @@ export function configuredStepCap(env = process.env): number | null {
 }
 
 export function enforceStepCap(
-  step: Pick<StepCompletedStreamEvent["data"], "stepIndex" | "finishReason">,
+  count: number,
+  step: Pick<ModelSettledData, "finishReason" | "outcome">,
   cancel: () => void,
   cap = configuredStepCap(),
 ): void {
   // Completed-step hooks run before Eve starts another model call. Reader
   // cancellation cannot stop that work. A final answer needs no cancellation.
-  if (cap !== null && step.stepIndex + 1 >= cap && step.finishReason === "tool-calls") cancel()
+  if (cap !== null && count >= cap && step.outcome === "completed" && step.finishReason === "tool-calls")
+    cancel()
 }

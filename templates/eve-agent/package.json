@@ -8,14 +8,15 @@
   "scripts": {
     "dev": "eve dev",
     "build": "eve build",
-    "test": "node --test --experimental-strip-types lib/*.test.ts",
+    "test": "node --test --experimental-strip-types lib/*.test.ts lib/*.test.mjs",
+    "test:integration": "cd test-fixtures/runtime && RULEKIT_STEP_CAP=2 NODE_OPTIONS=--conditions=rulekit-source ../../node_modules/.bin/eve eval --timeout 60000 --max-concurrency 1",
     "start": "eve start",
     "deploy": "eve deploy"
   },
   "dependencies": {
     "@rulekitai/rulekit": "workspace:*",
-    "ai": "^7.0.128",
-    "eve": "^0.75.1",
+    "ai": "^7.0.137",
+    "eve": "^0.84.1",
     "zod": "^4.4.0"
   },
   "engines": {

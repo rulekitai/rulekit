@@ -13,6 +13,18 @@ would be an invented one.
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-10-27
+
+The runtime packages retain their interfaces. The rulekit package ships the
+updated Eve guide and serving skill. The Eve template remains in this repository.
+
+### Changed
+
+- **The Eve template uses `eve ^0.84.1` and `ai ^7.0.137`.** It adapts to
+  Eve's new session events, dynamic capabilities, and skill loading. Its
+  stream retains tool progress, answer text, usage, and the configured model
+  call limit. A deterministic Eve runtime test checks normal and capped turns.
+
 ## [0.6.1] - 2026-10-09
 
 The runtime packages retain their interfaces. The rulekit package ships updated

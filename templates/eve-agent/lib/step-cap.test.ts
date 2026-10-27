@@ -7,16 +7,17 @@ test("cancels continued tool work at the configured model-call cap", () => {
   const cancel = () => {
     cancelled = true
   }
-  enforceStepCap({ stepIndex: 0, finishReason: "tool-calls" }, cancel, 2)
+  enforceStepCap(1, { outcome: "completed", finishReason: "tool-calls" }, cancel, 2)
   assert.equal(cancelled, false)
-  enforceStepCap({ stepIndex: 1, finishReason: "tool-calls" }, cancel, 2)
+  enforceStepCap(2, { outcome: "completed", finishReason: "tool-calls" }, cancel, 2)
   assert.equal(cancelled, true)
 })
 
 test("preserves a finished answer and leaves uncapped turns running", () => {
   const cancel = () => assert.fail("the turn must continue or finish normally")
-  enforceStepCap({ stepIndex: 1, finishReason: "stop" }, cancel, 2)
-  enforceStepCap({ stepIndex: 100, finishReason: "tool-calls" }, cancel, null)
+  enforceStepCap(2, { outcome: "completed", finishReason: "stop" }, cancel, 2)
+  enforceStepCap(101, { outcome: "completed", finishReason: "tool-calls" }, cancel, null)
+  enforceStepCap(2, { outcome: "failed", finishReason: "tool-calls" }, cancel, 2)
 })
 
 test("ignores absent or invalid environment caps", () => {

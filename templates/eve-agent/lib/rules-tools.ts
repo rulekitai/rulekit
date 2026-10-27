@@ -52,8 +52,6 @@ export const TOOL_NAMES = [...byName.keys()]
  * both accept the file and only `eve start` reads the graph. `data/riftbound`
  * ships an empty `rulings.json`, so `list_rulings` is the tool that finds it.
  *
- * The resolver captures nothing, which matters: since 0.43.0 Eve stores each
- * callback's closure values and rejects any that is not JSON-serializable.
  */
 /**
  * One procedure, ready for Eve, and switched off when its tool is absent.
@@ -73,21 +71,20 @@ export function eveSkill(name: string) {
   if (!skill) throw new Error(`the ${name} skill is missing from @rulekitai/rulekit/agent/skills`)
   const needs = skill.requiresTool
   if (needs && !byName.has(needs)) {
-    return defineDynamic({ events: { "session.started": () => null } })
+    return defineDynamic(() => null)
   }
-  return defineSkill({ description: skill.description, markdown: skill.body })
+  return defineSkill({ description: skill.description, content: skill.body })
 }
 
 export function eveTool(name: string) {
   const tool = byName.get(name)
-  if (!tool) return defineDynamic({ events: { "session.started": () => null } })
+  if (!tool) return defineDynamic(() => null)
   return defineTool({
     description: tool.description,
     // Plain JSON Schema keeps this adapter independent of Eve's schema
     // compiler. Zod remains the single input definition for both runtimes.
     inputSchema: z.toJSONSchema(tool.inputSchema, { target: "draft-7" }),
-    // Capture the tool name, which is serializable. The module-level lookup
-    // keeps the RuleTool object and its execute function out of durable state.
+    // The module-level lookup keeps the RuleTool object in one place.
     execute: (input: unknown) => byName.get(name)?.execute(input as never),
   })
 }

@@ -1,31 +1,12 @@
 import { addStepUsage, type UsageTotals } from "@rulekitai/rulekit/agent/turn"
-import type { SessionWaitingStreamEvent, StepCompletedStreamEvent } from "eve/client"
+import type { UsageRecordedData } from "eve/events"
 
-export function addEveStepUsage(
-  totals: UsageTotals,
-  usage: StepCompletedStreamEvent["data"]["usage"],
-): UsageTotals {
-  return addStepUsage(totals, {
+/** A usage record can be a model call, compaction, or delegated work. */
+export function addEveUsage(totals: UsageTotals, usage: UsageRecordedData["usage"]): UsageTotals {
+  const accumulated = addStepUsage(totals, {
     ...usage,
-    cachedInputTokens: usage?.cacheReadTokens,
-    cacheCreationInputTokens: usage?.cacheWriteTokens,
+    cachedInputTokens: usage.cacheReadTokens,
+    cacheCreationInputTokens: usage.cacheWriteTokens,
   })
-}
-
-export function withEveSessionUsage(
-  totals: UsageTotals,
-  usage: SessionWaitingStreamEvent["data"]["usage"],
-): UsageTotals {
-  if (!usage) return totals
-  // Each request creates one session. Its totals include compaction calls,
-  // which have no step.completed event and must not increase agent_steps.
-  return {
-    ...totals,
-    prompt_tokens: usage.inputTokens,
-    completion_tokens: usage.outputTokens,
-    cache_read_input_tokens: usage.cacheReadTokens,
-    cache_creation_input_tokens: usage.cacheWriteTokens,
-    cost_usd: usage.costUsd ?? totals.cost_usd,
-    agent_steps: totals.agent_steps ?? 0,
-  }
+  return { ...accumulated, agent_steps: totals.agent_steps ?? 0 }
 }

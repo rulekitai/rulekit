@@ -9,4 +9,4 @@ import { defineSkill } from "eve/skills"
 const skill = findSkill("sequence")
 if (!skill) throw new Error("the sequence skill is missing from @rulekitai/rulekit/agent/skills")
 
-export default defineSkill({ description: skill.description, markdown: skill.body })
+export default defineSkill({ description: skill.description, content: skill.body })
